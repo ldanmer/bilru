@@ -31,7 +31,7 @@ class ByOfferController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update', 'addPrice', 'list'),
+				'actions'=>array('create','update', 'addPrice', 'list', 'finished'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -149,8 +149,22 @@ class ByOfferController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('ByOffer');
+		$criteria=new CDbCriteria;
+		$criteria->with=array('materialBuy');
+		$criteria->condition='supplier_id='.Yii::app()->user->id.' AND status=0';
+		$dataProvider=new CActiveDataProvider('ByOffer', array('criteria'=>$criteria));
 		$this->render('index',array(
+			'dataProvider'=>$dataProvider,
+		));
+	}
+
+	public function actionFinished()
+	{
+		$criteria=new CDbCriteria;
+		$criteria->with=array('materialBuy');
+		$criteria->condition='supplier_id='.Yii::app()->user->id.' AND status=1';
+		$dataProvider=new CActiveDataProvider('ByOffer', array('criteria'=>$criteria));
+		$this->render('finished',array(
 			'dataProvider'=>$dataProvider,
 		));
 	}

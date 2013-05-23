@@ -47,6 +47,9 @@ class Events extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
+			'likesCount' => array(self::STAT, 'EventsLikes', 'event_id'),
+			'commentsCount' => array(self::STAT, 'EventsComments', 'event_id'),
+			'comments' => array(self::HAS_MANY, 'EventsComments', 'event_id'),		
 		);
 	}
 
@@ -84,5 +87,20 @@ class Events extends CActiveRecord
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
+	}
+
+	public function trimLongText($text, $lenght = 200, $toogle="Далее...")
+	{
+		if(strlen(strip_tags($text)) > $lenght)
+		{
+			$start = '<span class="hidden">';
+			$end = '</span> <a class="show">'.$toogle.'</a>';
+			$rest = substr($text,$lenght);
+			$rest = $start.$rest.$end;
+			$main = substr($text, 0, $lenght);		
+			$text = $main.$rest;
+
+		}
+		return str_replace(array("\n","\r"), '', $text);
 	}
 }

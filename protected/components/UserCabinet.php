@@ -8,130 +8,83 @@ class UserCabinet extends CPortlet
     public function init()
     {
       parent::init();
-      $this->currentUser = User::model()->findByPk(Yii::app()->user->id);     
+      $criteria = new CDbCriteria;
+      $criteria->with = 'settings';
+      $criteria->condition = "t.id=:user_id";
+      $criteria->params = array(":user_id"=>Yii::app()->user->id);
+      $this->currentUser = User::model()->find($criteria);     
     }
  
     protected function renderContent()
     {
-
-        $userAttributes = $this->currentUser ? $this->cabinetMenuList() : "";
-
-    	$this->render('cabinets/view_cabinet', array(
-            'type' => $type, 
-            'userAttributes' => $userAttributes,
-            ));       
+        $user = $this->cabinetMenuList();
+    	$this->render('cabinets/view_cabinet', array('user' => $user));       
     }
 
     protected function cabinetMenuList()
     {
-        $currentUserAttributes = new stdClass();  
-        $currentUserAttributes->title = $this->cabinetAttributes->title;
-        $cabinetType = $this->cabinetAttributes->type;
+        $userAttribute = new stdClass();  
+        $userAttribute->title = GetName::getCabinetAttributes()->title;
+        $cabinetType = GetName::getCabinetAttributes()->type;
 
         // Поля поставщика услуг
         if($cabinetType != 1)
         {
-            $currentUserAttributes->rating = "10.25";
-            $currentUserAttributes->questions = '26';
+            $userAttribute->rating = GetName::getRating(Yii::app()->user->id)->averageRating;
+            /* TODO: количество вопросов */
+            $userAttribute->questions = '0';
         }
         else
             // Ответы заказчикам
-            $currentUserAttributes->answers = "12";  
+            /* TODO: количество ответов */
+            $userAttribute->answers = "0";  
 
         // Оборудование у строителей
+        /* TODO: закупка оборудования */
         if($cabinetType == 2) 
-            $currentUserAttributes->equipment = "12";                    
-
+            $userAttribute->equipment = "0";                  
 
         // Общее число заказов
-        $currentUserAttributes->orders->total = $this->currentUser->orderCount;
+        $userAttribute->orders->total = $this->currentUser->orderCount;
 
         // Заказы для поставщиков
         if($cabinetType == 3)
         {
-            $currentUserAttributes->orders->fizlitsa = 59;
-            $currentUserAttributes->orders->company = 28;
-            $currentUserAttributes->orders->gang = 34;
-            $currentUserAttributes->orders->workers = 74;
+            $userAttribute->orders->fizlitsa = 0;
+            $userAttribute->orders->company = 0;
+            $userAttribute->orders->gang = 0;
+            $userAttribute->orders->workers = 0;
         }
             
         // Число объектов
-        $currentUserAttributes->objects = $this->currentUser->objectCount;
+        $userAttribute->objects = $this->currentUser->objectCount;
         // Предложения
         if($cabinetType != 3 && $this->currentUser->role_id != 5)
         {
             if($this->currentUser->role_id != 4)
             {
-                $currentUserAttributes->offers->company = "28";
-                $currentUserAttributes->offers->gang = "34";
+                $userAttribute->offers->company = User::userOrdersInfo($this->currentUser->id)->offersToMe->builders;
+                $userAttribute->offers->gang = User::userOrdersInfo($this->currentUser->id)->offersToMe->gangs;
             }
-            $currentUserAttributes->offers->workers = "74";
+            $userAttribute->offers->workers = User::userOrdersInfo($this->currentUser->id)->offersToMe->masters;
          }
 
         // Поставка
          if($cabinetType != 3)
          {
-            $currentUserAttributes->supply->materials = "12";
-            $currentUserAttributes->supply->finish = "43";      
-            $currentUserAttributes->supply->engineer = "9";     
+            $userAttribute->supply->materials = User::offersToBuy($this->currentUser->id, 1);
+            $userAttribute->supply->finish = User::offersToBuy($this->currentUser->id, 2);      
+            $userAttribute->supply->engineer = User::offersToBuy($this->currentUser->id, 3);     
          } 
         
 
-        $currentUserAttributes->region = GetName::getUserTitles($this->currentUser->id)->region;
-        $currentUserAttributes->name = GetName::getUserTitles($this->currentUser->id)->name;
-        $currentUserAttributes->orgType = GetName::getUserTitles($this->currentUser->id)->orgType;
-        
+        $userAttribute->region = GetName::getUserTitles($this->currentUser->id)->region;
+        $userAttribute->name = GetName::getUserTitles($this->currentUser->id)->name;
+        $userAttribute->orgType = GetName::getUserTitles($this->currentUser->id)->orgType;
+        $userAttribute->avatar = $this->currentUser->settings[0]->avatar;
 
-        /*
-        if(!empty($userInfo->org_name))
-        {   
-            $currentUserAttributes->name = $userInfo->org_name;
-            $currentUserAttributes->orgType = $this->currentUser->orgType->org_type_name;            
-        }
-        // поля Физ.Лица   
-        else 
-        {   
-            $currentUserAttributes->name = $userInfo->first_name . " " . $userInfo->last_name;
-            $currentUserAttributes->orgType = "Частное лицо";
-        }     
-        */
-        return $currentUserAttributes;
+        return $userAttribute;
     }
 
-    public function getCabinetAttributes()
-    {   
-        $cabinetType;
-        $currentUser = User::model()->findByPk(Yii::app()->user->id);
-        $userRole = $currentUser->role_id;
-        switch ($userRole) {
-            case 1:
-                $cabinetType = 1;
-                $cabinetTitle = "Заказчика";
-                break;
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-                $cabinetType = 2;
-                $cabinetTitle = "Строителя";
-                break;
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-                $cabinetType = 3;
-                $cabinetTitle = "Поставщика";
-                break;
-            
-            default:
-                $cabinetType = false;
-                break;
-        }
-
-        $cabinetAttributes = new stdClass();
-        $cabinetAttributes->type = $cabinetType;
-        $cabinetAttributes->title = $cabinetTitle;
-
-        return $cabinetAttributes;
-    }
+    
 }

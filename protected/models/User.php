@@ -59,14 +59,19 @@ class User extends CActiveRecord
 		return array(
 			'organizationData' => array(self::HAS_MANY, 'OrganizationData', 'user_id'),		
 			'personalData' => array(self::HAS_MANY, 'PersonalData', 'user_id'),	
-			'settings' => array(self::HAS_MANY, 'UserSettings', 'user_id'),		
-			'orders' => array(self::HAS_MANY, 'Orders', 'user_id'),
+			'userInfo' => array(self::HAS_MANY, 'UserInfo', 'user_id'),	
+			'objects' => array(self::HAS_MANY, 'Objects', 'user_id'),
 			'materials' => array(self::HAS_MANY, 'MaterialBuy', 'user_id'),
 			'supplier' => array(self::HAS_MANY, 'ByOffer', 'supplier_id'),
 			'objectCount' => array(self::STAT, 'Objects', 'user_id'),
+			'offersCount' => array(self::STAT, 'OrderOffer', 'supplier_id'),
+			'materialOffersCount' => array(self::STAT, 'ByOffer', 'supplier_id'),			
+			'eventsCount' => array(self::STAT, 'Events', 'user_id'),
+			'ratingCount' => array(self::STAT, 'UserRating', 'user_id'),
 			'orgType' => array(self::BELONGS_TO, 'OrgType', 'org_type_id'),
 			'role' => array(self::BELONGS_TO, 'Role', 'role_id'),
 			'rating' => array(self::HAS_MANY, 'UserRating', 'user_id'),
+			'settings' => array(self::HAS_MANY, 'UserSettings', 'user_id'),
 		);
 	}
 
@@ -184,6 +189,15 @@ class User extends CActiveRecord
 		return $this->sendMail($model->email, $subject, $body);			
 	}
 
+	public function sendRecoveryString($user)
+	{
+		$activation_url = Yii::app()->createAbsoluteUrl('/site/recovery',
+			array("activation_string" => $user->activation_string, "email" => $user->email));
+		$subject = "Подтверждение смены пароля пользователя";
+		$body = 'Пожалуйста, проследуйте по ссылке для подтверждения смены пароля: <a href="'.$activation_url.'">'.$activation_url.'</a>';				
+		return $this->sendMail($user->email, $subject, $body);
+	}
+
 	// Получаем роль и заголовок на основе переменной userRole
 	public function getUserAttributes($currentRole)
 	{
@@ -249,5 +263,161 @@ class User extends CActiveRecord
 		$arr->jur = $jur;
 		return $arr;
 	}
+
+	public function userOrdersInfo($user_id)
+	{
+		$user = self::model()->findByPk($user_id);
+		if($user)
+		{
+			$info = new stdClass;
+			$info->actualOrders = self::getActualOrders($user);
+			if(GetName::getCabinetAttributes()->type == 2)
+			{
+				$info->offers = $user->offersCount;
+				$info->acceptedOffers = self::getAcceptedOffers($user)->all;
+				$info->inWork = self::getAcceptedOffers($user)->inWork;
+			}			
+
+			if(GetName::getCabinetAttributes()->type == 3)
+				$info->offers = $user->materialOffersCount;
+
+			$info->ordersCount = self::ordersCount($user_id);
+			$info->offersToMe->builders = self::offersToMe($user)->builders;
+			$info->offersToMe->gangs = self::offersToMe($user)->gangs;
+			$info->offersToMe->masters = self::offersToMe($user)->masters;
+			$info->offersToMe->unaccepted = self::offersToMe($user)->unaccepted;
+			return $info;
+		}
+		
+	}
+
+	// Получение актуальных заказов
+	private function getActualOrders($user)
+	{
+		if(GetName::getCabinetAttributes()->type == 2)
+		{
+			$role = $user->role->id;
+			$categories = UserSettings::getSettingsField("order_category");
+			if(empty($categories)) 
+				return array();
+			else
+			{
+				$criteria = new CDbCriteria();
+				foreach ($categories as $category) 
+		    	$criteria->addSearchCondition('work_type_id',$category, true, 'OR'); 
+
+				$criteria->addCondition('status=0');
+				$criteria->addSearchCondition('user_role_id',$role);
+				return $orders = Orders::model()->findAll($criteria);	
+			}
+		}
+
+		if(GetName::getCabinetAttributes()->type == 3)
+		{
+			$category = UserSettings::getSettingsField("material_category");
+			if(empty($category)) 
+				return array();
+			else
+			{
+				$criteria = new CDbCriteria();				
+		    $criteria->condition('material_type='.$category); 
+
+				$criteria->addCondition('status=0');				
+				return $orders = MaterialBuy::model()->findAll($criteria);	
+			}
+		}
+		
+	
+	}
+
+	// Получение актуальных заявок на поставку материалов
+	private function getActualMaterials()
+	{		
+		$categories = UserSettings::getSettingsField("material_category");
+		if(empty($categories)) 
+			return array();
+		else
+		{
+			$criteria = new CDbCriteria();
+			$criteria->addInCondition('material_type',$categories, 'OR');
+			$criteria->addCondition('status=0');
+			return $orders = MaterialBuy::model()->findAll($criteria);
+		}
+	}
+
+	private function getAcceptedOffers($user)
+	{	
+		$criteria = new CDbCriteria();
+		$criteria->with = 'offer';
+		$criteria->condition = "supplier_id=".$user->id;
+		$orders = Orders::model()->findAll($criteria);
+		$inWork = 0;
+		$offers = new stdClass;	
+
+		foreach ($orders as $order) 
+		{
+			if($order->status == 0)
+				++$inWork;
+		}
+
+		$offers->all = $orders;
+		$offers->inWork = $inWork;
+		return $offers;
+	}
+
+	private function ordersCount($user_id)
+	{
+		$model = self::model()->findByPk($user_id);
+		$count = 0;
+		foreach ($model->objects as $object)
+		{
+			foreach ($object->orders as $order)
+				++$count;			
+		}
+
+		return $count;
+	}
+
+	private function offersToMe($user)
+	{		
+		$sql = "SELECT offer.supplier_id, ord.offer_id
+			  FROM bl_order_offer offer
+		    INNER JOIN bl_objects obj
+		    INNER JOIN bl_orders ord
+		    ON ord.object_id=obj.id AND offer.order_id=ord.id
+		    WHERE obj.user_id='$user->id'";
+    $rows = Yii::app()->db->createCommand($sql)->queryAll();
+		$count = new stdClass;
+		$count->builders = $count->gangs = $count->masters = $count->unaccepted = 0; 
+
+		foreach ($rows as $row) 
+		{
+			$user = self::model()->findByPk($row['supplier_id']);
+			if($user->role_id == 2)
+				++$count->builders;
+			if($user->role_id == 4)
+				++$count->gangs;
+			if($user->role_id == 5)
+				++$count->masters;
+			if($row['offer_id'] == 0)
+				++$count->unaccepted;
+		}		
+
+		return $count;	 
+	}
+
+	public function offersToBuy($user, $category)
+	{	
+		$model = self::model()->findByPk($user);
+		$count = 0;	
+		foreach ($model->materials as $material) 
+		{
+			if($material->category == $category)				
+				$count += ByOffer::model()->count('material_buy_id='.$material->id);
+		}
+
+		return $count;	 
+	}
+	
 
 }

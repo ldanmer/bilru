@@ -9,16 +9,15 @@ $org_info = OrganizationData::model()->find('user_id=:user_id', array(':user_id'
 
 if($model->documents != "null")
 	$docs = GetName::getDocsList($model->documents);
-
-
 ?>
-
 <div>
 	<?php $this->widget('bootstrap.widgets.TbMenu', array(
 	    'type'=>'tabs', 
 	    'stacked'=>false, 
 	    'items'=>array(
-	        array('label'=>'Найти подряд', 'url'=>'search', 'active' => true),
+	        array('label'=>'Найти подряд', 'url'=>array('orders/search'), 'active' => true),
+	        array('label'=>'Мои подряды', 'url'=>array('orderOffer/index')),
+	        array('label'=>'Завершенные подряды', 'url'=>array('orderOffer/finished')),
 	    ),
 	)); ?>
 </div>
@@ -61,7 +60,7 @@ if($model->documents != "null")
 				<td class="header">ОБЪЕКТ:</td>
 				<td>
 					<?php 
-					if(UserSettings::getThisTariff() == 1):			
+					if(UserSettings::getThisTariff() == 0):			
 						$this->widget('bootstrap.widgets.TbButton', array(
 						    'label'=>'Посмотреть профиль объекта',
 						    'type'=>'btn-block',
@@ -88,7 +87,7 @@ if($model->documents != "null")
 				<td class="header">ЗАКАЗЧИК:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() == 1):
+					if(UserSettings::getThisTariff() == 0):
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else: 
 						if (empty($org_info->org_name))
@@ -132,7 +131,7 @@ if($model->documents != "null")
 				<td class="header">КОНТАКТЫ:</td>
 				<td>
 					<?php 
-					if(UserSettings::getThisTariff() == 1):
+					if(UserSettings::getThisTariff() == 0):
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else:
 						echo $model->object->region->region_name ?>, 
@@ -145,7 +144,7 @@ if($model->documents != "null")
 				<td class="header contact">Телефон:</td>
 				<td>
 					<?php 
-					if(UserSettings::getThisTariff() == 1)
+					if(UserSettings::getThisTariff() == 0)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 						echo $user_info->phone1 
@@ -156,7 +155,7 @@ if($model->documents != "null")
 				<td class="header contact">E-mail:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() == 1)
+					if(UserSettings::getThisTariff() == 0)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 					 echo $model->object->user->email;
@@ -167,7 +166,7 @@ if($model->documents != "null")
 				<td class="header contact">Контактное лицо:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() == 1)
+					if(UserSettings::getThisTariff() == 0)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 					 echo $user_info->first_name . " " . $user_info->middle_name . " " . $user_info->last_name; 
@@ -184,16 +183,7 @@ if($model->documents != "null")
 
 
 	<?php 
-			$this->widget('bootstrap.widgets.TbButton', array(
-		    'label'=>'Запросить информацию',
-		    'type'=>'primary',
-		    'htmlOptions'=>array(
-		        'data-toggle'=>'modal',
-		        'data-target'=>'#alert',
-		        'class' => 'span2',
-		    ),
-		));
-
+	if(UserSettings::getThisTariff() == 0):
 		$this->widget('bootstrap.widgets.TbButton', array(
 		    'label'=>'Дать предложение',
 		    'type'=>'primary',
@@ -201,6 +191,30 @@ if($model->documents != "null")
 		        'data-toggle'=>'modal',
 		        'data-target'=>'#alert',
 		        'class' => 'span2 pull-right',
+		    ),
+		));
+		else:
+			if(empty($already)):
+				$this->widget('bootstrap.widgets.TbButton', array(
+			    'label'=>'Дать предложение',
+			    'type'=>'primary',
+			    'url'=>array('orderOffer/create', 'id'=>$model->id),
+			    'htmlOptions'=>array('class' => 'span2 pull-right'),
+				));
+			else:
+				$this->widget('bootstrap.widgets.TbButton', array(
+			    'label'=>'Мои подряды',
+			    'type'=>'success',
+			    'url'=>array('orderOffer/index'),
+			    'htmlOptions'=>array('class' => 'span2 pull-right'),
+				));
+			endif;
+		endif;
+		$this->widget('bootstrap.widgets.TbButton', array(
+		    'label'=>'Вернуться к результатам поиска',
+		    'type'=>'primary',
+		    'htmlOptions'=>array(
+		        'class' => 'btn-back pull-left',
 		    ),
 		));
 	?>
@@ -211,20 +225,18 @@ if($model->documents != "null")
 </fieldset>
 </form>
 
-<?php $this->widget('bootstrap.widgets.TbButton', array(
-		    'label'=>'Вернуться к результатам поиска',
-		    'type'=>'primary',
-		    'htmlOptions'=>array(
-		        'class' => 'btn-back pull-right',
-		    ),
-		));
- ?>
-
 <?php $this->beginWidget('bootstrap.widgets.TbModal', array('id'=>'alert')); ?>
  
 <div class="alert alert-error">
     Информация недоступна на тарифном плане «БАЗОВЫЙ»
 </div>
+ 
+<?php $this->endWidget(); ?>
 
+<?php $this->beginWidget('bootstrap.widgets.TbModal', array('id'=>'already')); ?>
+ 
+<div class="alert alert-info">
+  Вы уже давали предложение к этому заказу
+</div>
  
 <?php $this->endWidget(); ?>

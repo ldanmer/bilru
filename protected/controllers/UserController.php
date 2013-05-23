@@ -22,6 +22,11 @@ class UserController extends Controller
 				'captcha'=>array(
 				'class'=>'CCaptchaAction',
 			),
+			'upload'=>array(
+        'class'=>'xupload.actions.XUploadAction',
+        'path' =>Yii::app()->getBasePath() . "/../files/uploads",
+        'publicPath' => Yii::app()->getBaseUrl() . "/files/uploads",
+      ),
 		);
 	}
 
@@ -37,13 +42,13 @@ class UserController extends Controller
 				'actions'=>array('register','captcha'),
 				'users'=>array('*'),
 			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('feed'),
+			array('allow', 
+				'actions'=>array('feed', 'view', 'update', 'main','profile', 'about',  'licenceUpload'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete','index','view', 'update'),
-				'users'=>array('info@danmer-studio.ru'),
+				'actions'=>array('admin','delete','index','update'),
+				'users'=>array('admin@bilru.com'),
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
@@ -51,14 +56,107 @@ class UserController extends Controller
 		);
 	}
 
-	/**
-	 * Displays a particular model.
-	 * @param integer $id the ID of the model to be displayed
-	 */
-	public function actionView($id)
-	{		
+	// Просмотр реквизитов
+	public function actionView()
+	{	
 		$this->render('view',array(
-			'model'=>$this->loadModel($id),
+			'model'=>$this->loadModel(Yii::app()->user->id),
+		));
+	}
+
+	// Просмотр основной информации
+	public function actionMain()
+	{	
+		$model = $this->loadModel(Yii::app()->user->id);
+		$this->render('main',array(
+			'model'=>$model,
+		));
+	}
+
+	// Просмотр профиля другим пользователем
+	public function actionProfile($id)
+	{	
+		$model = $this->loadModel($id);
+		$gallery = json_decode($model->userInfo[0]->portfolio);
+		$license = json_decode($model->userInfo[0]->license);		
+		$this->render('profile',array(
+			'model'=>$model,
+			'gallery'=>$gallery,
+			'license'=>$license,
+		));
+	}
+
+	// Просмотр/Редактирование деятельности
+	public function actionAbout()
+	{	
+		$model = $this->loadModel(Yii::app()->user->id);	
+		$uploadDir = '/files/docs_upload/'.$model->id.'/';
+		GetName::makeDir($uploadDir);
+
+		if(isset($_POST['OrganizationData']))
+		{
+			$model->userInfo[0]->description = $_POST['OrganizationData']['description'];
+			if($model->userInfo[0]->update())
+				Yii::app()->user->setFlash('success',"Описание сохранено");	
+			else
+				Yii::app()->user->setFlash('error',"Ошибка сохранения. Попробуйте еще раз или свяжитесь с администратором");
+		}
+		
+		if(isset($_POST['UserSettings']))
+		{
+			if((CUploadedFile::getInstancesByName('license')))
+				$model->userInfo[0]->license = GetName::saveUploadedFiles('license',$uploadDir, $model->userInfo[0]->license);
+
+			if((CUploadedFile::getInstancesByName('portfolio')))
+				$model->userInfo[0]->portfolio = GetName::saveUploadedFiles('portfolio',$uploadDir, $model->userInfo[0]->license);
+
+			if($file = CUploadedFile::getInstance($model->settings[0],'avatar'))
+			{
+				$fileName = GetName::translit($file->getName());
+				$model->settings[0]->avatar = $uploadDir.$fileName;
+				if($model->settings[0]->validate())
+				{
+					$model->settings[0]->save();
+					$file->saveAs(Yii::getPathOfAlias('webroot').$model->settings[0]->avatar);	
+				}
+			}
+		}
+		
+		if(isset($_POST['UserInfo']['regions']))
+			$model->userInfo[0]->regions = json_encode($_POST['UserInfo']['regions']);
+
+		if(isset($_POST['UserInfo']['profiles']))
+				$model->userInfo[0]->profiles = json_encode($_POST['UserInfo']['profiles']);
+
+		if(isset($_POST['UserInfo']['goods']))
+			$model->userInfo[0]->goods = json_encode($_POST['UserInfo']['goods']);
+		
+		$model->userInfo[0]->update();		
+
+
+		$gallery = json_decode($model->userInfo[0]->portfolio);
+		$geography = GetName::jsonToString($model->userInfo[0]->regions, GetName::getNames('Region', 'region_name'), "li");
+		if(GetName::getCabinetAttributes()->type == 2)
+		{
+			$profile = GetName::jsonToString($model->userInfo[0]->profiles, Orders::model()->categoryList, "li");
+			$goods = GetName::jsonToString($model->userInfo[0]->goods, GetName::getNames('WorkTypes', 'name'), "li");
+		}
+
+		if(GetName::getCabinetAttributes()->type == 3)
+		{
+			$profile = GetName::jsonToString($model->userInfo[0]->profiles, MaterialBuy::model()->categoryList, "li");
+			$goods = GetName::jsonToString($model->userInfo[0]->goods, GetName::getNames('MaterialList', 'name'), "li");
+		}
+
+		$model->userInfo[0]->regions = json_decode($model->userInfo[0]->regions);
+		$model->userInfo[0]->profiles = json_decode($model->userInfo[0]->profiles);
+		$model->userInfo[0]->goods = json_decode($model->userInfo[0]->goods);
+		$this->render('about',array(
+			'model'=>$model,
+			'gallery'=>$gallery,
+			'geography'=>$geography,
+			'profile'=>$profile,
+			'goods'=>$goods,
 		));
 	}
 
@@ -74,6 +172,7 @@ class UserController extends Controller
 		$userData = new PersonalData;
 		$orgData = new OrganizationData;
 		$userSettings = new UserSettings;
+		$userInfo = new UserInfo;
 
 		$userRole = CHttpRequest::getParam('userRole');
 		$regionNames = GetName::getNames('Region', 'region_name');
@@ -110,12 +209,15 @@ class UserController extends Controller
 
 			if($model->save())
 			{
-				$userData->user_id = $userSettings->user_id = $model->id;
+				$userData->user_id = $userSettings->user_id = $userInfo->user_id = $orgData->user_id = $model->id;
 				$userData->save();
-				if(!empty($orgData->attributes))
+				$userSettings->save(false);
+				$userInfo->save(false);				
+				if(empty($orgData->org_name))
 				{
-					$orgData->user_id = $model->id;
-					$orgData->save();
+					$orgData->org_name = ' ';
+					$orgData->terms = true;
+					$orgData->save(false);
 				}
 					
 				Yii::app()->user->setFlash('success',"Благодарим за регистрацию! Пожалуйста, проверьте свой email.");	
@@ -162,18 +264,18 @@ class UserController extends Controller
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	public function actionUpdate($id)
+	public function actionUpdate()
 	{
-		$model=$this->loadModel($id);
+		$model=$this->loadModel(Yii::app()->user->id);
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['User']))
+		if(isset($_POST['User']) && isset($_POST['PersonalData']) && isset($_POST['OrganizationData']))
 		{
 			$model->attributes=$_POST['User'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			$model->personalData[0]->attributes=$_POST['PersonalData'];
+			$model->organizationData[0]->attributes=$_POST['OrganizationData'];
+			if($model->update() && $model->personalData[0]->update() && $model->organizationData[0]->update())
+				$this->redirect(array('view'));
 		}
 
 		$this->render('update',array(

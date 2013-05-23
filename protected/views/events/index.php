@@ -12,9 +12,8 @@ $this->breadcrumbs=array(
 	    'type'=>'tabs', // '', 'tabs', 'pills' (or 'list')
 	    'stacked'=>false, // whether this is a stacked menu
 	    'items'=>array(
-	        array('label'=>'Лента', 'url'=>'index', 'active'=>true),
-	        array('label'=>'Создать событие', 'url'=>'create'),
-	        array('label'=>'Настройка', 'url'=>'#'),
+	        array('label'=>'Лента', 'url'=>array('events/index')),
+	        array('label'=>'Создать событие', 'url'=>array('events/create')),
 	    ),
 	)); ?>
 </div>
@@ -25,3 +24,5 @@ $this->breadcrumbs=array(
 	'template' => '{items}',
 	'htmlOptions' => array('class' => 'clearfix'),
 )); ?>
+
+

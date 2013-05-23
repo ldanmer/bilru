@@ -1,28 +1,18 @@
 <?php
 $this->breadcrumbs=array(
-	'Отзывы'=>array('index'),
-	$model->id,
+	'Отзывы'
 );
 ?>
-<div>
-	<?php $this->widget('bootstrap.widgets.TbMenu', array(
-	    'type'=>'tabs', 
-	    'stacked'=>false, 
-	    'items'=>array(
-        array('label'=>'Отзывы', 'url'=>array('index'), 'active' => true),
-	    ),
-	)); ?>
-</div>
 <div class="order-title">
 	Оставить отзыв
 </div>
 <div class="order-view clearfix">
-		<div class="span1">		
-		<?php if(!empty($model[0]->user->avatar)): ?>
-			<?php echo CHtml::image(Yii::app()->baseUrl.$model[0]->user->avatar); ?>
-		<?php else: ?>
-		<img src="<?php echo Yii::app()->baseUrl ?>/img/avatar_placeholder.png" />
-		<?php endif; ?>
+	<div class="span1">		
+  	<?php if(!empty($model[0]->user->settings[0]->avatar)): ?>
+      <?php echo CHtml::link(CHtml::image(Yii::app()->baseUrl.$model[0]->user->settings[0]->avatar), array('user/profile', 'id'=>$model[0]->user_id)); ?>
+    <?php else: ?>
+      <?php echo CHtml::link(CHtml::image(Yii::app()->baseUrl.'/img/avatar_placeholder.png'), array('user/view')); ?>
+    <?php endif; ?>
 		<p class="margin-top">
 			<img src="<?php echo Yii::app()->baseUrl ?>/img/finger-up.png" class="pull-right" />
 		</p>
@@ -30,7 +20,7 @@ $this->breadcrumbs=array(
 	<div class="span3">
 		<h4 class="header"><?php echo CHtml::encode($model[0]->user->role->role_name) ?></h4>
 		<h4><strong><?php echo CHtml::encode($model[0]->user->organizationData[0]->org_name) ?></strong></h4>
-		<?php echo CHtml::link("Посмотреть профиль",array(''), array('class'=>'btn btn-block pull-left')); ?>
+		<?php echo CHtml::link("Посмотреть профиль",array('user/profile', 'id'=>$model[0]->user_id), array('class'=>'btn btn-block pull-left')); ?>
 		<div class="clearfix"></div>
 		<p class="green margin-top">Этого поставщика рекомендовало 
 			<span class="red"><?php echo GetName::getRating($model[0]->user_id)->count ?></span>

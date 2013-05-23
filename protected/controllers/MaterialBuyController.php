@@ -302,8 +302,8 @@ class MaterialBuyController extends Controller
 
 		if(isset($_POST['UserRating']))
 		{
-			$rating->user_id = Yii::app()->user->id;
-			$rating->rater_id = $model->supplier_id;
+			$rating->rater_id = Yii::app()->user->id;
+			$rating->user_id = $model->supplier_id;
 			$rating->review = $_POST['UserRating']['review'];
 			// Проверка на 0
 			foreach ($_POST['UserRating']['score'] as $value) 

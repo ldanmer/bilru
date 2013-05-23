@@ -95,6 +95,59 @@ class SiteController extends Controller
 		} else
 			$this->redirect(Yii::app()->user->returnUrl);
 	}
+
+		/**
+	 * Displays the login page
+	 */
+	public function actionRecovery()
+	{
+		$this->layout="//layouts/main";
+		if (Yii::app()->user->isGuest) 
+		{
+			$model = new UserRecovery;	
+			if(isset($_POST['UserRecovery']['email']))	
+			{
+				$model->email = $_POST['UserRecovery']['email'];
+				if($model->validate())
+				{
+					$user = User::model()->findbyPk($model->user_id);
+					if(User::model()->sendRecoveryString($user))
+						Yii::app()->user->setFlash('success',"Проверьте ваш почтовый ящик");
+					else
+						Yii::app()->user->setFlash('error',"Ошибка отправки почты. Если ошибка повторяется, свяжитесь с администратором");
+				}
+			}		
+			
+			if(isset($_GET['email']) && isset($_GET['activation_string']))
+			{
+				$user = User::model()->findByAttributes(array('email'=>$_GET['email']));
+				if(!empty($user) && $user->activation_string == $_GET['activation_string'])
+				{
+					if(isset($_POST['User']['password']) && isset($_POST['User']['password_repeat']))
+					{
+						if($_POST['User']['password'] == $_POST['User']['password_repeat'])
+						{
+							$user->password = User::model()->hashPassword($_POST['User']['password']);
+							$user->activation_string=User::encrypting(microtime().$user->password);
+							$user->active_status = 1;
+							$user->update();
+							Yii::app()->user->setFlash('success',"Пароль изменен");
+							$this->redirect($this->createUrl('/site/login'));
+						}							
+					}
+					$this->render('changepassword',array('model'=>$user));
+				}					
+
+			}	
+			else	
+    		$this->render('recovery',array('model'=>$model));
+    } 
+    else 
+    {
+    	$this->redirect(Yii::app()->user->returnUrl);
+    	
+    }
+	}
 	
 	private function lastVisit() 
 	{	

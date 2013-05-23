@@ -32,7 +32,7 @@ class OrdersController extends Controller
 				'users'=>array('*'),
 			), */
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','create','update', 'search','view'),
+				'actions'=>array('index','create','update', 'search','view','finished','rating'),
 				'users'=>array('@'),
 			),
 		/*	array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -51,8 +51,13 @@ class OrdersController extends Controller
 	 */
 	public function actionView($id)
 	{
+		$criteria = new CDbCriteria;
+		$criteria->condition = 'order_id=:order_id AND supplier_id='.Yii::app()->user->id;
+		$criteria->params = array(':order_id'=>$id);
+		$already = OrderOffer::model()->find($criteria);
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
+			'already'=>$already,
 		));
 	}
 
@@ -187,10 +192,26 @@ class OrdersController extends Controller
 		// Поиск заказов пользователя
 		$criteria = new CDbCriteria;
 		$criteria->with = array('object');
-		$criteria->condition = 'user_id = :userId';
+		$criteria->condition = 'user_id = :userId AND status=0';
 		$criteria->params = array(':userId' => Yii::app()->user->id);
 		$dataProvider=new CActiveDataProvider('Orders', array('criteria'=>$criteria));		
 		$this->render('index',array(
+			'dataProvider'=>$dataProvider,
+		));
+	}
+
+	/**
+	 * Lists finished models.
+	 */
+	public function actionFinished()
+	{
+		// Поиск заказов пользователя
+		$criteria = new CDbCriteria;
+		$criteria->with = array('object');
+		$criteria->condition = 'user_id = :userId AND status=1';
+		$criteria->params = array(':userId' => Yii::app()->user->id);
+		$dataProvider=new CActiveDataProvider('Orders', array('criteria'=>$criteria));		
+		$this->render('finished',array(
 			'dataProvider'=>$dataProvider,
 		));
 	}
@@ -220,6 +241,42 @@ class OrdersController extends Controller
 			'model'=>$model,
 		));
 	}
+
+
+	public function actionRating($id)
+	{
+		$rating=new UserRating;
+		$status=Orders::model()->findByPk($id);		
+		$model=OrderOffer::model()->find("order_id=:id", array(":id"=>$id));
+
+		if(isset($_POST['UserRating']))
+		{
+			$rating->rater_id = Yii::app()->user->id;
+			$rating->user_id = $model->supplier_id;
+			$rating->review = $_POST['UserRating']['review'];
+			// Проверка на 0
+			foreach ($_POST['UserRating']['score'] as $value) 
+				$sum += $value;
+			if($sum != 0)
+			$rating->rating = json_encode($_POST['UserRating']['score']);
+
+			if($rating->save())
+			{
+				$status->status = 1;
+				$status->rating_id = $rating->id;
+				$status->update();
+				Yii::app()->user->setFlash('success',"Благодарим вас за оценку!");
+				$this->redirect(array('finished'));
+			}
+				
+		}
+
+		$this->render('rating',array(
+			'model'=>$model,
+			'rating'=>$rating,
+		));
+	}
+
 
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.

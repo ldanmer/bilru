@@ -9,9 +9,9 @@ $this->breadcrumbs=array(
 </div>
 
 <div class="order-view create-form clearfix" id="object-view">
-
-	<div class="span3">
+	<div class="span3">		
 		<p class="subtitle" align="center">Фото объекта</p>
+		<?php if($photos): ?>
 		<div class="image_carousel">
 			<div id="photos" class="carusel">
 				<?php foreach ($photos as $photo) {
@@ -20,7 +20,13 @@ $this->breadcrumbs=array(
 			</div>
 			<div class="pagination" id="photos_pag"></div>
 		</div>
+		<?php else: ?>
+		<div>
+			<em>Пользователь пока ничего не добавил</em>
+		</div>
+		<?php endif ?>		
 		<p class="subtitle" align="center">Чертежи объекта</p>
+		<?php if($blueprints): ?>
 		<div class="image_carousel">
 			<div id="blueprints" class="carusel">
 				<?php foreach ($blueprints as $blueprint) {
@@ -29,22 +35,22 @@ $this->breadcrumbs=array(
 			</div>
 				<div class="pagination" id="blueprints_pag"></div>
 		</div>
+		<?php else: ?>
+		<div>
+			<em>Пользователь пока ничего не добавил</em>
+		</div>
+		<?php endif; ?>
+		<?php if($model->documents != "null"): ?>
 		<p class="subtitle" align="center">Документы</p>
 		<div>
-		<?php 
-			if($model->documents != "null"):
-				$docs = GetName::getDocsList($model->documents);				
-		 ?>
 		 <ol class="doc-list">
-		 	<?php echo $docs->list; ?>
+		 	<?php echo GetName::getDocsList($model->documents)->list; ?>
 		 </ol>
-		<?php endif; ?>
 		</div>
-
+		<?php endif; ?>
 	</div>
 	<div class="span3">
 		<table class="table table-striped">
-
 			<tr>
 				<td class="header">Объект:</td>
 				<td><?php echo CHtml::encode($model->title); ?></td>
@@ -93,6 +99,8 @@ $this->breadcrumbs=array(
 				?>
 		</div>
 
+
+
 </div>	
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 		    'label'=>'Вернуться',
@@ -104,6 +112,24 @@ $this->breadcrumbs=array(
 	 ?>
 </div>
 
+<?php  $this->widget('ext.yandexmap.YandexMap',array(
+        'id'=>'map',
+        'width'=>600,
+        'height'=>400,
+        'controls' => array(
+            'zoomControl' => true,
+        ),
+        'placemark' => 
+            array(
+                'lat'=>'ymaps.geolocation.latitude',
+                'lon'=>'ymaps.geolocation.longitude',
+                'options'=>array(
+                    'draggable'=>true
+                )
+            )
+
+    ));
+ ?>
 <?php 
 
 $this->widget('ext.fancybox.EFancyBox', array(

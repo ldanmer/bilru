@@ -36,7 +36,7 @@ $(document).ready(function(){
 	});
 
 	// Разворот заказов
-	$('.order-view .show').click(function(){
+	$('.show').click(function(){
 		var block = $(this).parent().parent();
 		$(block).find('.hidden').toggle('500');
 
@@ -45,7 +45,23 @@ $(document).ready(function(){
 		else
 			$(this).attr("value", "Показать полностью")
 
+		if($(this).text()=="Далее...")
+			$(this).text("Свернуть");
+		else
+			$(this).text("Далее...");
+
 	});
+	
+	// Разворот формы комментариев
+	$('a.comment-show').click(function(){
+		var block = $(this).parent().parent().next();
+		$(block).toggle();
+	});
+
+	$('a.cencel').click(function(){
+		var block = $(this).parent().parent().parent();
+		$(block).toggle();
+	})
 
 	// Добавить строк
 	$('#add-lines').click(function(){
@@ -64,12 +80,12 @@ $(document).ready(function(){
 	$('#material-grid img[src$="delivery.png"]').tooltip({title:"Только с доставкой"});
 
 	// Карусель
-	$('#object-view #photos').carouFredSel({
+	$('#photos').carouFredSel({
 		circular: false,
 		pagination  : "#photos_pag"
 	});
 
-	$('#object-view #blueprints').carouFredSel({
+	$('#blueprints').carouFredSel({
 		circular: false,
 		pagination  : "#blueprints_pag"
 	});
@@ -105,7 +121,9 @@ $(document).ready(function(){
 	});
 
 	// Tooltip в поиске поставщика
-	$('tbody a[href*="byOffer"]').tooltip({title:"Посмотреть предложение"});	
+	$('tbody a[href*="byOffer"]').tooltip({title:"Посмотреть предложение"});
+	$('tbody a[href*="orderOffer"]').tooltip({title:"Посмотреть предложение"});		
+	$('tbody a[href*="UserRating"]').tooltip({title:"Отзывы"});		
 	$('.order-view .rating').tooltip({title:"Посмотреть отзывы"});	
 	$('.order-view .reviews').tooltip({title:"Посмотреть отзывы"});	
 
@@ -120,7 +138,5 @@ $(document).ready(function(){
 		});
 		$('#average').text((average/6).toFixed(1))
 	});
-	
-
 });
 

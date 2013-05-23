@@ -12,17 +12,7 @@
     </div>
     <div class="span7">
         <div id="content">
-            <?php $this->widget('UserAlerts'); ?>
-            <?php
-                $flashMessages = Yii::app()->user->getFlashes();
-                if ($flashMessages) 
-                {
-                    foreach($flashMessages as $key => $message)
-                    {
-                    echo '<div class="alert alert-' . $key . '"><button type="button" class="close" data-dismiss="alert">X</button>' . $message . "</div>\n";            
-                    }
-                }
-             ?>
+            <?php $this->widget('UserAlerts'); ?>           
             <?php echo $content; ?>
         </div><!-- content -->
     </div>

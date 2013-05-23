@@ -16,6 +16,8 @@ class EventsController extends Controller
 		return array(
 			'accessControl', // perform access control for CRUD operations
 			'postOnly + delete', // we only allow deletion via POST request
+			'ajaxOnly + like',
+			'ajaxOnly + comment',
 		);
 	}
 
@@ -28,7 +30,7 @@ class EventsController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','index','view'),
+				'actions'=>array('create','update','index','view', 'like','comment'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -100,6 +102,66 @@ class EventsController extends Controller
 		));
 	}
 
+	public function actionComment()
+	{
+		$comment = new EventsComments;
+		if(Yii::app()->getRequest()->getIsAjaxRequest()) 
+		{
+			if(isset($_POST['EventsComments']) && isset($_POST['Events']))
+			{
+				$comment->comment = $_POST['EventsComments']['comment'];
+				$comment->event_id = $_POST['Events']['id'];
+				$comment->user_id = Yii::app()->user->id;
+				
+
+				if($comment->validate())
+				{
+					$comment->save(false);
+					$event = $this->loadModel($comment->event_id);
+			   	echo CJSON::encode(array(
+			   		'id'=>$comment->event_id,
+         		'status'=>'success',
+         		'count'=>$event->commentsCount,
+         	));
+         Yii::app()->end();
+				}
+				else
+				{
+			   	echo CJSON::encode(array(
+         		'error'=>$comment->getError('comment'),
+         		'id'=>$comment->event_id,
+         	));			   	
+					Yii::app()->end(); 
+				}
+			}
+		}
+	}
+
+	public function actionLike()
+	{ 
+		if(isset($_POST['event']))
+		{	
+			$event=$this->loadModel($_POST['event']);
+			$criteria = new CDbCriteria;
+			$criteria->condition = "user_id=:user_id AND event_id=:event_id";
+			$criteria->params = array(':user_id'=>Yii::app()->user->id, ':event_id'=>$event->id);
+			if(EventsLikes::model()->find($criteria) || $event->user_id == Yii::app()->user->id)
+				return;
+
+			$like = new EventsLikes;
+      $like->user_id = Yii::app()->user->id;
+      $like->event_id = $event->id;
+    	if($like->save())
+    	{
+    		$arr = array('id'=>$event->id, 'count'=>$event->likesCount);
+    		 $arr = json_encode($arr);
+    		echo $arr;
+    	}    		
+      Yii::app()->end();
+		}
+
+	}
+
 	/**
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
@@ -119,13 +181,17 @@ class EventsController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider= new CActiveDataProvider('Events');
+		$dataProvider= new CActiveDataProvider('Events', array('criteria'=>array(
+				'order'=>'date DESC',
+			)));
+		
 		foreach($dataProvider->getData() as $record)
 			$record->userName = GetName::getUserTitles($record->user_id)->name;
 
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
+
 	}
 
 	/**

@@ -36,7 +36,8 @@ $list = array_pop($arrayData->rawData);
 	    'stacked'=>false, 
 	    'items'=>array(
 	        array('label'=>'Найти заказ', 'url'=>'search', 'active' => true),
-	        array('label'=>'Мои заказы', 'url'=>'index'),
+	        array('label'=>'Активные заказы', 'url'=>array('byOffer/index')),
+	        array('label'=>'Завершенные заказы', 'url'=>array('byOffer/finished')),
 	    ),
 	)); ?>
 </div>
@@ -81,7 +82,7 @@ $list = array_pop($arrayData->rawData);
 				<td class="header">ОБЪЕКТ:</td>
 				<td>
 					<?php 
-					if(UserSettings::getThisTariff() == 1):			
+					if(UserSettings::getThisTariff() != 1):			
 						$this->widget('bootstrap.widgets.TbButton', array(
 						    'label'=>'Посмотреть профиль объекта',
 						    'type'=>'btn-block',
@@ -109,7 +110,7 @@ $list = array_pop($arrayData->rawData);
 				<td class="header">ЗАКАЗЧИК:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() == 1):
+					if(UserSettings::getThisTariff() != 1):
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else: 
 						if (empty($org_info->org_name))
@@ -220,7 +221,7 @@ $list = array_pop($arrayData->rawData);
 </div>
 	 
 	 <?php 
-		if(UserSettings::getThisTariff() == 1):			
+		if(UserSettings::getThisTariff() != 1):			
 				$this->widget('bootstrap.widgets.TbButton', array(
 			    'label'=>'Дать предложение',
 			    'type'=>'btn-block',

@@ -9,9 +9,12 @@ class Orders extends CActiveRecord
 			'Заказчика', 'Подрядчика', 'По договоренности'
 		);
 
-	public $statusArray = array(
-			'На конкурсе', 'В работе', 'Выполнен'
-		);
+	public $categoryList = array(
+			1=>'Архитектура',
+			2=>'Проектирование',
+			3=>'Дизайн',
+			4=>'Строительство и ремонт'
+		); 
 
 	public $email_check;
 	public $region_id;
@@ -64,9 +67,11 @@ class Orders extends CActiveRecord
 			'userRole' => array(self::BELONGS_TO, 'Role', 'user_role_id'),
 			'workType' => array(self::BELONGS_TO, 'WorkTypes', 'work_type_id'),
 			'object' => array(self::BELONGS_TO, 'Objects', 'object_id'),
-			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
 			'region' => array(self::HAS_MANY, 'Region', 'region_id',  'through' => 'object'),
 			'orgType' => array(self::HAS_MANY, 'OrgType', 'org_type_id',  'through' => 'object'),
+			'supplierCount'=>array(self::STAT,'OrderOffer','order_id'),
+			'offer'=>array(self::BELONGS_TO, 'OrderOffer', 'offer_id'),
+
 		);
 	}
 
@@ -120,7 +125,7 @@ class Orders extends CActiveRecord
 						UNION 
 						(SELECT gos.id, gos.title, gos.price, gos.start_date, gos.end_date, gos.object_id, gos.contact 
 						FROM bl_goszakaz gos 
-						WHERE gos.contact LIKE '%$region%' AND gos.category LIKE '%$category%$orgAnd')
+						WHERE gos.contact LIKE '%$region%' AND gos.category LIKE '%$category%$orgAnd' AND gos.status=1)
 						ORDER BY REVERSE(end_date) ASC
 						";
 		

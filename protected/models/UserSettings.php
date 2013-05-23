@@ -1,16 +1,5 @@
 <?php
 
-/**
- * This is the model class for table "{{user_settings}}".
- *
- * The followings are the available columns in table '{{user_settings}}':
- * @property integer $id
- * @property integer $tariff
- * @property integer $user_id
- *
- * The followings are the available model relations:
- * @property User $user
- */
 class UserSettings extends CActiveRecord
 {
 	/**
@@ -43,9 +32,7 @@ class UserSettings extends CActiveRecord
 		return array(
 			array('user_id', 'required'),
 			array('tariff, user_id', 'numerical', 'integerOnly'=>true),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, tariff, user_id', 'safe', 'on'=>'search'),
+			array('avatar', 'file', 'types'=>'jpg, gif, png','maxSize'=>1024*1024),			
 		);
 	}
 
@@ -96,5 +83,16 @@ class UserSettings extends CActiveRecord
 	public static function getThisTariff()
 	{
 		return self::model()->find("user_id=:user_id", array(":user_id"=>Yii::app()->user->id))->tariff;
+	}
+
+	
+	public function getSettingsField($field)
+	{
+		$criteria = new CDbCriteria();
+		$criteria->select = $field;
+		$criteria->condition = 'user_id=:user_id';
+		$criteria->params = array(':user_id'=>Yii::app()->user->id);
+		$categories = self::model()->find($criteria);
+		return $categories = json_decode($categories->$field);
 	}
 }

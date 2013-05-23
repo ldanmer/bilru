@@ -202,7 +202,7 @@ p.small {
 }
 
 label, input, button, select, textarea{
-	font-size: .9em;
+	font-size: 1em;
 }
 
 .nav-list{
@@ -214,9 +214,13 @@ h1,h2, h3, h4, h5{
 	font-weight: normal;	
 	text-transform: uppercase;
 }
+p {
+margin: 0 0 5px;
+}
 
 h4{
 	font-size: 15px;
+	margin:5px 0;
 }
 
 .nav-pills > .active > a, .nav-pills > .active > a:hover{
@@ -436,19 +440,32 @@ h3.block-title{
 .event .event-tools{
 	background-color: #f2f2f2;
 	font-size: .9em;
-	height: 30px;
 }
 
-.event .event-tools ul li{
+.event .event-tools ul{
+	height: 20px
+}
+
+.event .event-tools ul li {
 	list-style: none;
 	float: left;
 	padding-right: 20px;
 	padding-top: 5px;
 }
 
-.event .event-tools ul li.like a{
-	background: url(../img/star.png) no-repeat 0%;
+.event .event-tools ul li a{
+	font-size: 1em;
 	padding-left: 14px;
+	padding-right: 5px;
+}
+
+.event .event-tools ul li.like a{
+	background: url(../img/star.png) no-repeat 0% 33%;
+}
+
+.event .event-tools ul li.replay a{
+	background: url(../img/comment.png) no-repeat 0% 40%;
+	padding-top: 0px;
 }
 
 /* Форма создания */
@@ -596,7 +613,7 @@ z-index:99;
 	color: #b94a48;
 }
 
-.order-view .hidden{
+.hidden{
 	visibility: visible;
 }
 
@@ -631,7 +648,7 @@ z-index:99;
 
 .detail-order td{
 	background-color: #fff;
-	border: 0;
+	
 }
 
 .detail-order tr{
@@ -655,6 +672,10 @@ z-index:99;
 	background-color: #c6d9f1;
 	color: #1f497d;
 	width:160px;
+}
+
+.detail-order input{
+
 }
 
 td.contact{
@@ -762,6 +783,10 @@ input[type="radio"], input[type="checkbox"]{
 	border: 2px solid #00b0f0;
 }
 
+.red-border{
+	border: 2px solid #C00000;
+}
+
 .grid-view{
 	font-size:.8em;
 }
@@ -835,3 +860,101 @@ box-shadow: 2px 2px 5px 0px #1f497d;
 .event .span1{
 	width:100px;
 }
+
+#maininfo{
+	color: #1f497d;
+	margin-left: 10px;
+}
+
+#maininfo .big, #maininfo .header{
+	font-size: 1.3em;
+}
+
+#maininfo .header{
+	width:100%;
+}
+
+#maininfo .big{
+	font-weight: bold;
+}
+
+.tarif{
+	background: #fff;
+	padding: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	text-transform: uppercase;
+}
+
+.tarif .btn{
+	line-height: 15px;
+	background: #00b0f0;
+}
+
+.tarif .btn:hover{
+	background: #2f96b4;
+}
+
+.order-view .span13
+{
+	width: 165px;
+}
+
+#mainprofile .span4{
+	width:345px;
+}
+
+#mainprofile .span45{
+	width:320px;
+}
+
+a.change{
+	margin-top:3px; 
+}
+
+a.show{
+	cursor: pointer;
+	display: inline;
+}
+
+.btn-primary{
+	background: #1f497d;
+}
+
+.btn-primary:hover{
+	background: #dce6f2;
+	color: #1f497d;
+}
+
+.span14{
+	width:160px;
+}
+
+.comment-form{
+	display: none;
+}
+
+.comments-block{
+	font-size: .9em;
+}
+
+.upload 
+{
+  position:relative;
+}
+
+.upload > input[type=file] 
+{
+  display:block;
+  width:100%;
+  height:100%;
+  opacity:0;
+}
+
+.upload > .btn 
+{
+  position:absolute;
+  top:0;
+  left:0;
+}
+

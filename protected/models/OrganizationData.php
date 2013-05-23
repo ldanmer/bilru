@@ -65,7 +65,7 @@ class OrganizationData extends CActiveRecord
 			'region_id' => 'Регион',
 			'city_id' => 'Город',
 			'street' => 'Улица',
-			'house' => 'Дом',
+			'house' => 'Дом/Корпус',
 			'office' => 'Офис',
 			'inn' => 'ИНН',
 			'kpp' => 'КПП',

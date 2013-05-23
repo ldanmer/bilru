@@ -42,7 +42,7 @@ $this->breadcrumbs=array(
         )); ?>
 	</div>
 
-	<?php echo CHtml::link('Восстановление пароля',array('#')); ?>
+	<?php echo CHtml::link('Восстановление пароля',array('recovery')); ?>
 
 <?php $this->endWidget(); ?>
 

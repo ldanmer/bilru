@@ -31,7 +31,7 @@ class UserRating extends CActiveRecord
 		return array(
 			array('user_id, rater_id, review, rating', 'required'),
 			array('user_id, rater_id', 'numerical', 'integerOnly'=>true),
-			array('review', 'length', 'allowEmpty'=>false, 'min'=>50),
+			array('review', 'length', 'allowEmpty'=>false, 'min'=>3),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, user_id, rater_id, review, rating', 'safe', 'on'=>'search'),

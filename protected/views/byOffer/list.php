@@ -66,8 +66,8 @@ $this->widget('bootstrap.widgets.TbGridView',array(
 	'enablePagination' => true,
 	'columns'=>array(		
 		array('name' => 'Название поставщика', 'value' => 'CHtml::link($data->supplier->organizationData[0]->org_name, array("view", "id"=>$data->id))', 'type'=>'raw'),
-		array('name'=>'Рейтинг', 'value'=>'GetName::getRating($data->supplier_id)->averageRating'),
-		array('name'=>'Отзывы', 'value'=>'GetName::getRating($data->supplier_id)->count'),
+		array('name'=>'Рейтинг', 'value'=>'CHtml::link(GetName::getRating($data->supplier_id)->averageRating, array("UserRating/view", "id"=>$data->supplier_id))', 'type'=>'raw'),
+		array('name'=>'Отзывы', 'value'=>'CHtml::link(GetName::getRating($data->supplier_id)->count, array("UserRating/view", "id"=>$data->supplier_id))', 'type'=>'raw'),
 		array('name'=>'Стоимость, руб', 'value'=>'CHtml::link($data->total_price, array("view", "id"=>$data->id))', 'type'=>'raw'),
 		array('name'=>'Поставка, отгрузка', 'value'=>'CHtml::link($data->supply_date, array("view", "id"=>$data->id))', 'type'=>'raw'),
 		array('name'=>'Доставка', 'value'=>'$data->delivery === null ? "Без доставки": $data->delivery." руб."', 'type'=>'raw'),

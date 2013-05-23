@@ -18,8 +18,8 @@
 	</div>
   <div class="user-header clearfix">
 		<div class="thumbnail user-image">
-		<?php if(!empty($data->user->avatar)): ?>
-			<?php echo CHtml::image(Yii::app()->baseUrl.$data->rater->avatar); ?>
+		<?php if(!empty($data->user->settings[0]->avatar)): ?>
+			<?php echo CHtml::image(Yii::app()->baseUrl.$data->rater->settings[0]->avatar); ?>
 		<?php else: ?>
 		<img src="<?php echo Yii::app()->baseUrl ?>/img/avatar_placeholder.png" />
 		<?php endif; ?>
@@ -27,7 +27,7 @@
 		<p>
 			<?php echo CHtml::encode($data->rater->role->role_name); ?>
 			<strong>
-			<?php echo CHtml::link(CHtml::encode($data->rater->organizationData[0]->org_name), array('user/view', 'id'=>$data->rater_id)); ?>
+			<?php echo CHtml::link(CHtml::encode($data->rater->organizationData[0]->org_name), array('user/profile', 'id'=>$data->rater_id)); ?>
 		</strong>
 		</p>	
 	

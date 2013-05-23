@@ -60,6 +60,7 @@ class Objects extends CActiveRecord
 			'orders' => array(self::HAS_MANY, 'Orders', 'object_id'),
 			'goszakaz' => array(self::MANY_MANY, 'Goszakaz', 'object_id'),
 			'orgType' => array(self::HAS_MANY, 'OrgType', 'org_type_id',  'through' => 'user'),
+			'ordersCount' => array(self::STAT, 'Orders', 'object_id'),
 		);
 	}
 

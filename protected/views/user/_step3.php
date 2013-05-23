@@ -176,7 +176,7 @@ array_shift($orgTypes);
 			'placeholder' => 'ИНН',
 			'class' => 'optional'
 		)); ?>
-		<?php echo $form->textFieldRow($orgData,'inn', array(
+		<?php echo $form->textFieldRow($orgData,'kpp', array(
 			'maxlength'=>60, 
 			'label'=>false, 
 			'placeholder' => 'КПП',

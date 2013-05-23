@@ -1,6 +1,8 @@
 <?php
 Yii::setPathOfAlias('bootstrap', dirname(__FILE__).'/../extensions/bootstrap');
 Yii::setPathOfAlias('dzRaty', dirname(__FILE__).'/../extensions/DzRaty');
+
+require_once(dirname(__FILE__) . '/../helpers/common.php');
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
 return array(
@@ -14,7 +16,7 @@ return array(
 	'preload'=>array('log'),	
 	'behaviors' => array(
     'pageChecker' => array(
-        'class' => 'application.components.PageChecker',
+      'class' => 'application.components.PageChecker',
     )
 	),
 
@@ -22,10 +24,9 @@ return array(
 	'import'=>array(
 		'application.models.*',
 		'application.components.*',
+		'application.helpers.*',
 		'dzRaty.*',
-
 	),
-
 	'modules'=>array(
 		'auth',
 		'parser',		
@@ -48,9 +49,17 @@ return array(
 		'authManager' => array(
 				'behaviors' => array(
         	'auth.components.AuthBehavior',
-      	),
-      	
+      	),      	
 			),
+    'request'=>array(
+      'class' => 'application.components.EHttpRequest',
+    ),
+    'contentCompactor' => array(
+	    'class' => 'ext.contentCompactor.ContentCompactor',
+	    'options' => array(
+	        '',
+		    ),
+		),
 		'user'=>array(
         // enable cookie-based authentication
         'class' => 'auth.components.AuthWebUser',

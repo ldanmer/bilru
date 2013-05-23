@@ -85,6 +85,14 @@
 		)); ?><!-- breadcrumbs -->
 	<?php endif?>
 	<div class="row">
+		<?php
+      $flashMessages = Yii::app()->user->getFlashes();
+      if ($flashMessages) 
+      {
+        foreach($flashMessages as $key => $message)
+        	echo '<div class="alert alert-' . $key . '"><button type="button" class="close" data-dismiss="alert">X</button>' . $message . "</div>\n";         
+      }
+   	?>
 		<?php echo $content; ?>
 	</div>
 

@@ -24,10 +24,13 @@ $('.search-form form').submit(function(){
 	    'type'=>'tabs', 
 	    'stacked'=>false, 
 	    'items'=>array(
-	        array('label'=>'Найти подряд', 'url'=>'search', 'active' => true),
+	        array('label'=>'Найти подряд', 'url'=>array('orders/search')),
+	        array('label'=>'Мои подряды', 'url'=>array('orderOffer/index')),
+	        array('label'=>'Завершенные подряды', 'url'=>array('orderOffer/finished')),
 	    ),
 	)); ?>
 </div>
+
 
 <?php $this->renderPartial('_search',array(
 	'model'=>$model,

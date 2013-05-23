@@ -29,24 +29,31 @@
 	</div>
 	<div class="span6">
 		<table class="table table-striped">
-			<?php if(strtotime($data->end_date) > time()): ?>
-			<tr class="alert alert-error">
+			<?php if(strtotime($data->end_date) > time() && empty($data->offer_id)): ?>
+			<tr class="alert alert-error red-border">
 				<td class="header">Прием заявок:</td>
 				<td>с <?php echo $data->start_date; ?> по <?php echo $data->end_date; ?></td>
 			</tr>
 			<?php endif; ?>
 			<tr>
 				<td class="header">Статус:</td>
-				<td><?php echo $data->statusArray[CHtml::encode($data->status)]; ?></td>
+				<td class="light-blue"><?php echo !empty($data->offer_id) ? "В работе" : "На конкурсе" ?></td>
 			</tr>
 			<tr>
 				<td class="header">Объект:</td>
 				<td><?php echo CHtml::encode($data->object->title); ?></td>
 			</tr>
+			<?php if(empty($data->offer_id)): ?>
+			<tr class="light-blue-border">
+				<td class="header">Подрядчик:</td>
+				<td class="light-blue">Поступило <?php echo $data->supplierCount ?> предложений</td>
+			</tr>
+			<?php else: ?>
 			<tr>
 				<td class="header">Подрядчик:</td>
-				<td>Неопределен</td>
+				<td><?php echo $data->offer->supplier->organizationData[0]->org_name ?></td>
 			</tr>
+			<?php endif; ?>
 			<tr>
 				<td class="header">Стоимость работ:</td>
 				<td>
@@ -93,19 +100,32 @@
 						?>
 				</td>
 			</tr>
+			<tr class="hidden">
+				<td class="header">Документы</h4>
+				<td>
+					<ol class="doc-list">
+						<?php echo $docs->list ?>
+					</ol>
+				</td>	
+			</tr>
 		</table>
-		<div class="hidden">
-			<h4 class="subtitle">Документы</h4>
-			<ol class="doc-list"><?php echo $docs->list ?></ol>	
-		</div>
-
-	</div>	
-	<div align="right">
-
-
-	<?php echo CHtml::link("Редактировать",array('update','id'=>$data->id), array('class'=>'btn btn-primary hidden pull-right')); ?>
-	<?php echo CHtml::button("Показать полностью",array('class'=>'btn btn-primary show')); ?>
+	</div>
+	<div class="comment hidden clearfix">
+		<?php echo CHtml::encode($data->description) ?>
 	</div>
 
+	<div style="margin-top:10px;">
+	<?php if(empty($data->offer_id)): ?>
+	<?php echo CHtml::link("Посмотреть предложения поставщиков",array('/orderOffer/list','id'=>$data->id), array('class'=>'btn pull-left light-blue light-blue-border')); ?>
+	<?php endif; ?>
+	<?php if(empty($data->offer_id)): 
+		echo CHtml::link("Редактировать",array('update','id'=>$data->id), array('class'=>'btn btn-primary hidden pull-right')); 
+ 	else: 
+	 echo CHtml::link("Заказ выполнен",array('rating', 'id'=>$data->id), array('class'=>'btn btn-success pull-left'));
+	endif;
+ 		 ?>
+	<?php echo CHtml::button("Показать полностью",array('class'=>'btn btn-primary show pull-right')); ?>
+	</div>
+<div class="clearfix"></div>
 
 </div>

@@ -70,10 +70,9 @@ class PersonalData extends CActiveRecord
 			'region_id' => 'Регион',
 			'city_id' => 'Город',
 			'street' => 'Улица',
-			'house' => 'Дом',
+			'house' => 'Дом/Корпус',
 			'apartament' => 'Офис/Квартира',
 			'user_id' => 'User',
-			'corpus' => 'Корпус',
 		);
 	}
 

@@ -25,7 +25,8 @@ $('.search-form form').submit(function(){
 	    'stacked'=>false, 
 	    'items'=>array(
 	        array('label'=>'Найти заказ', 'url'=>'search', 'active' => true),
-	        array('label'=>'Мои заказы','url'=>'search'),
+         	array('label'=>'Активные заказы', 'url'=>array('byOffer/index')),
+	        array('label'=>'Завершенные заказы', 'url'=>array('byOffer/finished')),
 	    ),
 	)); ?>
 </div>

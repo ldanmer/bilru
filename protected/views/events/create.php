@@ -7,12 +7,15 @@ $this->breadcrumbs=array(
 	'Создать',
 );
 
-$this->menu=array(
-	array('label'=>'List Events', 'url'=>array('index')),
-	array('label'=>'Manage Events', 'url'=>array('admin')),
-);
 ?>
-
-<h2>Создать событие</h2>
-
+<div id="feed-nav">
+	<?php $this->widget('bootstrap.widgets.TbMenu', array(
+	    'type'=>'tabs', // '', 'tabs', 'pills' (or 'list')
+	    'stacked'=>false, // whether this is a stacked menu
+	    'items'=>array(
+	        array('label'=>'Лента', 'url'=>array('events/index')),
+	        array('label'=>'Создать событие', 'url'=>array('events/create')),
+	    ),
+	)); ?>
+</div>
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

@@ -9,8 +9,9 @@ $this->breadcrumbs=array(
 	    'type'=>'tabs', 
 	    'stacked'=>false, 
 	    'items'=>array(
-	        array('label'=>'Мои заказы', 'url'=>'index'),
-	        array('label'=>'Создать заказ', 'url'=>'create', 'active' => true),
+	        array('label'=>'Мои заказы', 'url'=>array('orders/index')),
+	        array('label'=>'Создать заказ', 'url'=>array('orders/create'), 'active' => true),
+	        array('label'=>'Завершенные заказы', 'url'=>array('orders/finished')),
 	    ),
 	)); ?>
 </div>

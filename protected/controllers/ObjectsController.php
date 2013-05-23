@@ -46,15 +46,11 @@ class ObjectsController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$criteria = new CDbCriteria;
-		$criteria->select = "photoes, blueprints";
-		$criteria->condition = "id=:id";
-		$criteria->params = array(":id"=>$id);
-		$images = Objects::model()->find($criteria); 
-		$photos = json_decode($images->photoes); 
-		$blueprints = json_decode($images->blueprints);		
+		$model = $this->loadModel($id); 
+		$photos = json_decode($model->photoes); 
+		$blueprints = json_decode($model->blueprints);		
 		$this->render('view',array(
-			'model'=>$this->loadModel($id),
+			'model'=>$model,
 			'photos'=>$photos,
 			'blueprints'=>$blueprints,
 		));

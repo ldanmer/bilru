@@ -2,7 +2,6 @@
 Yii::setPathOfAlias('bootstrap', dirname(__FILE__).'/../extensions/bootstrap');
 Yii::setPathOfAlias('dzRaty', dirname(__FILE__).'/../extensions/DzRaty');
 
-require_once(dirname(__FILE__) . '/../helpers/common.php');
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
 return array(

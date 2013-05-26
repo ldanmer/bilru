@@ -10,18 +10,18 @@
 	    'items'=>array(
 	        array('label'=>'Основное', 'url'=>array('user/main')),
 	        array('label'=>'Реквизиты', 'url'=>array('user/view')),
-	        array('label'=>'Деятельность', 'url'=>array('user/about')),
+	        array('label'=>'Деятельность', 'url'=>array('user/about'),'visible' =>!($model->role_id == 1 && $model->org_type_id == 1)),
 	    ),
 	)); ?>
 </div>
 
 <form class="create-form">
-
-<legend><span>ИНФОРМАЦИЯ о компании</span></legend>
+<legend><span>Реквизиты компании</span></legend>
 <fieldset>
 <div class="detail-order">
 	<div class="span6">
 		<table class="table">
+			<?php if($model->role_id != 1 && $model->org_type_id != 1): ?>
 			<tr>
 				<td class="header">
 					<?php 
@@ -33,32 +33,31 @@
 							echo "Компания";
 				 ?>
 				</td>
-				<td><?php echo $model->organizationData[0]->org_name; ?></td>
+				<td><?php echo GetName::getUserTitles($model->id)->orgType ?> <?php echo $model->organizationData[0]->org_name; ?></td>
 			</tr>	
+			<?php endif; ?>
 			<tr>
 				<td class="header">
 					<?php 
 						if($model->role_id == 4)
 							echo "Бригадир/Прораб";
-						elseif($model->role_id == 5)
+						elseif($model->role_id == 5 || ($model->role_id == 1 && $model->org_type_id == 1))
 							echo "Ф.И.О.";
 						else
 							echo "Контактное лицо";
 				 ?>:
 				</td>
 				<td>
-					<?php echo $model->personalData[0]->first_name; ?>
-					<?php echo $model->personalData[0]->middle_name; ?>
-					<?php echo $model->personalData[0]->last_name; ?>
+					<?php echo $model->personalData[0]->first_name .' '. $model->personalData[0]->middle_name.' '.$model->personalData[0]->last_name; ?>
 				</td>
 			</tr>	
 			<tr>
 				<td class="header">Регион:</td>
-				<td><?php echo $model->organizationData[0]->region->region_name; ?></td>
+				<td><?php echo $model->personalData[0]->region->region_name; ?></td>
 			</tr>
 			<tr>
 				<td class="header">Город:</td>
-				<td><?php echo $model->organizationData[0]->city->city_name; ?></td>
+				<td><?php echo $model->personalData[0]->city->city_name; ?></td>
 			</tr>	
 			<tr>
 				<td class="header">Фактический адрес:</td>
@@ -68,7 +67,7 @@
 					оф.<?php echo !empty($model->personalData[0]->apartament) ? $model->personalData[0]->apartament : '<span class="text-error">НЕ УКАЗАНО</span>'; ?>
 				</td>
 			</tr>	
-			<?php if($model->role_id != 4 && $model->role_id != 5): ?>
+			<?php if($model->org_type_id != 1): ?>
 			<tr>
 				<td class="header">Юридический адрес:</td>
 					<td>

@@ -22,11 +22,6 @@ class UserController extends Controller
 				'captcha'=>array(
 				'class'=>'CCaptchaAction',
 			),
-			'upload'=>array(
-        'class'=>'xupload.actions.XUploadAction',
-        'path' =>Yii::app()->getBasePath() . "/../files/uploads",
-        'publicPath' => Yii::app()->getBaseUrl() . "/files/uploads",
-      ),
 		);
 	}
 
@@ -79,10 +74,19 @@ class UserController extends Controller
 		$model = $this->loadModel($id);
 		$gallery = json_decode($model->userInfo[0]->portfolio);
 		$license = json_decode($model->userInfo[0]->license);		
+		$photoArr = array();
+		foreach ($model->objects as $object) 
+		{
+			$photoArr[] = json_decode($object->photoes);
+		}
+
+		$objectsPhoto = GetName::multipleToSingleArray($photoArr);
+
 		$this->render('profile',array(
 			'model'=>$model,
 			'gallery'=>$gallery,
 			'license'=>$license,
+			'objectsPhoto' => $objectsPhoto
 		));
 	}
 
@@ -192,7 +196,7 @@ class UserController extends Controller
 			// get form attributes
 			$model->attributes=$_POST['User'];
 			$userData->attributes = $_POST['PersonalData'];	
-			$orgData->attributes=((isset($_POST['OrganizationData'])?$_POST['OrganizationData']:array()));		
+			$orgData->attributes=isset($_POST['OrganizationData'])?$_POST['OrganizationData']:array();		
 			$model->activation_string=User::encrypting(microtime().$model->password);
 
 			// OrgType
@@ -215,10 +219,10 @@ class UserController extends Controller
 				$userInfo->save(false);				
 				if(empty($orgData->org_name))
 				{
-					$orgData->org_name = ' ';
-					$orgData->terms = true;
-					$orgData->save(false);
+					$orgData->org_name = 'Не указано';
+					$orgData->terms = true;					
 				}
+				$orgData->save();
 					
 				Yii::app()->user->setFlash('success',"Благодарим за регистрацию! Пожалуйста, проверьте свой email.");	
 

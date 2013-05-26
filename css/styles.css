@@ -7,6 +7,8 @@ body{
 	border-top: 10px solid #444;
 }
 
+a{cursor: pointer;}
+
 div.event-preview{
 	word-wrap:break-word;
 	word-break: break-all;
@@ -957,4 +959,13 @@ a.show{
   top:0;
   left:0;
 }
-
+.blue-header{
+	background-color: #1f497d;
+	color: #fff;
+	text-align: center;
+	font-size: 1.5em;
+	padding: 10px;
+}
+.grid-view {
+	padding-top: 10px;
+}

@@ -62,12 +62,17 @@ class User extends CActiveRecord
 			'userInfo' => array(self::HAS_MANY, 'UserInfo', 'user_id'),	
 			'objects' => array(self::HAS_MANY, 'Objects', 'user_id'),
 			'materials' => array(self::HAS_MANY, 'MaterialBuy', 'user_id'),
+			'materialsCount' => array(self::STAT, 'MaterialBuy', 'user_id'),
+			'materialsCountActual' => array(self::STAT, 'MaterialBuy', 'user_id', 'condition'=>'offer_id IS NULL'),
+			'materialsCountInWork' => array(self::STAT, 'MaterialBuy', 'user_id', 'condition'=>'offer_id IS NOT NULL'),
+			'materialsCountFinished' => array(self::STAT, 'MaterialBuy', 'user_id', 'condition'=>'status=1'),
 			'supplier' => array(self::HAS_MANY, 'ByOffer', 'supplier_id'),
 			'objectCount' => array(self::STAT, 'Objects', 'user_id'),
 			'offersCount' => array(self::STAT, 'OrderOffer', 'supplier_id'),
 			'materialOffersCount' => array(self::STAT, 'ByOffer', 'supplier_id'),			
 			'eventsCount' => array(self::STAT, 'Events', 'user_id'),
 			'ratingCount' => array(self::STAT, 'UserRating', 'user_id'),
+			'ratingMadeCount' => array(self::STAT, 'UserRating', 'rater_id'),
 			'orgType' => array(self::BELONGS_TO, 'OrgType', 'org_type_id'),
 			'role' => array(self::BELONGS_TO, 'Role', 'role_id'),
 			'rating' => array(self::HAS_MANY, 'UserRating', 'user_id'),
@@ -365,14 +370,34 @@ class User extends CActiveRecord
 		return $offers;
 	}
 
-	private function ordersCount($user_id)
+	public function ordersCount($user_id, $actual="")
 	{
 		$model = self::model()->findByPk($user_id);
 		$count = 0;
 		foreach ($model->objects as $object)
 		{
 			foreach ($object->orders as $order)
-				++$count;			
+			{
+				if($actual == 1) // идут торги
+				{
+					if($order->offer_id != 0)
+						continue;
+				}
+
+				if($actual == 2) // подрядчик выбран, идут работы
+				{
+					if($order->offer_id == 0)
+						continue;
+				}
+
+				if($actual == 3) // работы завершены
+				{
+					if($order->status != 1)
+						continue;
+				}				
+				++$count;		
+			}
+	
 		}
 
 		return $count;

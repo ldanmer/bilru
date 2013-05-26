@@ -18,13 +18,14 @@
 
 	<div id="maininfo" class="span4">
 		<p class="header"> <?php echo CHtml::encode($model->role->role_name) ?>: 
-		<span class="big"><?php echo CHtml::encode($model->organizationData[0]->org_name) ?></span></p>
+		<span class="big"><?php echo GetName::getUserTitles($model->id)->orgType ?></span></p> 
+		<p class="big"><?php echo ($model->org_type_id == 1 && $model->role_id == 1 ) ? CHtml::encode($model->personalData[0]->first_name . ' ' .$model->personalData[0]->middle_name . ' ' . $model->personalData[0]->last_name) : CHtml::encode($model->organizationData[0]->org_name) ?></p>
 		<?php if($model->role_id == 4): ?>
 			<p class="header">Бригадир/Прораб:  
 			<span class="big"><?php echo CHtml::encode($model->personalData[0]->first_name) ?> <?php echo CHtml::encode($model->personalData[0]->last_name) ?></span></p>
 		<?php endif; ?>
 		<?php if($model->role_id == 5): ?>			 
-			<p class="big"><?php echo CHtml::encode($model->personalData[0]->first_name), CHtml::encode($model->personalData[0]->middle_name), CHtml::encode($model->personalData[0]->last_name) ?></p>
+			<p class="big"><?php echo CHtml::encode($model->personalData[0]->first_name)?> <?php echo CHtml::encode($model->personalData[0]->middle_name) ?> <?php echo CHtml::encode($model->personalData[0]->last_name) ?></p>
 		<?php endif; ?>
 		<h4>
 			<span class="red">
@@ -34,6 +35,7 @@
 		</h4>
 		<p><strong>Телефон: </strong><?php echo CHtml::encode($model->personalData[0]->phone1) . '; ' . CHtml::encode($model->personalData[0]->phone2)  ?></p>
 		<p><strong>Email: </strong><?php echo CHtml::mailto($model->email) ?></p>
+		<?php if($model->role_id != 1): ?>
 		<p class="green margin-top">
 			<img src="<?php echo Yii::app()->baseUrl ?>/img/finger-up.png" class="pull-left" />
 		Эту компанию рекомендовало 
@@ -90,20 +92,6 @@
 		</div>
 		<?php endif; ?>
 		<div class="clearfix"></div>
-		<!--
-		<div class="subtitle">
-			<h4>Цены на товары и услуги</h4>
-		</div>
-		<?php if($model->userInfo[0]->price): ?>
-			<ol class="doc-list">
-				<?php echo GetName::getDocsList($model->userInfo[0]->price)->list ?>
-			</ol>	
-		<?php else: ?>
-		<div>
-			<em>Пользователь пока ничего не добавил</em>
-		</div>
-		<?php endif; ?>
-	-->
 	</div>
 
 	<div class="span45 pull-right">
@@ -145,13 +133,95 @@
 		<div class="rating-title">Опыт компании (лет):
 			<span class="red pull-right"><?php echo !empty($model->userInfo[0]->age) ? $model->userInfo[0]->age : "0"; ?></span>
 		</div>
-		<div class="subtitle"><h4>Краткое описание компании</h4></div>	
+	</div>
+
+	<?php else: ?>
+	</div>	
+	<div class="span45 clearfix">		
+		<h4 class="subtitle" align="center">Объекты</h4>
+		<?php if($objectsPhoto): ?>
+		<div class="image_carousel">
+			<div id="photos" class="carusel">
+				<?php foreach ($objectsPhoto as $photo) {
+					echo CHtml::link(CHtml::image(Yii::app()->baseUrl.$photo), Yii::app()->baseUrl.$photo, array('rel'=>'fancybox'));
+				} ?>
+			</div>
+			<div class="pagination" id="photos_pag"></div>
+		</div>
+		<?php else: ?>
+		<div>
+			<em>Пользователь пока ничего не добавил</em>
+		</div>
+		<?php endif ?>	
+	</div>
+	<div class="span45 pull-right">		
+		<h4 class="subtitle" align="center">О компании</h4>
+		<div class="rating-title">Объектов:
+			<span class="red pull-right"><?php echo $model->objectCount ?></span>
+		</div>
+		<div class="rating-title">Размещенных заказов:
+			<span class="red pull-right"><?php echo User::ordersCount($model->id) + $model->materialsCount ?></span>
+		</div>
+		<div class="rating-title"><?php echo CHtml::link('Идут торги. Поиск подрядчика', '', array('id'=>'orders-show')) ?>:
+			<span class="red pull-right"><?php echo User::ordersCount($model->id, 1) ?></span>
+		</div>
+		<div class="rating-title"><?php echo CHtml::link('Идут торги. Поиск поставщика', '', array('id'=>'purchases-show')) ?>:
+			<span class="red pull-right"><?php echo $model->materialsCountActual ?></span>
+		</div>
+		<div class="rating-title"><?php echo CHtml::link('Отзывы о подрядчиках/поставщиках', array('userRating/self', 'id'=>$model->id)) ?>:
+			<span class="red pull-right"><?php echo $model->ratingMadeCount ?></span>
+		</div>
+	</div>
+<?php endif; ?>
+
+	<div class="subtitle clearfix"><h4>Краткое описание компании</h4></div>	
 		<p class="comment">
 			<?php echo !empty($model->organizationData[0]->description) ? CHtml::encode($model->organizationData[0]->description) : "Пользователь не оставил описания."; ?>
 		</p>
-
+ 	<?php if($model->role_id == 1): ?>
+ 	<div class="hidden" id="user-orders">
+ 		<div class="blue-header">Идут торги. Поиск подрядчика</div>
+ 		<?php 
+		$this->widget('bootstrap.widgets.TbGridView',array(
+			'id'=>'material-grid',
+			'dataProvider'=>Orders::searchUserOrders($model->id),
+			'ajaxUpdate'=>true,
+			'enablePagination' => true,
+			'columns'=>array(
+				array('name'=>'Тип', 'value' => 'CHtml::image(Yii::app()->request->baseUrl."/img/bill.png")', 'type' => 'raw'),
+				array('name' => 'Наименование заказа','type' => 'raw', 'value' => 'CHtml::link($data->title, array("orders/view", "id"=>$data["id"]))'),
+				array('name' => 'Начальная цена, руб', 'value' => '$data->price != 0 ? $data->price : "По договоренности"'),
+				array('name' => 'Регион', 'value' => '$data->object->region->region_name'),
+				array('name' => 'Окончание подачи заявок', 'value' => '$data["end_date"]',)
+			),
+			'template' => '{items}{pager}',
+		));
+		?>
 	</div>
-		<?php $this->widget('bootstrap.widgets.TbButton', array(
+	<div class="hidden" id="user-purchases">
+		<div class="blue-header">Идут торги. Поиск поставщика</div>
+		<?php 
+			$this->widget('bootstrap.widgets.TbGridView',array(
+				'id'=>'material-grid',
+				'dataProvider'=>MaterialBuy::searchUserPurchases($model->id),
+				'ajaxUpdate'=>true,
+				'enablePagination' => true,
+				'columns'=>array(
+					array('name'=>'Вид', 'value' => 'CHtml::image(Yii::app()->request->baseUrl.MaterialBuy::categoryImg($data->category))', 'type' => 'raw'),
+					array('name' => 'Наименование покупки', 'value' => 'CHtml::link($data->title, array("materialBuy/view", "id"=>$data->id))', 'type' => 'raw'),
+					array('name' => 'Доставка', 'value' => '$data->supply == 1 ? CHtml::image(Yii::app()->request->baseUrl."/img/delivery.png") : ""', 'type' => 'raw'),
+					array('name' => 'Регион', 'value' => '$data->object->region->region_name'),
+					array('name' => 'Срок поставки', 'value' => '$data->start_date ." - ". $data->end_date',
+			      ),
+				),
+				'template' => '{items}{pager}',
+			));
+
+ 		?>
+ 	</div>
+
+	<?php endif; ?>
+	<?php $this->widget('bootstrap.widgets.TbButton', array(
 		    'label'=>'Вернуться',
 		    'type'=>'primary',
 		    'htmlOptions'=>array(

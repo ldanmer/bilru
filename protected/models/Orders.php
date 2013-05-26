@@ -147,6 +147,18 @@ class Orders extends CActiveRecord
 		));
 	}
 
+	public function searchUserOrders($userId)
+	{
+		$criteria = new CDbCriteria;
+		$criteria->with = "object";
+		$criteria->condition = "user_id=:user_id AND offer_id=0";
+		$criteria->params = array(':user_id' => $userId);
+		return new CActiveDataProvider('Orders', array(
+			'criteria'=>$criteria,
+		));
+
+	}
+
 	public static function getWorkTypes($keys)
 	{
 		$keys = json_decode($keys);

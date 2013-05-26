@@ -122,11 +122,22 @@ class MaterialBuy extends CActiveRecord
 			$criteria->condition = "material_type=:material_type";
 			$criteria->params = array(":material_type"=>$this->material_type);
 		}
-
-
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
+	}
+
+	public function searchUserPurchases($userId)
+	{
+		
+		$criteria = new CDbCriteria;
+		$criteria->with = "user";
+		$criteria->condition = "user_id=:user_id AND offer_id IS NULL";
+		$criteria->params = array(':user_id' => $userId);
+		return new CActiveDataProvider('MaterialBuy', array(
+			'criteria'=>$criteria,
+		));
+
 	}
 
 	public function ordersList($id,$offerId="")

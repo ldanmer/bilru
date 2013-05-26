@@ -313,4 +313,18 @@ class GetName extends CActiveRecord
 
 	}
 
+	/* Функция получения плоского массива */ 
+	public function multipleToSingleArray($array) 
+	{ 
+		$result = array();
+		foreach ($array as $value) 
+			if(is_array($value))
+				$result = array_merge($result,self::multipleToSingleArray($value)); 
+			elseif (is_null($value))
+				continue;
+			else
+				$result[] = $value;
+		return $result; 
+	} 
+
 }

@@ -27,7 +27,7 @@ class UserRatingController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update', 'view'),
+				'actions'=>array('create','update', 'view', 'self'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -55,6 +55,18 @@ class UserRatingController extends Controller
 		$dataProvider= new CActiveDataProvider('UserRating', array('criteria'=>$criteria));
 		$this->render('view', array(
 			'model'=>$model,
+			'dataProvider'=>$dataProvider,
+			));
+	}
+
+	public function actionSelf($id)
+	{
+		$criteria = new CDbCriteria;
+		$criteria->with = 'rater';
+		$criteria->condition = 'rater_id=:user_id';
+		$criteria->params = array(':user_id'=>$id);
+		$dataProvider= new CActiveDataProvider('UserRating', array('criteria'=>$criteria));
+		$this->render('self', array(
 			'dataProvider'=>$dataProvider,
 			));
 	}

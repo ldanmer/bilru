@@ -138,5 +138,23 @@ $(document).ready(function(){
 		});
 		$('#average').text((average/6).toFixed(1))
 	});
+
+	// Переключение видимости заказов пользователя
+	$('#orders-show').click(function(){
+		if($('#user-purchases').is(':visible'))
+		{
+			$('#user-purchases').hide();			
+		}
+		$('#user-orders').toggle();
+	});
+
+	// Переключение видимости поставок пользователя
+	$('#purchases-show').click(function(){
+		if($('#user-orders').is(':visible'))
+		{
+			$('#user-orders').hide();			
+		}
+		$('#user-purchases').toggle();
+	});
 });
 

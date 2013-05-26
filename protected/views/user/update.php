@@ -10,7 +10,7 @@
 	    'items'=>array(
 	        array('label'=>'Основное', 'url'=>array('user/main')),
 	        array('label'=>'Реквизиты', 'url'=>array('user/view'), 'active'=>true),
-	        array('label'=>'Деятельность', 'url'=>array('user/about')),
+	        array('label'=>'Деятельность', 'url'=>array('user/about'),'visible' =>!($model->role_id == 1 && $model->org_type_id == 1)),
 	    ),
 	)); ?>
 </div>

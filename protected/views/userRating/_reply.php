@@ -18,19 +18,17 @@
 	</div>
   <div class="user-header clearfix">
 		<div class="thumbnail user-image">
-		<?php if(!empty($data->rater->settings[0]->avatar)): ?>
-			<?php echo CHtml::image(Yii::app()->baseUrl.$data->rater->settings[0]->avatar); ?>
+		<?php if(!empty($data->user->settings[0]->avatar)): ?>
+			<?php echo CHtml::image(Yii::app()->baseUrl.$data->user->settings[0]->avatar); ?>
 		<?php else: ?>
 		<img src="<?php echo Yii::app()->baseUrl ?>/img/avatar_placeholder.png" />
 		<?php endif; ?>
 		</div>
 		<p>
-			<?php echo CHtml::encode($data->rater->role->role_name); ?>
-			<strong>
-			<?php echo CHtml::link(CHtml::encode($data->rater->organizationData[0]->org_name), array('user/profile', 'id'=>$data->rater_id)); ?>
+			<?php echo CHtml::encode($data->user->role->role_name); ?>
+			<strong> <?php echo CHtml::link(CHtml::encode($data->user->organizationData[0]->org_name), array('user/profile', 'id'=>$data->user_id)); ?>
 		</strong>
-		</p>	
-	
+		</p>		
   </div>
 
 	<div class="event-preview">

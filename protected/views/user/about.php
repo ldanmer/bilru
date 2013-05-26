@@ -10,7 +10,7 @@
 	    'items'=>array(
 	        array('label'=>'Основное', 'url'=>array('user/main')),
 	        array('label'=>'Реквизиты', 'url'=>array('user/view')),
-	        array('label'=>'Деятельность', 'url'=>array('user/about')),
+	        array('label'=>'Деятельность', 'url'=>array('user/about'),'visible' =>!($model->role_id == 1 && $model->org_type_id == 1)),
 	    ),
 	)); ?>
 </div>
@@ -37,14 +37,21 @@
 
 	<div id="maininfo" class="span4">
 		<span class="header"> <?php echo CHtml::encode($model->role->role_name) ?></span>
-		<p class="big"><?php echo CHtml::encode($model->organizationData[0]->org_name) ?></p>
-		<p class="red"><?php echo CHtml::encode($model->organizationData[0]->region->region_name) ?></p>
+		<p class="big"><?php echo GetName::getUserTitles($model->id)->orgType ?> <?php echo CHtml::encode($model->organizationData[0]->org_name) ?></p>
+		<p class="red"><?php echo CHtml::encode($model->personalData[0]->region->region_name) ?></p>
+	<?php if($model->role_id != 1): ?>
 	</div>
 	<div class="span13 pull-right">
 		<div class="subtitle">
 		<h4>Мой Рейтинг: <span class="red"><?php echo GetName::getRating($model->id)->averageRating ?></span></h4>
 		</div>	
 	</div>
+	<?php else: ?>
+		<p><strong>Контактное лицо:</strong><?php echo CHtml::encode($model->personalData[0]->first_name)?> <?php echo CHtml::encode($model->personalData[0]->middle_name) ?> <?php echo CHtml::encode($model->personalData[0]->last_name) ?></p>
+		<p><strong>Телефон: </strong><?php echo CHtml::encode($model->personalData[0]->phone1) . '; ' . CHtml::encode($model->personalData[0]->phone2)  ?></p>
+		<p><strong>Email: </strong><?php echo CHtml::mailto($model->email) ?></p>
+	</div>
+	<?php endif; ?>
 		<div class="clearfix">
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 		    'label'=>'Изменить',
@@ -80,6 +87,7 @@
 			<?php echo $geography; ?>
 		</ul>
 	</div>
+	<?php if($model->role_id != 1): ?>
 	<div class="clearfix">
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
     'label'=>'Изменить',
@@ -170,6 +178,7 @@
 		'label'=> 'Сохранить',
 		'htmlOptions' => array('name' => 'save', 'class'=>'pull-right'),			
 	)); ?>
+	<?php endif; ?>
 </fieldset>
 <?php $this->endWidget(); ?>
 

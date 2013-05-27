@@ -54,7 +54,7 @@ $(document).ready(function(){
 	
 	// Разворот формы комментариев
 	$('a.comment-show').click(function(){
-		var block = $(this).parent().parent().next();
+		var block = $(this).parent().parent().parent().next();
 		$(block).toggle();
 	});
 

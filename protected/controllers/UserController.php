@@ -54,8 +54,29 @@ class UserController extends Controller
 	// Просмотр реквизитов
 	public function actionView()
 	{	
+		$model = $this->loadModel(Yii::app()->user->id);
+		// смена пароля
+		if($_POST['User'])
+		{
+			if(!$model->validatePassword($_POST['User']['password']))
+				Yii::app()->user->setFlash('error',"<h4>Ошибка!</h4>. Текущий пароль указан неверно.");
+			else
+			{
+				$model->password = $_POST['User']['newPassword'];
+				$model->password_repeat = $_POST['User']['newPassword_repeat'];
+				$model->verifyCode = $_POST['User']['verifyCode'];
+				if($model->validate())
+				{
+					$model->update();
+					Yii::app()->user->setFlash('success','Новый пароль успешно сохранен!');
+				}					
+				else
+					Yii::app()->user->setFlash('error',GetName::arrayToUl($model->getErrors()));
+					
+			}	
+		}
 		$this->render('view',array(
-			'model'=>$this->loadModel(Yii::app()->user->id),
+			'model'=>$model,
 		));
 	}
 

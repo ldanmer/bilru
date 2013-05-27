@@ -111,8 +111,7 @@ class EventsController extends Controller
 			{
 				$comment->comment = $_POST['EventsComments']['comment'];
 				$comment->event_id = $_POST['Events']['id'];
-				$comment->user_id = Yii::app()->user->id;
-				
+				$comment->user_id = Yii::app()->user->id;				
 
 				if($comment->validate())
 				{
@@ -159,6 +158,11 @@ class EventsController extends Controller
     	}    		
       Yii::app()->end();
 		}
+
+	}
+
+	public function commentUpdate()
+	{
 
 	}
 

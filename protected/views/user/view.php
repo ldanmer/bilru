@@ -124,9 +124,60 @@
 		'htmlOptions' => array('class' => 'pull-right'),
 	)); ?>
 	<?php $this->widget('bootstrap.widgets.TbButton', array(
-		'url'=>array('site/changepassword'),
-		'type'=>'primary',
-		'label'=>'Сменить пароль',
-		'htmlOptions' => array('class' => 'clearfix'),
+	    'label'=>'Сменить пароль',
+	    'type'=>'primary',
+	    'htmlOptions'=>array(
+	        'data-toggle'=>'modal',
+	        'data-target'=>'#change-password',
+	    ),
 	)); ?>
 </form>
+
+ <?php $this->beginWidget('bootstrap.widgets.TbModal', array('id'=>'change-password')); ?>
+ <div class="modal-header">
+    <a class="close" data-dismiss="modal">Х</a>
+    <h4>Смена пароля</h4>
+</div>
+	<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
+		'htmlOptions' => array('class' => 'create-form'),
+		'enableAjaxValidation'=>false,
+		'type'=>'horizontal',
+	)); ?>
+<div class="modal-body">
+			<?php echo $form->passwordFieldRow($model,'password',array(
+				'maxlength'=>60,
+				'label'=>false, 
+				'value' => false,
+				'placeholder' => 'Текущий пароль'
+			)); ?>
+
+		<?php echo $form->passwordFieldRow($model,'newPassword',array(
+				'maxlength'=>60,
+				'label'=>false, 
+				'value' => false,
+				'placeholder' => 'Новый пароль'
+			)); ?>
+
+		<?php echo $form->passwordFieldRow($model,'newPassword_repeat',array(
+				'maxlength'=>60,
+				'label'=>false, 
+				'placeholder' => 'Подтверждение пароля'
+		)); ?>
+		<?php if(CCaptcha::checkRequirements()): ?>
+			<?php echo $form->captchaRow($model,'verifyCode',array(
+					'label'=>false, 
+	        'placeholder'=>'Введите код проверки...',
+      	)); ?>
+		<?php endif; ?>
+</div>
+ 
+<div class="modal-footer">
+	<?php $this->widget('bootstrap.widgets.TbButton', array(
+		'buttonType'=>'submit',
+		'type'=>'primary',
+		'label'=> 'Сохранить',
+		'htmlOptions' => array('name' => 'save'),			
+	)); ?>
+</div>
+	<?php $this->endWidget(); ?>
+<?php $this->endWidget(); ?>

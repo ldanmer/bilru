@@ -12,8 +12,9 @@
 			<?php echo CHtml::link(CHtml::encode($data->user->organizationData[0]->org_name), array('user/profile', 'id'=>$data->user_id)); ?>
 		</strong>
 	</p>	
+		<?php echo CHtml::encode($data->comment); ?>
 </div>
 
 
-	<?php echo $data->comment; ?>
+
 </div>

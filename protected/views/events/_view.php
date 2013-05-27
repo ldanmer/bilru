@@ -21,43 +21,17 @@
 
 	<div class="event-preview">
 		<?php echo Events::trimLongText($data->text); ?>
-      <?php if($data->commentsCount > 0): ?>
-      <div class="event-tools span6 pull-right">				
-      	<?php 
-					echo CHtml::ajaxLink('Показать все комментарии', Yii::app()->createUrl('events/like'),
-				  	array(
-							'type' => 'POST',
-							'success'=>'function(data)
-							{  		
-								var json = $.parseJSON(data);
-								$("#event"+json.id+" li.like span").text(json.count);					
-							
-							}',
-  						'data' => array(
-  							'event' => $data->id,
-  							Yii::app()->request->csrfTokenName => Yii::app()->request->csrfToken)
-  						)); 
-				?>
-			</div>
-      <?php $this->widget('zii.widgets.CListView', array(
-				'dataProvider'=>new CArrayDataProvider(array_reverse($data->comments)), 
-				'itemView'=>'_comment',
-				'template' => '{items}',
-				'ajaxUpdate'=>true,
-				'htmlOptions' => array('class' => 'comments-block span6 pull-right'),
-			)); ?>
-	 	<?php endif; ?>
 	</div>
 
 	<div class="event-tools clearfix">
 		<ul>
 			<li class="replay">
 				<?php $this->widget('bootstrap.widgets.TbButton', array(
-				    'label'=>'Комментировать',
+				    'label'=>'Комментарии',
 				    'type'=>'link', 
 				    'htmlOptions'=>array('class'=>'comment-show'),				    
 				)); ?>
-        <span class="comments-count"><?php echo $data->commentsCount; ?></span>	
+        <span class="comments-count"><?php echo $data->commentsCount; ?></span>
 			</li>
 			<li class="like">
 				<?php 
@@ -82,13 +56,24 @@
 <div class="yashare-auto-init" data-yashareL10n="ru" data-yashareType="none" data-yashareQuickServices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir"></div> 
 			</div>
 		</ul>
-	<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
+	</div>
+		<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
 			'htmlOptions' => array('class' => 'create-form comment-form'),
 			'enableClientValidation'=>true,
 			'enableAjaxValidation'=>true,
 			)); ?>
+    <?php if($data->commentsCount > 0): ?>
+	  	<?php $this->widget('zii.widgets.CListView', array(
+	  		'id'=>'comments-list'.$data->id,
+				'dataProvider'=>new CArrayDataProvider(array_reverse($data->comments)), 
+				'itemView'=>'_comment',
+				'template' => '{items}',
+				'ajaxUpdate'=>true,
+				'htmlOptions' => array('class' => 'comments-block span6 pull-right'),
+			)); ?>
+		<?php endif; ?>	
 	<legend>
-		<span>Комментарий</span>
+		<span>Оставить комментарий</span>
 	</legend>
 	<fieldset>
 			<div class="span14 pull-right">
@@ -103,7 +88,8 @@
 					'type'=>'POST',					
 					'success'=>'function(data){	
 						var data = $.parseJSON(data);	
-						var event = $("#event" + data.id);				
+						var event = $("#event" + data.id);	
+						var list = "comments-list" + data.id;			
 						if(!data.status)
 						{    							
 							event.find(".help-block").text(data.error);
@@ -111,7 +97,8 @@
 						}
 						else
 						{
-							event.find("form").fadeOut(300); 
+							$.fn.yiiListView.update(list);
+							//event.find("form").fadeOut(300); 
 							event.find("textarea").val(""); 
 							event.find(".help-block").text(""); 
 							event.find(".comments-count").text(data.count); 
@@ -119,9 +106,6 @@
 					}'
 				),
 		)); ?>
-
-
-
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 			'type'=>'primary',
 			'size'=>'small',
@@ -140,6 +124,4 @@
 
 </fieldset>
 <?php $this->endWidget(); ?>
-
-	</div>
 </div>

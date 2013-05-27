@@ -969,3 +969,11 @@ a.show{
 .grid-view {
 	padding-top: 10px;
 }
+
+.comment-form{
+	margin-top: 10px;
+}
+
+.comment-block{
+	margin: 10px 5px;
+}

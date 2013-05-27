@@ -327,4 +327,18 @@ class GetName extends CActiveRecord
 		return $result; 
 	} 
 
+	// Массив в html-список
+	public function arrayToUl($array) 
+	{
+    $out="<ul>";
+    foreach($array as $elem)
+    {
+      if(!is_array($elem))
+        $out=$out."<li>$elem</li>";
+      else 
+      	$out=$out."<li>".self::arrayToUl($elem)."</li>";
+    }
+    	$out=$out."</ul>";
+    return $out; 
+	}
 }

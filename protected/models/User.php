@@ -7,6 +7,8 @@ class User extends CActiveRecord
 	public $verifyCode;
 	public $cabinetType;
 	public $orderCount = 0;
+	public $newPassword;
+	public $newPassword_repeat;
 
 	/**
 	 * Returns the static model of the specified AR class.
@@ -40,12 +42,13 @@ class User extends CActiveRecord
 			array('email', 'unique'),
 			array('email', 'email'),
 			array('password', 'compare'),
+			array('newPassword', 'compare'),
 			array('email, password, password_repeat, org_type_id, role_id', 'required'),
 			array('org_type_id, role_id', 'numerical', 'integerOnly'=>true),
-			array('email, password', 'length', 'max'=>255),
-			array('email, password', 'length', 'min'=>6),
+			array('email, password, newPassword', 'length', 'max'=>255),
+			array('email, password, newPassword', 'length', 'min'=>6),
 			array('activation_string', 'length', 'max'=>255),
-			array('last_visit, password_repeat, create_time, activation_string, active_status', 'safe'),			
+			array('last_visit, password_repeat, newPassword, newPassword_repeat, create_time, activation_string, active_status', 'safe'),			
 		);
 	}
 
@@ -90,6 +93,8 @@ class User extends CActiveRecord
 			'email' => 'Email',
 			'password' => 'Пароль',
 			'password_repeat' => 'Подтверждение пароля', 
+			'newPassword' => 'Новый пароль',
+			'newPassword_repeat' => 'Подтверждение нового пароля',
 			'org_type_id' => 'Организационно-правовая форма',
 			'role_id' => 'Роль',
 			'active_status' => 'Активный статус',

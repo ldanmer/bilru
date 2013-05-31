@@ -30,7 +30,10 @@ class SiteController extends Controller
 	public function actionIndex()
 	{		
 		$this->layout="//layouts/main";
-		$this->render('index');
+		if(Yii::app()->user->isGuest)
+			$this->render('index');
+		else
+			$this->redirect(Yii::app()->user->returnUrl);
 	}
 
 	/**
@@ -78,7 +81,8 @@ class SiteController extends Controller
 	 */
 	public function actionLogin()
 	{
-		if (Yii::app()->user->isGuest) {
+		if (Yii::app()->user->isGuest) 
+		{
 			$model=new UserLogin;
 			// collect user input data
 			if(isset($_POST['UserLogin']))

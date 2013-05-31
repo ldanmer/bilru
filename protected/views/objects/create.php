@@ -1,7 +1,7 @@
 <?php
 $this->breadcrumbs=array(
-	'Objects'=>array('index'),
-	'Create',
+	'Объекты'=>array('index'),
+	'Создать',
 );
 
 ?>
@@ -11,13 +11,24 @@ $this->breadcrumbs=array(
 	    'type'=>'tabs', 
 	    'stacked'=>false, 
 	    'items'=>array(
-	        array('label'=>'Мои заказы', 'url'=>'index'),
-	        array('label'=>'Создать заказ', 'url'=>'create', 'active' => true),
+	        //array('label'=>'Мои объекты', 'url'=>array('objects/index')),
+	        array('label'=>'Создать объект', 'url'=>array('objects/create')),
 	    ),
 	)); ?>
 </div>
 
-<?php echo $this->renderPartial('_form', array(
-	'model'=>$model,
-	
-	)); ?>
+<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
+	'htmlOptions' => array('class' => 'create-form material-list','enctype' => 'multipart/form-data'),
+	'enableAjaxValidation'=>false,
+)); ?>
+<?php echo $this->renderPartial('/objects/_form', array(
+		'objects'=>$objects,	
+		'form'=>$form,
+)); ?>
+	<?php $this->widget('bootstrap.widgets.TbButton', array(
+				'buttonType'=>'submit',
+				'type'=>'primary',
+				'label'=> 'Сохранить',
+				'htmlOptions' => array('class' => 'pull-right', 'name' => 'publish'),				
+			)); ?>
+<?php $this->endWidget(); ?>

@@ -1,8 +1,6 @@
 <?php
 class OrganizationData extends CActiveRecord
 {
-		public $terms;
-		public $corpus;
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -29,7 +27,6 @@ class OrganizationData extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-		 	array('terms',"required", 'requiredValue' => true, 'message' => 'Вы должны согласиться с условиями пользовательского соглашения'),
 			array('org_name, user_id', 'required'),
 			array('region_id, city_id, office, inn, kpp, bik, current_account, correspond_account, user_id', 'numerical', 'integerOnly'=>true),
 			array('org_name, street, bank', 'length', 'max'=>255),
@@ -73,9 +70,6 @@ class OrganizationData extends CActiveRecord
 			'bik' => 'Бик',
 			'current_account' => 'Расчётный счёт',
 			'correspond_account' => 'Корреспондентский счёт',
-			'terms' => 'Я ознакомился и принимаю условия <a data-toggle="modal" data-target="#myModal">пользовательского соглашения</a>',
-			'user_id' => 'User',
-			'corpus' => 'Корпус',
 		);
 	}
 

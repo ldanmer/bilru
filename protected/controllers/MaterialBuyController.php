@@ -170,7 +170,7 @@ class MaterialBuyController extends Controller
 				$objects->communications = json_encode($_POST['Objects']['communications']);
 				$objects->user_id = Yii::app()->user->id;
 				$objects->photoes = GetName::saveUploadedFiles('photoes',$uploadDir);
-				$objects->blueprints = GetName::saveUploadedFiles('blueprints',$uploadDir);
+				$objects->blueprints = GetName::saveUploadedFiles('bluprints',$uploadDir);
 				$objects->documents = GetName::saveUploadedFiles('objectdocs',$uploadDir);	
 
 				/**

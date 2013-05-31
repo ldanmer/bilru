@@ -1,7 +1,12 @@
 <?php 
 	$count = Goszakaz::model()->count() + Orders::model()->count();
 	$total = Goszakaz::model()->totalPrice();
-	$mainPage = Yii::app()->checkSpecifiedPage('homepage') ? 'mainpage' : '';
+	$mainPage = (
+			Yii::app()->checkSpecifiedPage('homepage') 
+			|| Yii::app()->checkSpecifiedPage('login') 
+			|| Yii::app()->checkSpecifiedPage('register')
+			|| Yii::app()->checkSpecifiedPage('recovery')
+		) ? 'mainpage' : '';
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">
@@ -33,15 +38,15 @@
 			      		</td>     		
 			      		<td>
 			      			<ul>
-			      				<li>Количество: <?php echo $count ?></li>
-			      				<li>На сумму: <?php echo number_format($total, 2, ',', '\'') ?> Рублей</li>
+			      				<li>Количество: <strong><?php echo $count ?></strong></li>
+			      				<li>На сумму: <strong><?php echo number_format($total, 2, ',', '\'') ?></strong> руб.</li>
 			      			</ul>
 		      			</td>
 			    		</tr>
 			  		</tbody>
 		    	</table>		    	
 				</div>
-				<div class="pull-right clearfix">
+				<div class="pull-right clearfix" style="margin-right:200px;">
 					<?php $this->widget('bootstrap.widgets.TbMenu', array(
 				    'type'=>'pills',
 				    'items'=>array(
@@ -57,11 +62,8 @@
 			</div>
 		</div>
 	</div>
-
-<div id="main-wrap" class="<?php echo $mainPage; ?>">
-	<div class="container" id="page">
-
-	<?php $this->widget('bootstrap.widgets.TbNavbar',array(
+		<div id="grey-top"></div>
+		<?php $this->widget('bootstrap.widgets.TbNavbar',array(
 		'type'=>'inverse',
 		'brand'=>false,
 		'fixed' => false,
@@ -75,15 +77,17 @@
           array('label'=>'Выход', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest),                
 	      ),
       ),
-
     ),
 )); ?>
-
 	<?php if(isset($this->breadcrumbs)):?>
 		<?php $this->widget('bootstrap.widgets.TbBreadcrumbs', array(
 			'links'=>$this->breadcrumbs,
+			'htmlOptions'=>array('id'=>'bread'),
 		)); ?><!-- breadcrumbs -->
 	<?php endif?>
+
+<div id="main-wrap" class="<?php echo $mainPage; ?>">
+	<div class="container" id="page">
 	<div class="row">
 		<?php
       $flashMessages = Yii::app()->user->getFlashes();

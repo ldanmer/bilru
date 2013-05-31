@@ -30,7 +30,7 @@ class EventsController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','index','view', 'like','comment'),
+				'actions'=>array('create','update','index','like','comment'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -70,7 +70,7 @@ class EventsController extends Controller
 			$model->attributes=$_POST['Events'];
 			$model->user_id = Yii::app()->user->id;
 			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+				$this->redirect(array('index'));
 		}
 
 		$this->render('create',array(
@@ -158,11 +158,6 @@ class EventsController extends Controller
     	}    		
       Yii::app()->end();
 		}
-
-	}
-
-	public function commentUpdate()
-	{
 
 	}
 

@@ -1,7 +1,7 @@
-<div class="user-form" id="registration-form1">
+<div class="user-form register-form" id="registration-form">
 
 <h3 class="form-title">Регистрация</h3>
-<p class="small">Выберите тип пользователя</p>
+<p class="muted text-center" style="margin-top: 10px; margin-bottom:0">Выберите основной тип пользователя</p>
 
 <?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
 	'enableAjaxValidation'=>false,
@@ -68,7 +68,8 @@
 			'buttonType'=>'submit',
 			'type'=>'primary',
 			'label'=>'Далее',
-			'htmlOptions' => array('class'=>'pull-right', 'name'=>''),
+			'block'=>true,
+			'htmlOptions' => array('class'=>'pull-right span2', 'name'=>''),
 		)); ?>
 	</div>
 

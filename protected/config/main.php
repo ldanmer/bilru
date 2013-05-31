@@ -8,7 +8,6 @@ return array(
 	//'theme'=>'bootstrap', 
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 	'name'=>'Bilru.com',
-	//'defaultController'=>'events/index',
 	'language'          =>'ru',
 
 	// preloading 'log' component

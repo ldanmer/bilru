@@ -19,7 +19,7 @@ array_shift($orgTypes);
 <div class="row">
 
 	<div class="span3">
-		<p class="small">Организационно-правовая форма</p>
+		<p class="small muted">Организационно-правовая форма</p>
 		<?php echo $form->dropDownListRow($model, 'org_type_id', array($orgTypes), array(
 			'label'=>false, 
 		)); ?>
@@ -61,11 +61,10 @@ array_shift($orgTypes);
 				'label'=>false, 
 				'placeholder' => 'Подтверждение пароля'
 			)); ?>	
-
 	</div>
 
 	<div class="span3">
-		<p class="small">Контактное лицо</p>
+		<p class="small text-center"><strong>Контактное лицо</strong></p>
 		<?php echo $form->textFieldRow($userData,'first_name', array(
 				'maxlength'=>60, 
 				'label'=>false, 
@@ -85,7 +84,7 @@ array_shift($orgTypes);
 				'class' => 'optional',
 			)); ?>
 
-		<p class="small">Фактический адрес</p>
+		<p class="small text-center"><strong>Фактический адрес</strong></p>
 		<?php echo $form->dropDownListRow($userData, 'region_id', array($regionNames), array(
 			'label'=>false, 
 			'empty' => 'Регион',
@@ -110,13 +109,6 @@ array_shift($orgTypes);
 					'placeholder' => 'Дом',
 					'class' => 'span1 optional'
 				)); ?>
-	
-				<?php echo $form->textFieldRow($userData,'corpus', array(
-					'maxlength'=>60, 
-					'label'=>false, 
-					'placeholder' => 'Корпус',
-					'class' => 'span1 optional'
-				)); ?>
 
 				<?php echo $form->textFieldRow($userData,'apartament', array(
 					'maxlength'=>60, 
@@ -125,9 +117,8 @@ array_shift($orgTypes);
 					'class' => 'span1 optional'
 				)); ?>
 	</div>
-
 	<div class="span3">
-		<p class="small">Юридический адрес</p>
+		<p class="small text-center"><strong>Юридический адрес</strong></p>
 		<?php echo $form->dropDownListRow($orgData, 'region_id', array($regionNames), array(
 			'label'=>false, 
 			'empty' => 'Регион',
@@ -146,30 +137,20 @@ array_shift($orgTypes);
 				'placeholder' => 'Улица',
 				'class' => 'optional'
 			)); ?>
-			<div class="clearfix"></div>
 
-				<?php echo $form->textFieldRow($orgData,'house', array(
-					'maxlength'=>60, 
-					'label'=>false, 
-					'placeholder' => 'Дом',
-					'class' => 'span1 optional'
-				)); ?>
-	
-				<?php echo $form->textFieldRow($orgData,'corpus', array(
-					'maxlength'=>60, 
-					'label'=>false, 
-					'placeholder' => 'Корпус',
-					'class' => 'span1 optional'
-				)); ?>
+		<?php echo $form->textFieldRow($orgData,'house', array(
+			'maxlength'=>60, 
+			'label'=>false, 
+			'placeholder' => 'Дом',
+			'class' => 'span1 optional'
+		)); ?>
 
-				<?php echo $form->textFieldRow($orgData,'office', array(
-					'maxlength'=>60, 
-					'label'=>false, 
-					'placeholder' => 'Офис',
-					'class' => 'span1 optional'
-				)); ?>
-
-		<p class="small">Регистрационные данные</p>
+		<?php echo $form->textFieldRow($orgData,'office', array(
+			'maxlength'=>60, 
+			'label'=>false, 
+			'placeholder' => 'Офис',
+			'class' => 'span1 optional'
+		)); ?>
 		<?php echo $form->textFieldRow($orgData,'inn', array(
 			'maxlength'=>60, 
 			'label'=>false, 
@@ -183,10 +164,6 @@ array_shift($orgTypes);
 			'class' => 'optional'
 		)); ?>
 
-	</div>
-
-	<div class="span3">
-		<p class="small">Банковские реквизиты</p>
 		<?php echo $form->textFieldRow($orgData,'bank', array(
 			'maxlength'=>60, 
 			'label'=>false, 
@@ -214,15 +191,9 @@ array_shift($orgTypes);
 			'placeholder' => 'Корреспондентский счёт',
 			'class' => 'optional'
 		)); ?>
-		<p class="text-info">Эти поля можно заполнить позже </p>
+		<p class="light-blue">Эти поля можно заполнить позже </p>
 	</div>
-</div>
-
-
-	<p class="muted">
-		Пользователь гарантирует достоверность всех вводимых при использовании сайта данных. Недостоверные или некорректные данные могут стать причиной отказа в обслуживании и выполнении финансовых операций.
-	</p>
-	<div class="pull-right">
+	<div class="span6 clearfix" id="register-captcha">
 		<?php if(CCaptcha::checkRequirements()): ?>
 			<?php echo $form->captchaRow($model,'verifyCode',array(
 					'label'=>false, 
@@ -230,8 +201,13 @@ array_shift($orgTypes);
       	)); ?>
 		<?php endif; ?>
 	</div>
+</div>
+
+	<p class="muted small">
+		Пользователь гарантирует достоверность всех вводимых при использовании сайта данных. Недостоверные или некорректные данные могут стать причиной отказа в обслуживании и выполнении финансовых операций.
+	</p>
 	<div class="form-actions">
-		<?php echo $form->checkboxRow($orgData, 'terms', array('label'=>false)); ?>
+		<?php echo $form->checkboxRow($userData, 'terms', array('label'=>false)); ?>
 
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 			'buttonType'=>'submit',
@@ -244,7 +220,7 @@ array_shift($orgTypes);
 <?php $this->endWidget(); ?>
 
 
-<?php $this->beginWidget('bootstrap.widgets.TbModal', array('id'=>'myModal')); ?>
+<?php $this->beginWidget('bootstrap.widgets.TbModal', array('id'=>'agreement')); ?>
  
 <div class="modal-header">
     <a class="close" data-dismiss="modal">X</a>

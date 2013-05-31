@@ -62,20 +62,23 @@ class ObjectsController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model=new Objects;
+		$objects=new Objects;
 
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
+			if(isset($_POST['Objects']))
+			{
+				$objects->attributes=$_POST['Objects'];	
+				$objects->communications = $_POST['Objects']['communications'] != "" ? json_encode($_POST['Objects']['communications']) : NULL;
+				$objects->user_id = Yii::app()->user->id;
+				$objects->photoes = GetName::saveUploadedFiles('photoes',$uploadDir);
+				$objects->blueprints = GetName::saveUploadedFiles('bluprints',$uploadDir);
+				$objects->documents = GetName::saveUploadedFiles('objectdocs',$uploadDir);	
 
-		if(isset($_POST['Objects']))
-		{
-			$model->attributes=$_POST['Objects'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
-		}
+				if($objects->save()) 
+					$this->redirect(array('view','id'=>$objects->id));
+			}	
 
 		$this->render('create',array(
-			'model'=>$model,
+			'objects'=>$objects,
 		));
 	}
 

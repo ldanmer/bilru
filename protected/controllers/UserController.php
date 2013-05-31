@@ -239,25 +239,20 @@ class UserController extends Controller
 				$userSettings->save(false);
 				$userInfo->save(false);				
 				if(empty($orgData->org_name))
-				{
-					$orgData->org_name = 'Не указано';
-					$orgData->terms = true;					
-				}
+					$orgData->org_name = 'Не указано';	
+
 				$orgData->save();
 					
 				Yii::app()->user->setFlash('success',"Благодарим за регистрацию! Пожалуйста, проверьте свой email.");	
 
 				
 				if($model->sendActivationString($model))
-				{
-					Yii::app()->user->setFlash('success',"Благодарим за регистрацию! Пожалуйста, проверьте свой email.");	
-				}						
+					Yii::app()->user->setFlash('success',"Благодарим за регистрацию! Пожалуйста, проверьте свой email.");					
 				else
 				{
 					Yii::app()->user->setFlash('error',"Отправка почтового подтверждения не доступна");
 						throw new CHttpException(503,'Отправка почтового подтверждения не доступна');
-				}
-															
+				}															
 			}	
 			else						
 			{

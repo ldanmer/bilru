@@ -1,17 +1,10 @@
-<?php
-$this->pageTitle=Yii::app()->name . ' - Восстановление пароля';
-$this->breadcrumbs=array(
-	'Восстановление пароля',
-);
-?>
+<?php $this->pageTitle=Yii::app()->name . ' - Восстановление пароля'; ?>
 
 <div class="user-form" id="login-form">
 
-<h3 class="form-title">Восстановление пароля</h3>
+<h4 class="form-title">Восстановление пароля</h4>
 
-<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm', array(
-  'type'=>'horizontal',	
-)); ?>		
+<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm'); ?>		
 
 	<?php echo $form->textFieldRow($model,'email',array('placeholder'=>'mail@example.com')); ?>
 
@@ -19,7 +12,7 @@ $this->breadcrumbs=array(
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
             'buttonType'=>'submit',
             'type'=>'primary',
-           	'size'=>'large',
+            'block'=>true,
             'label'=>'Отправить',
         )); ?>
 	</div>

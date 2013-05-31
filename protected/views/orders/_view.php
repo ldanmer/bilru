@@ -6,10 +6,8 @@
 	// Список документов
 
 	if($data->documents != "null")
-	{
-		$docs = GetName::getDocsList($data->documents);
-		$img = $docs->img;
-	}
+		$docs = GetName::getDocsList($data->documents);	
+	$img = json_decode($data->object->photoes);
 
  ?>
 
@@ -21,8 +19,8 @@
 
 	<div class="span1">
 		<p class="subtitle" align="center">Фото объекта</p>
-		<?php if(!empty($img)): ?>
-			<?php  echo CHtml::image($img); ?>
+		<?php if(!empty($img[0])): ?>
+			<?php  echo CHtml::image(Yii::app()->baseUrl.$img[0]); ?>
 		<?php else: ?>
 		<img src="<?php echo Yii::app()->baseUrl ?>/img/order-image.png" />
 	<?php endif; ?>
@@ -116,15 +114,15 @@
 
 	<div style="margin-top:10px;">
 	<?php if(empty($data->offer_id)): ?>
-	<?php echo CHtml::link("Посмотреть предложения поставщиков",array('/orderOffer/list','id'=>$data->id), array('class'=>'btn pull-left light-blue light-blue-border')); ?>
+	<?php echo CHtml::link("Посмотреть предложения поставщиков",array('/orderOffer/list','id'=>$data->id), array('class'=>'btn btn-small pull-left light-blue light-blue-border')); ?>
 	<?php endif; ?>
 	<?php if(empty($data->offer_id)): 
-		echo CHtml::link("Редактировать",array('update','id'=>$data->id), array('class'=>'btn btn-primary hidden pull-right')); 
+		echo CHtml::link("Редактировать",array('update','id'=>$data->id), array('class'=>'btn btn-small btn-primary hidden pull-right')); 
  	else: 
-	 echo CHtml::link("Заказ выполнен",array('rating', 'id'=>$data->id), array('class'=>'btn btn-success pull-left'));
+	 echo CHtml::link("Заказ выполнен",array('rating', 'id'=>$data->id), array('class'=>'btn btn-small btn-success pull-left'));
 	endif;
  		 ?>
-	<?php echo CHtml::button("Показать полностью",array('class'=>'btn btn-primary show pull-right')); ?>
+	<?php echo CHtml::button("Показать полностью",array('class'=>'btn btn-primary btn-small show pull-right')); ?>
 	</div>
 <div class="clearfix"></div>
 

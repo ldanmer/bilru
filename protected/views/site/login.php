@@ -1,19 +1,9 @@
-<?php
-/* @var $this SiteController */
-/* @var $model LoginForm */
-/* @var $form CActiveForm  */
-
-$this->pageTitle=Yii::app()->name . ' - Вход';
-$this->breadcrumbs=array(
-	'Вход',
-);
-?>
+<?php $this->pageTitle=Yii::app()->name . ' - Вход';?>
 <div class="user-form" id="login-form">
 
 <h3 class="form-title">Вход в кабинет</h3>
 
 <?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm', array(
-  'type'=>'horizontal',
 	'enableClientValidation'=>true,
 	'clientOptions'=>array(
 		'validateOnSubmit'=>true,
@@ -37,12 +27,12 @@ $this->breadcrumbs=array(
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
             'buttonType'=>'submit',
             'type'=>'primary',
-           	'size'=>'large',
+            'block'=>true,
             'label'=>'Войти',
         )); ?>
 	</div>
 
-	<?php echo CHtml::link('Восстановление пароля',array('recovery')); ?>
+	<p class="text-center small"><?php echo CHtml::link('Восстановление пароля',array('recovery')); ?></p>
 
 <?php $this->endWidget(); ?>
 

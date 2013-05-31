@@ -1,9 +1,9 @@
 <div class="event" id="event<?php echo $data->id?>">
 	<div class="pull-right date">
-			<?php echo CHtml::encode($data->date); ?>
+			<?php echo CHtml::encode(date('d.m.Y', strtotime($data->date))); ?>
 	</div>	
-  <div class="user-header clearfix">
-		<div class="thumbnail user-image">
+  <div class="user-header">
+		<div class="user-image">
 	  	<?php if(!empty($data->user->settings[0]->avatar)): ?>
 	      <?php echo CHtml::image(Yii::app()->baseUrl.$data->user->settings[0]->avatar); ?>
 	    <?php else: ?>
@@ -15,8 +15,7 @@
 		</strong>
 			<br />
 			<small><?php echo CHtml::encode($data->title); ?></small>
-		</p>	
-	
+		</p>		
   </div>
 
 	<div class="event-preview">
@@ -26,11 +25,7 @@
 	<div class="event-tools clearfix">
 		<ul>
 			<li class="replay">
-				<?php $this->widget('bootstrap.widgets.TbButton', array(
-				    'label'=>'Комментарии',
-				    'type'=>'link', 
-				    'htmlOptions'=>array('class'=>'comment-show'),				    
-				)); ?>
+				<?php echo CHtml::link('Комментарии', '',array('class'=>'comment-show')); ?>
         <span class="comments-count"><?php echo $data->commentsCount; ?></span>
 			</li>
 			<li class="like">
@@ -53,7 +48,14 @@
 			</li>
 			<div class="pull-right">
 <script type="text/javascript" src="//yandex.st/share/share.js" charset="utf-8"></script>
-<div class="yashare-auto-init" data-yashareL10n="ru" data-yashareType="none" data-yashareQuickServices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir"></div> 
+<div 
+	class="yashare-auto-init" 
+	data-yashareL10n="ru" 
+	data-yashareType="none" 
+	data-yashareQuickServices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir" 
+	data-yashareTitle="<?php echo CHtml::encode($data->userName) . ": " .CHtml::encode($data->title); ?>"
+	data-yashareDescription="<?php echo CHtml::encode($data->text) ?>"
+	></div> 
 			</div>
 		</ul>
 	</div>
@@ -76,14 +78,14 @@
 		<span>Оставить комментарий</span>
 	</legend>
 	<fieldset>
-			<div class="span14 pull-right">
+		<div class="span14 pull-right">
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 			'buttonType'=>'ajaxSubmit',	
 			'url'=>array('events/comment'),
 			'type'=>'primary',
+			'block'=>true,
 			'size'=>'small',
 			'label'=> 'Сохранить',	
-			'htmlOptions'=>array('class'=>'pull-right'),	
 			'ajaxOptions'=>array(
 					'type'=>'POST',					
 					'success'=>'function(data){	
@@ -107,8 +109,9 @@
 				),
 		)); ?>
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
-			'type'=>'primary',
+			'type'=>'danger',
 			'size'=>'small',
+			'block'=>true,
 			'label'=> 'Отмена',		
 			'htmlOptions'=>array('class'=>'cencel'),		
 		)); ?>
@@ -118,8 +121,7 @@
 			'placeholder' => 'Комментировать...',
 			'class'=>'span5',			
 		)); ?>
-
-		<?php echo $form->hiddenField($data, 'id'); ?>
+	<?php echo $form->hiddenField($data, 'id'); ?>
 
 
 </fieldset>

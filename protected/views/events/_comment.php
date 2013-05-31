@@ -1,8 +1,8 @@
 <div class="comment-block">
 	<div class="user-header clearfix">
-		<div class="thumbnail user-image">
-		<?php if(!empty($data->comment->user->settings[0]->avatar)): ?>
-		  <?php echo CHtml::image(Yii::app()->baseUrl.$data->comment->user->settings[0]->avatar); ?>
+		<div class="user-image">
+		<?php if(!empty($data->user->settings[0]->avatar)): ?>
+		  <?php echo CHtml::image(Yii::app()->baseUrl.$data->user->settings[0]->avatar); ?>
 		<?php else: ?>
 		  <?php echo CHtml::image(Yii::app()->baseUrl.'/img/avatar_placeholder.png'); ?>
 		<?php endif; ?>

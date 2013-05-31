@@ -47,7 +47,7 @@ $this->breadcrumbs=array(
 			<tr>
 				<td class="header">Вид работ:</td>
 				<td>
-					<?php echo CHtml::encode($zakaz->workType->name); ?>
+					<?php echo Orders::getWorkTypes($zakaz->work_type_id); ?>
 				</td>
 			</tr>	
 			<tr>

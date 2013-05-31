@@ -8,7 +8,6 @@
  */
 
 class PageChecker extends CBehavior {
-	
 
 	/**
 	 * Checks whether the specified page is currently shown by our application
@@ -34,14 +33,14 @@ class PageChecker extends CBehavior {
 				case 'homepage':
 					$pageUrl = array('site/index'); //set the homepage url
 					break;
-				case 'contact':
-					$pageUrl = array('site/contact'); //set the contact page url
-					break;
-				case 'about':
-					$pageUrl = array('site/page'); //set the about url
+				case 'recovery':
+					$pageUrl = array('site/recovery'); //set the contact page url
 					break;
 				case 'login':
 					$pageUrl = array('site/login'); //set the login url
+					break;
+				case 'register':
+					$pageUrl = array('user/register'); //set the login url
 					break;
 			}
 			

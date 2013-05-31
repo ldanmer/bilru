@@ -1,8 +1,5 @@
 <?php
 $this->pageTitle='Заказчику';
-$this->breadcrumbs=array(
-	'Заказчику',
-);
 ?>
 <h1 class="text-error">Заказчику</h1>
 <div class="customer">

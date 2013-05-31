@@ -93,15 +93,11 @@ $this->breadcrumbs=array(
 		</table>
 		<p class="subtitle" align="center">Наличие коммуникаций</p>
 		<div class="white-list">
-			<?php 
-				$communications = GetName::jsonToString($model->communications, $model->communicationTypes, "<br>");
-				echo !empty($communications) ? $communications : "коммуникаций нет"; 
+			<?php 			
+				echo !empty($model->communications) ? GetName::jsonToString($model->communications, $model->communicationTypes, "<br>") : "коммуникаций нет"; 
 				?>
 		</div>
-
-
-
-</div>	
+	</div>	
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 		    'label'=>'Вернуться',
 		    'type'=>'primary',
@@ -111,25 +107,6 @@ $this->breadcrumbs=array(
 			));
 	 ?>
 </div>
-
-<?php  $this->widget('ext.yandexmap.YandexMap',array(
-        'id'=>'map',
-        'width'=>600,
-        'height'=>400,
-        'controls' => array(
-            'zoomControl' => true,
-        ),
-        'placemark' => 
-            array(
-                'lat'=>'ymaps.geolocation.latitude',
-                'lon'=>'ymaps.geolocation.longitude',
-                'options'=>array(
-                    'draggable'=>true
-                )
-            )
-
-    ));
- ?>
 <?php 
 
 $this->widget('ext.fancybox.EFancyBox', array(

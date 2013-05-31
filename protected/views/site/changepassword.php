@@ -1,9 +1,4 @@
-<?php
-$this->pageTitle=Yii::app()->name . ' - Смена пароля';
-$this->breadcrumbs=array(
-	'Смена пароля',
-);
-?>
+<?php $this->pageTitle=Yii::app()->name . ' - Смена пароля'; ?>
 
 <div class="user-form" id="login-form">
 

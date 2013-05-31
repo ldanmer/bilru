@@ -1,10 +1,4 @@
-<?php
-	$this->pageTitle=Yii::app()->name . ' - Регистрация';
-	$this->breadcrumbs=array(
-		'Регистрация'
-	);
-?>
-
+<?php	$this->pageTitle=Yii::app()->name . ' - Регистрация'; ?>
 <?php 
 // Успешная регистрация
 if(Yii::app()->user->hasFlash('success')):
@@ -24,17 +18,15 @@ elseif (empty($roleAttributes)):
 // Вывод 2й формы 
 else:
 ?>
-<div class="user-form row" id="registration-form2">
-<div class="span8">
+<div class="user-form register-form">
+<div class="span6">
 	<h3 class="form-title">Регистрация <?php echo $roleAttributes->title; ?></h3>
-	<p class="small">Заполните поля</p>
 </div>
-
 <div class="span3">
 	<h3 class="jur-status"><?php echo $roleAttributes->jur; ?></h3>
-
 </div>
 <div class="clearfix"></div>
+	<p class="muted text-center">Заполните поля</p>
 
 	<?php if($roleAttributes->jur == "Частное лицо"): ?>
 

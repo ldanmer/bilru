@@ -23,15 +23,13 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 				'label'=>false, 
 			)); ?>
 
-		<div class="span5">
 			<p class="text-info">
 			Для создания заказа необходимо выбрать или создать ОБЪЕКТ. В разделе ОБЪЕКТ хранится история ваших заказов, покупок, а также фотографии, чертежи, файлы и информация о ОБЪЕКТЕ.
 			</p>
-		</div>
 
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 				'buttonType'=>'link',
-				'url' => $this->createUrl('create', array('object' => 'new')),
+				'url' => $this->createUrl('objects/create'),
 				'type'=>'primary',
 				'label'=> 'Создать объект',
 				'htmlOptions' => array('class' => 'pull-right', 'name' => 'newobject'),				
@@ -43,106 +41,10 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 	<!-- Если объектов еще нет -->
 	<?php elseif(isset($objects)): ?>
 
-	<?php echo $form->errorSummary($objects); ?>
-	<legend>
-		<span>Создание объекта</span>
-	</legend>
-	<fieldset>
-		<div class="span3">
-			<h4 class="subtitle">Фото объекта</h4>
-			<?php $this->widget('CMultiFileUpload', array(
-              'name' => 'photoes',
-              'accept' => 'jpeg|jpg|gif|png|doc|docx|txt|pdf',
-              'duplicate' => 'Дупликат!', 
-              'denied' => 'Неверный тип файла',
-            ));
-      ?>
-
-
-			<h4 class="subtitle">Чертежи объекта объекта</h4>
-			<?php $this->widget('CMultiFileUpload', array(
-              'name' => 'blueprints',
-              'accept' => 'jpeg|jpg|gif|png|doc|docx|txt|pdf',
-              'duplicate' => 'Дупликат!', 
-              'denied' => 'Неверный тип файла',
-            ));
-      ?>
-
-			<h4 class="subtitle">Документы</h4>
-			<?php $this->widget('CMultiFileUpload', array(
-              'name' => 'objectdocs',
-              'accept' => 'jpeg|jpg|gif|png|doc|docx|txt|pdf',
-              'duplicate' => 'Дупликат!', 
-              'denied' => 'Неверный тип файла',
-            ));
-      ?>
-		</div>
-		<div class="span3">
-			<h4 class="subtitle" align="center">Профиль объекта</h4>
-			<?php echo $form->textFieldRow($objects,'title',array(
-			'label'=>false, 
-			'maxlength'=>255,
-			'placeholder' => 'Введите название объекта',
-			'class' => 'span3',
-			)); ?>
-
-			<?php echo $form->dropDownListRow($objects, 'object_type_id', GetName::getNames('ObjectTypes', 'name'), array(
-				'label'=>false, 
-				'empty'=>'- Тип объекта -',
-				'class' => 'span3',
-			)); ?>
-
-			<div class="span2">
-				<?php echo $form->dropDownListRow($objects, 'region_id', GetName::getNames('Region', 'region_name'), array(
-					'label'=>false, 
-					'empty' => '- выберите регион -',
-				)); ?>
-
-				<?php echo $form->dropDownListRow($objects, 'city_id', GetName::getNames('City', 'city_name'), array(
-					'label'=>false, 
-					'empty' => '- выберите город -',
-				)); ?>
-
-				<?php echo $form->textFieldRow($objects,'street',array(
-				'label'=>false, 
-				'maxlength'=>255,
-				'placeholder' => 'Улица',
-				)); ?>	
-			
-			</div>
-
-			<div class="span0 pull-right">				
-				<?php echo $form->textFieldRow($objects,'house',array(
-				'label'=>false, 
-				'maxlength'=>255,
-				'placeholder' => 'Дом',
-				'class' => 'span0',
-				)); ?>
-
-				<?php echo $form->textFieldRow($objects,'square',array(
-				'label'=>false, 
-				'maxlength'=>255,
-				'placeholder' => 'Площадь',
-				'class' => 'span0',
-				)); ?>
-
-				<?php echo $form->textFieldRow($objects,'floors',array(
-				'label'=>false, 
-				'maxlength'=>255,
-				'placeholder' => 'Этажей',
-				'class' => 'span0',
-				)); ?>
-			</div>
-			<div class="span3">
-				<h4 class="subtitle" align="center">Наличие коммуникаций</h4>	
-				<?php echo $form->checkBoxListRow($objects, 'communications', $objects->communicationTypes, array(
-				'label'=>false, 
-			)); ?>
-			</div>
-
-		</div>
-
-	</fieldset>
+		<?php echo $this->renderPartial('/objects/_form', array(
+		'objects'=>$objects,	
+		'form'=>$form,
+	)); ?>
 
 	<?php endif; ?>
 
@@ -150,7 +52,7 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 		<?php $title = isset($objects) ? "Создание" : "Редактирование" ?>
 		<span><?php echo $title; ?> заказа</span>
 	</legend>
-	<fieldset>
+	<fieldset id="create-order">
 		<div class="span3">			
 			<?php $this->widget('bootstrap.widgets.TbButton', array(
 		    'label'=>'Выберите тип подрядчика',
@@ -198,18 +100,36 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 
 		<div class="span3">
 			<h4 class="subtitle">Стоимость работ</h4>
-			<div class="grey-field">
+			<div class="round-border">
 				<?php echo $form->textFieldRow($model,'price',array(
 						'class' => 'span1',
 						'label' => false,
 						'prepend' => 'Стоимость',
 						'append' => 'руб.',
+						'class'=>'input-prepend'
 					)); ?>
 			    <label class="checkbox">
 		    		По договоренности
       			<input type="checkbox" id="dogovorennost">
     		</label>
-			</div>
+    		</div>
+			<h4 class="subtitle">Сроки выполнения работ</h4>
+				<?php echo $form->textFieldRow($model,'duration',array(
+					'label'=>false,
+					'class' => 'input-append',
+					'append'=>'Дней',
+					)); 
+				?>
+
+			<h4 class="subtitle">Документы</h4>
+			<?php $this->widget('CMultiFileUpload', array(
+              'name' => 'documents',
+              'accept' => 'doc|docx|txt|pdf|csv|xls',
+              'duplicate' => 'Дупликат!', 
+              'denied' => 'Неверный тип файла',
+            ));
+      ?>
+      <small class="red">разрешенные типы файлов: doc, txt, pdf, csv, xls</small>	
 		</div>
 		<div class="span3">
 		<h4 class="subtitle" align="center">Прием заявок</h4>
@@ -249,39 +169,11 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 				'label'=>false,				
 				)); ?>
 		</div>
-
-		<div class="span3">
-			<h4 class="subtitle">Сроки выполнения работ</h4>
-				<?php echo $form->textFieldRow($model,'duration',array(
-					'label'=>false,
-					'class' => 'span2',
-					'append'=>'Дней',
-					)); 
-				?>
-		</div>
-		<div class="span3 clearfix">
-			<h4 class="subtitle">Документы</h4>
-			<?php $this->widget('CMultiFileUpload', array(
-              'name' => 'documents',
-              'accept' => 'jpeg|jpg|gif|png|doc|docx|txt|pdf',
-              'duplicate' => 'Дупликат!', 
-              'denied' => 'Неверный тип файла',
-            ));
-      ?>
-		</div>
 		<div class="span3">
 			<p class="text-info">
 			Ваши контакты  подрядчик увидит после того, как вы его отметите как претендента в разделе «ПОСТУПИЛИ ПРЕДЛОЖЕНИЯ»
 			</p>
 		</div>
-
-		<div class="span3">
-			<?php $this->widget('bootstrap.widgets.TbButton', array(
-				'buttonType'=>'submit',
-				'type'=>'primary',
-				'label'=> 'Сохранить',
-				'htmlOptions' => array('name' => 'save'),			
-			)); ?>
 
 			<?php $this->widget('bootstrap.widgets.TbButton', array(
 				'buttonType'=>'submit',
@@ -289,6 +181,6 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 				'label'=> 'Разместить заказ',
 				'htmlOptions' => array('class' => 'pull-right', 'name' => 'publish'),				
 			)); ?>
-		</div>
+
 </fieldset>
 <?php $this->endWidget(); ?>

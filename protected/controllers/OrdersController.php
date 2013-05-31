@@ -95,7 +95,6 @@ class OrdersController extends Controller
 		if(isset($_POST['Orders']))
 		{
 			$model->attributes=$_POST['Orders'];
-			$model->user_id = Yii::app()->user->id;
 			$model->documents = GetName::saveUploadedFiles('documents',$uploadDir);	
 			$publish = isset($_POST['publish']) ? 1 : 0;  
 			if(!empty($_POST['Orders']['user_role_id']))
@@ -110,7 +109,7 @@ class OrdersController extends Controller
 				$objects->communications = json_encode($_POST['Objects']['communications']);
 				$objects->user_id = Yii::app()->user->id;
 				$objects->photoes = GetName::saveUploadedFiles('photoes',$uploadDir);
-				$objects->blueprints = GetName::saveUploadedFiles('blueprints',$uploadDir);
+				$objects->blueprints = GetName::saveUploadedFiles('bluprints',$uploadDir);
 				$objects->documents = GetName::saveUploadedFiles('objectdocs',$uploadDir);	
 
 				/**

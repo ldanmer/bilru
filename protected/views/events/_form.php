@@ -1,32 +1,32 @@
-<?php
-/* @var $this EventsController */
-/* @var $model Events */
-/* @var $form CActiveForm */
-?>
-
 <div class="form">
 
-<?php $form=$this->beginWidget('CActiveForm', array(
+<?php $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
 	'id'=>'events-form',
+	'htmlOptions' => array('class' => 'create-form'),
 	'enableAjaxValidation'=>false,
 )); ?>
+<fieldset>
+<?php echo $form->textFieldRow($model,'title',array(
+	'label'=>false, 
+	'maxlength'=>255,
+	'placeholder' => 'Введите заголовок',
+	'class' => 'span3',
+)); ?>
 
-	<?php echo $form->errorSummary($model); ?>
+<?php echo $form->textAreaRow($model,'text',array(
+	'label'=>false, 
+	'placeholder' => 'Текст новости',
+	'class' => 'span3',
+	'rows'=>5
+)); ?>
+<div class="clearfix"></div>
+<?php $this->widget('bootstrap.widgets.TbButton', array(
+				'buttonType'=>'submit',
+				'type'=>'primary',
+				'label'=> 'Сохранить',					
+			)); ?>
+</fieldset>
 
-	<div class="row">
-		<?php echo $form->labelEx($model,'title'); ?>
-		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'title'); ?>
-	</div>
-
-	<div class="row">
-		<?php echo $form->labelEx($model,'text'); ?>
-		<?php echo $form->textArea($model,'text',array('rows'=>6, 'cols'=>50)); ?>
-		<?php echo $form->error($model,'text'); ?>
-	</div>
-	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Создать' : 'Сохранить'); ?>
-	</div>
 
 <?php $this->endWidget(); ?>
 

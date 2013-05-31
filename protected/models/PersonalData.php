@@ -2,7 +2,7 @@
 
 class PersonalData extends CActiveRecord
 {
-	public $corpus;
+	public $terms;
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -35,6 +35,7 @@ class PersonalData extends CActiveRecord
 			array('phone1, phone2', 'length', 'max'=>20),
 			array('phone1, phone2','match','pattern'=>'/^((8|\+7|7)[\- ]?)?(\(?\d{3,4}\)?[\- ]?)?[\d\- ]{6,10}$/'),
 			array('house', 'length', 'max'=>20),
+		 	array('terms',"required", 'requiredValue' => true, 'message' => 'Вы должны согласиться с условиями пользовательского соглашения'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, first_name, middle_name, last_name, phone1, phone2, region_id, city_id, street, house, apartament, user_id', 'safe', 'on'=>'search'),
@@ -65,14 +66,14 @@ class PersonalData extends CActiveRecord
 			'first_name' => 'Имя',
 			'middle_name' => 'Отчество',
 			'last_name' => 'Фамилия',
-			'phone1' => 'Основной телефон',
+			'phone1' => 'Телефон',
 			'phone2' => 'Дополнительный телефон',
 			'region_id' => 'Регион',
 			'city_id' => 'Город',
 			'street' => 'Улица',
 			'house' => 'Дом/Корпус',
 			'apartament' => 'Офис/Квартира',
-			'user_id' => 'User',
+			'terms' => 'Я ознакомился и принимаю условия <a data-toggle="modal" data-target="#agreement">пользовательского соглашения</a>',
 		);
 	}
 

@@ -35,11 +35,11 @@ $today = date("d.m.Y");
 		</tr>
 		<tr>
 			<td class="header">СТОИМОСТЬ РАБОТ:</td>
-			<td><?php echo $order->price == 0 ? 'По договоренности' : $order->price; ?></td>
+			<td><?php echo $order->price == 0 ? 'По договоренности' : number_format($order->price, 2, ',', ' ') . 'руб.'; ?></td>
 		</tr>
 		<tr>
 			<td class="header">ПРИЕМ ЗАЯВОК:</td>
-			<td>
+			<td style="padding: 0 10px;">
 				<table>
 					<tr>
 						<td class="header">Начало</td>
@@ -127,15 +127,26 @@ $today = date("d.m.Y");
 		</td>
 	</tr>
 	<tr>
-		<td class="header">Добавить документы:</td>
+		<td class="header">
+		<?php $this->widget('bootstrap.widgets.TbButton', array(
+		    'label'=>'Загрузить',
+		    'type'=>'primary',
+		    'size'=>'mini',		     
+		    'htmlOptions' => array(
+		    	'class'=>'pull-right change upload',
+		    	'data-target'=>'doc_list',
+		    	'title'=>'Разрешенные типы файлов: jpeg|jpg|gif|png|doc|docx|txt|pdf|rtf',
+				  ),
+			)); ?>:</td>
 		<td>
 			<?php $this->widget('CMultiFileUpload', array(
         	'name' => 'doc_list',
-	        'accept' => 'jpeg|jpg|gif|png|doc|docx|txt|pdf',
+	        'accept' => 'jpeg|jpg|gif|png|doc|docx|txt|pdf|rtf',
 	        'duplicate' => 'Дупликат!', 
 	        'denied' => 'Неверный тип файла',
 	      ));
-    	?>			
+    	?>	
+    				
 		</td>
 	</tr>
 </table>

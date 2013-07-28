@@ -27,7 +27,11 @@ class MaterialBuyController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','index','view', 'search','finished', 'rating'),
+				'actions'=>array('create','search','view'),
+				'users'=>array('*'),
+			),
+			array('allow', // allow authenticated user to perform 'create' and 'update' actions
+				'actions'=>array('update','finished','index','rating'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -70,7 +74,7 @@ class MaterialBuyController extends Controller
 				if(isset($_POST['ByOffer']['comment']))
 					$offer->comment = $_POST['ByOffer']['comment'];
 				if(!empty($_POST['ByOffer']['total_price']))
-					$offer->total_price = $_POST['ByOffer']['total_price'];
+					$offer->total_price = preg_replace("/\s+|((\,|\.)\d{2}$)/","",$_POST['ByOffer']['total_price']);
 
 				if($_POST['ByOffer']['unsupply'] == 0 && $_POST['ByOffer']['supply'] == 0)
 					$offer->supply = false;
@@ -133,7 +137,8 @@ class MaterialBuyController extends Controller
 		{
 			$model->attributes=$_POST['MaterialBuy'];
 			$model->user_id = Yii::app()->user->id;
-			$model->doc_list = GetName::saveUploadedFiles('documents',$uploadDir);	
+			if(!empty($_FILES['documents']))
+				$model->doc_list = GetName::saveUploadedFiles('documents',$uploadDir);	
 
 			// Показ контактов
 			if(!empty($_POST['MaterialBuy']['show_contact']))
@@ -240,11 +245,13 @@ class MaterialBuyController extends Controller
 	/**
 	 * Lists active models.
 	 */
-	public function actionIndex()
+	public function actionIndex($id='')
 	{
 		$criteria=new CDbCriteria;
 		$criteria->with=array('offer');
 		$criteria->condition='user_id='.Yii::app()->user->id.' AND status=0';
+		if(!empty($id))
+			$criteria->addCondition('object_id='.$id);
 		$dataProvider=new CActiveDataProvider('MaterialBuy', array('criteria'=>$criteria));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
@@ -254,11 +261,13 @@ class MaterialBuyController extends Controller
 	/**
 	 * Lists finished models.
 	 */
-	public function actionFinished()
+	public function actionFinished($id='')
 	{
 		$criteria=new CDbCriteria;
 		$criteria->with=array('offer');
 		$criteria->condition='user_id='.Yii::app()->user->id.' AND status=1';
+		if(!empty($id))
+			$criteria->addCondition('object_id='.$id);
 		$dataProvider=new CActiveDataProvider('MaterialBuy', array('criteria'=>$criteria));
 		$this->render('finished',array(
 			'dataProvider'=>$dataProvider,
@@ -288,6 +297,15 @@ class MaterialBuyController extends Controller
 		// Категория
 		if(isset($_GET['MaterialBuy']['material_type']))
 			$model->material_type=$_GET['MaterialBuy']['material_type'];
+		
+		if($_GET['MaterialBuy']['subscribe'] == 1 && !Yii::app()->user->isGuest)
+		{
+			unset($_GET['MaterialBuy']['subscribe']);
+			$user = UserSettings::model()->find('user_id='.Yii::app()->user->id);
+			$user->material_subscribe = CJSON::encode($_GET['MaterialBuy']);
+			$user->update();
+		}
+
 
 		$this->render('search',array(
 			'model'=>$model,

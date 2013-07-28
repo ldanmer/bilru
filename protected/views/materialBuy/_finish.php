@@ -27,11 +27,12 @@
 				<td class="header white">Оценка поставщика: 
 					<?php echo GetName::getThisRating($data->rating_id)->rating; ?>
 				</td>
-				<td>
+				<td style="padding:0 10px">
 					<?php 
 						$this->widget('bootstrap.widgets.TbButton', array(
 					    'label'=>'Ваш отзыв',
 					    'block'=>true,
+					    'size'=>'small',
 					    'htmlOptions'=>array(
 				        'data-toggle'=>'modal',
 				        'data-target'=>'#review',
@@ -45,12 +46,12 @@
 			</tr>
 			<tr>
 				<td class="header">Поставщик:</td>
-				<td><?php echo $data->offer->supplier->organizationData[0]->org_name ?></td>
+				<td><?php echo $data->offer->supplier->organizationData->org_name ?></td>
 			</tr>
 			<tr>
 				<td class="header">Стоимость покупки:</td>
 				<td>
-					<?php echo CHtml::encode($data->offer->total_price) . ' руб.'; 	?>
+					<?php echo number_format($data->offer->total_price, 2, ',', ' ');	?> руб.
 				</td>
 			</tr>
 			<tr>
@@ -80,10 +81,10 @@
 								echo $data->user->email;
 								break;
 							case '1':
-								echo $data->user->personalData[0]->phone1;
+								echo $data->user->personalData->phone1;
 								break;
 							case '2':
-								echo $data->user->email." / ".$data->user->personalData[0]->phone1;
+								echo $data->user->email." / ".$data->user->personalData->phone1;
 								break;
 							
 							default:

@@ -16,9 +16,9 @@ class Orders extends CActiveRecord
 			4=>'Строительство и ремонт'
 		); 
 
-	public $email_check;
 	public $region_id;
 	public $org_type = 2;
+	public $subscribe;
 
 	/**
 	 * Returns the static model of the specified AR class.
@@ -93,7 +93,7 @@ class Orders extends CActiveRecord
 			'documents' => 'Документы',
 			'object_id' => 'Объект',
 			'status'=>'Статус',
-			'email_check' => 'Сохранить текущие настройки для E-mail уведомлений',
+			'subscribe' => 'Подпишитесь на email-рассылку по выбранным параметрам',
 		);
 	}
 
@@ -102,32 +102,68 @@ class Orders extends CActiveRecord
 	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
 	 */
 	public function search()
-	{
-		$region = Region::model()->findByPk($this->region)->region_name;
-		$category = WorkTypes::model()->findByPk($this->work_type_id)->name;
+	{		
+		if(count($this->region) > 0)
+		{
+			foreach ($this->region as $key => $region_id)
+			{
+				$region_name = Region::model()->findByPk($region_id)->region_name;
+				if($key > 0)
+				{
+					$region .= " OR obj.region_id=".$region_id;
+					$contact .= " OR gos.object LIKE '%$region_name%'";
+				}
+					
+				else
+				{
+					$region = "AND obj.region_id=".$region_id;
+					$contact = "AND gos.object LIKE '%$region_name%'";
+				}					
+			}
+		}
 
-		if($this->org_type == 3)
-			$orgAnd = " AND gos.object_id!=1";
-		if($this->org_type == 1)
-			$gosAnd = " AND ord.object_id=1";
+		if(count($this->work_type_id) > 0)
+		{
+			foreach ($this->work_type_id as $key => $work_type_id)
+			{
+				$category_name = WorkTypesList::model()->findByPk($work_type_id)->name;
+				if($key > 0)
+				{
+					$category .= " OR ord.work_type_id LIKE '%$work_type_id%'";
+					$gos_category .= " OR gos.category LIKE '%$category_name%'";
+				}					
+				else
+				{
+					$category = "AND ord.work_type_id LIKE '%$work_type_id%'";
+					$gos_category = "AND gos.category LIKE '%$category_name%'";
+				}					
 
-		if(!empty($region))
-			$where=" AND obj.region_id=".$this->region;
+			}				
+		}		 						
+		$gos_sql = "(SELECT gos.id, gos.title, gos.price, gos.start_date, gos.end_date, gos.object_id, gos.object 
+									FROM bl_goszakaz gos 
+								 	WHERE gos.status=1 $gos_category $contact
+								 	ORDER BY end_date DESC
+							 	)";
+		$bilru_sql = "(SELECT ord.id,ord.title,ord.price,ord.start_date,ord.end_date,ord.object_id,reg.region_name
+									  FROM bl_orders ord
+								    INNER JOIN bl_objects obj
+								    INNER JOIN bl_region reg
+								    ON ord.object_id=obj.id AND obj.region_id=reg.id 
+								    WHERE ord.status=0 $category $region
+								    ORDER BY end_date DESC
+								   )";
 
+		if(is_array($this->org_type) && count($this->org_type) == 1)
+		{
+			if($this->org_type[0] == 1)
+				$sql = $gos_sql;			
 
-		$sql = "(SELECT ord.id,ord.title,ord.price,ord.start_date,ord.end_date,ord.object_id,reg.region_name
-					  FROM bl_orders ord
-				    INNER JOIN bl_objects obj
-				    INNER JOIN bl_region reg
-				    ON ord.object_id=obj.id AND obj.region_id=reg.id 
-				    WHERE ord.work_type_id LIKE '%$this->work_type_id%'$where$gosAnd
-				   ) 
-						UNION 
-						(SELECT gos.id, gos.title, gos.price, gos.start_date, gos.end_date, gos.object_id, gos.contact 
-						FROM bl_goszakaz gos 
-						WHERE gos.contact LIKE '%$region%' AND gos.category LIKE '%$category%$orgAnd' AND gos.status=1)
-						ORDER BY REVERSE(end_date) ASC
-						";
+			if($this->org_type[0] == 3)
+				$sql = $bilru_sql;	
+		}
+		else
+			$sql = $bilru_sql." UNION ".$gos_sql. " ORDER BY end_date DESC";
 		
 	$rows = Yii::app()->db->createCommand($sql)->queryAll();
 	$count = count($rows);

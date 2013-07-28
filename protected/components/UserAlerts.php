@@ -7,7 +7,15 @@ class UserAlerts extends CPortlet
 	public function init()
 	{
 	  parent::init(); 
-		$this->isFinishedBuy();	
+		//$this->isFinishedBuy();	
+		//$this->isFinishedOrder();	
+
+		$flashMessages = Yii::app()->user->getFlashes();
+		if($flashMessages)
+			foreach($flashMessages as $key => $message) 
+				echo "<div class=\"alert alert-$key\">
+								<button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>
+							$message</div>";
 	}
 
 	public function isFinishedBuy()
@@ -31,8 +39,10 @@ class UserAlerts extends CPortlet
 	{
 		$criteria = new CDbCriteria;
 		$criteria->with = 'offer';
+		$criteria->with = 'object';
+		$criteria->together = true;
 		$criteria->condition = "user_id=".Yii::app()->user->id." AND offer_id IS NOT NULL";
-		$supply = Order::model()->findAll($criteria); 
+		$supply = Orders::model()->findAll($criteria); 
 		$flashArray = array();	
 		foreach ($supply as $value) {
 			if(strtotime($value->offer->start_date + $value->offer->duration) < time()) 

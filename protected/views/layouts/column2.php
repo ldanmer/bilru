@@ -8,7 +8,11 @@
     </div>
     <div class="span7">
         <div id="content">
-            <?php $this->widget('UserAlerts'); ?>           
+            <?php 
+            if(!Yii::app()->user->isGuest):
+              $this->widget('UserAlerts');
+            endif;
+              ?>           
             <?php echo $content; ?>
         </div><!-- content -->
     </div>

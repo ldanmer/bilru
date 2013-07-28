@@ -25,12 +25,11 @@ $('.search-form form').submit(function(){
 	    'stacked'=>false, 
 	    'items'=>array(
 	        array('label'=>'Найти подряд', 'url'=>array('orders/search')),
-	        array('label'=>'Мои подряды', 'url'=>array('orderOffer/index')),
-	        array('label'=>'Завершенные подряды', 'url'=>array('orderOffer/finished')),
+	        array('label'=>'Мои подряды', 'url'=>array('orderOffer/index'), 'visible'=>!Yii::app()->user->isGuest),
+	        array('label'=>'Завершенные подряды', 'url'=>array('orderOffer/finished'), 'visible'=>!Yii::app()->user->isGuest),
 	    ),
 	)); ?>
 </div>
-
 
 <?php $this->renderPartial('_search',array(
 	'model'=>$model,
@@ -48,9 +47,9 @@ $this->widget('bootstrap.widgets.TbGridView',array(
 					CHtml::link($data["title"], array("goszakaz/view", "id"=>$data["id"])) : 
 					CHtml::link($data["title"], array("orders/view", "id"=>$data["id"]))'
 					),
-		array('name' => 'Начальная цена, руб', 'value' => '$data["price"] != 0 ? $data["price"] : "По договоренности"'),
-		array('name' => 'Регион', 'value' => '$data["region_name"] ? $data["region_name"] : $data["contact"]'),
-		array('name' => 'Окончание подачи заявок', 'value' => '$data["end_date"]',
+		array('name' => 'Начальная цена, руб', 'value' => '$data["price"] != 0 ? number_format($data["price"], 2, ",", " ")  : "По договоренности"'),
+		array('name' => 'Регион', 'value' => '$data["region_name"] ? $data["region_name"] : $data["object"]'),
+		array('name' => 'Окончание подачи заявок', 'value' => 'date("d.m.Y",$data["end_date"])',
       ),
 	),
 	'template' => '{items}{pager}',

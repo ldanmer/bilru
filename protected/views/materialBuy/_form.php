@@ -8,7 +8,12 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 	'enableAjaxValidation'=>false,
 )); ?>
 
-	<?php echo $form->errorSummary($model); ?>
+	<?php 
+	if(!Yii::app()->user->isGuest)
+		echo $form->errorSummary($model); 
+	else
+		echo '<div class="alert">В уcловиях гостевого доступа вы не можете создавать заказы</div>';
+	?>
 
 	<!-- Если объекты существуют -->
 
@@ -69,10 +74,13 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 				'empty' => 'Выберите вид ПОКУПКИ',
 				'class' => 'span3',
 			)); ?>
-
-			<?php echo $form->checkboxRow($model, 'supply'); ?>
+			<div class="grey-field">
+				<?php echo $form->checkboxRow($model, 'supply'); ?>
+			</div>
 			<h4 class="subtitle" align="center">Показывать поставщикам для уточнений</h4>
-			<?php echo $form->checkBoxListRow($model, 'show_contact', array('email', 'телефон'), array('label' => false)); ?>	
+			<div class="grey-field">
+				<?php echo $form->checkBoxListRow($model, 'show_contact', array('email', 'телефон'), array('label' => false)); ?>	
+			</div>
 	</div>
 
 
@@ -109,14 +117,26 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 					?>
 			</div>
 			<div class="clearfix"></div>
+			<?php $this->widget('bootstrap.widgets.TbButton', array(
+		    'label'=>'Загрузить',
+		    'type'=>'primary',
+		    'size'=>'mini',		     
+		    'htmlOptions' => array(
+		    	'class'=>'pull-right change upload',
+		    	'data-target'=>'documents',
+					'title'=>'Разрешенные типы файлов: doc|docx|txt|pdf|csv|xls|rtf',	
+					'style'=>'margin-top:5px;',
+				  ),
+			)); ?>
 			<h4 class="subtitle">Документы</h4>
 			<?php $this->widget('CMultiFileUpload', array(
               'name' => 'documents',
-              'accept' => 'jpeg|jpg|gif|png|doc|docx|txt|pdf',
+              'accept' => 'doc|docx|txt|pdf|csv|xls|rtf',
               'duplicate' => 'Дупликат!', 
               'denied' => 'Неверный тип файла',
             ));
       ?>
+      	
 		</div>
 </fieldset>
 
@@ -139,9 +159,9 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 				</td>
 				<td>
 					<select class="span0" name="MaterialBuy[unit][]" id="MaterialBuy_unit">
-					  <option value="шт.">шт.</option>
-					  <option value="упак.">упак.</option>
-					  <option value="кг.">кг.</option>
+						<?php foreach (MaterialBuy::model()->unit as $value): ?>
+					  	<option value="<?php echo $value ?>"><?php echo $value ?></option>
+						<?php endforeach; ?>
 					</select>
 				</td>
 				<td>

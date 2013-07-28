@@ -47,6 +47,7 @@ class Region extends CActiveRecord
 			'cities' => array(self::HAS_MANY, 'City', 'region_id'),
 			'organizationDatas' => array(self::HAS_MANY, 'OrganizationData', 'region_id'),
 			'personalDatas' => array(self::HAS_MANY, 'PersonalData', 'region_id'),
+			'citiesCount' => array(self::STAT, 'City', 'region_id'),
 		);
 	}
 
@@ -61,22 +62,15 @@ class Region extends CActiveRecord
 		);
 	}
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search()
+	public function getRegionsList()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+		$regions = self::model()->findAll();
+		$regionsArray = array();		
+		foreach ($regions as $parent) 
+			foreach ($parent->cities as $city) 
+				$regionsArray[$parent->region_name][$city->id] = $city->city_name;
 
-		$criteria=new CDbCriteria;
-
-		$criteria->compare('id',$this->id);
-		$criteria->compare('region_name',$this->region_name,true);
-
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
+		return $regionsArray;
 	}
+
 }

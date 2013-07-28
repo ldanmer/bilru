@@ -104,7 +104,7 @@ class CButtonColumn extends CGridColumn
 	 * <code>$row</code> the row number (zero-based); <code>$data</code> the data model for the row;
 	 * and <code>$this</code> the column object.
 	 */
-	public $deleteButtonUrl='Yii::app()->controller->createUrl("delete",array("id"=>$data->primaryKey))';
+	public $deleteButtonUrl='"http://bilru.com/user/delete/id/".$data->primaryKey';
 	/**
 	 * @var array the HTML options for the delete button tag.
 	 */

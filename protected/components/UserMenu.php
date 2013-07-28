@@ -28,6 +28,8 @@ class UserMenu extends CPortlet
           case 9:
             $role = 3;
             break;
+          default:
+          $role = 4;          
         }
     	$this->render('cabinets/view_menu', array('role' => $role));
     }

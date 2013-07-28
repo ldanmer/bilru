@@ -4,17 +4,23 @@
 	</div>	
   <div class="user-header">
 		<div class="user-image">
-	  	<?php if(!empty($data->user->settings[0]->avatar)): ?>
-	      <?php echo CHtml::image(Yii::app()->baseUrl.$data->user->settings[0]->avatar); ?>
-	    <?php else: ?>
-	      <?php echo CHtml::image(Yii::app()->baseUrl.'/img/avatar_placeholder.png'); ?>
+	  	<?php if(!empty($data->user->settings->avatar)): 
+						$avatar = json_decode($data->user->settings->avatar);
+			?>
+	    <?php $this->widget('ext.SAImageDisplayer', array(
+	        'image' => str_replace('/images/originals/', '', $avatar[0]),
+	        'size' => 'tiny',
+	        'defaultImage' => 'avatar_placeholder.png',
+	    )); ?>
+      <?php else: ?>
+				<?php echo CHtml::image(Yii::app()->baseUrl.'/img/avatar_placeholder.png'); ?>
 	    <?php endif; ?>
 		</div>
 		<p><strong>
 			<?php echo CHtml::link(CHtml::encode($data->userName), array('user/profile', 'id'=>$data->user_id)); ?>
 		</strong>
 			<br />
-			<small><?php echo CHtml::encode($data->title); ?></small>
+			<strong><?php echo CHtml::encode($data->title); ?></strong>
 		</p>		
   </div>
 
@@ -53,8 +59,7 @@
 	data-yashareL10n="ru" 
 	data-yashareType="none" 
 	data-yashareQuickServices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir" 
-	data-yashareTitle="<?php echo CHtml::encode($data->userName) . ": " .CHtml::encode($data->title); ?>"
-	data-yashareDescription="<?php echo CHtml::encode($data->text) ?>"
+	data-yashareTitle="<?php echo CHtml::encode($data->userName) . ": " .CHtml::encode($data->title); ?>"	
 	></div> 
 			</div>
 		</ul>
@@ -64,16 +69,15 @@
 			'enableClientValidation'=>true,
 			'enableAjaxValidation'=>true,
 			)); ?>
-    <?php if($data->commentsCount > 0): ?>
 	  	<?php $this->widget('zii.widgets.CListView', array(
 	  		'id'=>'comments-list'.$data->id,
 				'dataProvider'=>new CArrayDataProvider(array_reverse($data->comments)), 
 				'itemView'=>'_comment',
 				'template' => '{items}',
+				'emptyText'=>'нет комментариев',
 				'ajaxUpdate'=>true,
 				'htmlOptions' => array('class' => 'comments-block span6 pull-right'),
 			)); ?>
-		<?php endif; ?>	
 	<legend>
 		<span>Оставить комментарий</span>
 	</legend>
@@ -100,7 +104,6 @@
 						else
 						{
 							$.fn.yiiListView.update(list);
-							//event.find("form").fadeOut(300); 
 							event.find("textarea").val(""); 
 							event.find(".help-block").text(""); 
 							event.find(".comments-count").text(data.count); 

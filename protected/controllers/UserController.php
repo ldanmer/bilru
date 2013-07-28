@@ -38,7 +38,7 @@ class UserController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', 
-				'actions'=>array('feed', 'view', 'update', 'main','profile', 'about',  'licenceUpload'),
+				'actions'=>array('feed', 'view', 'update', 'main','profile', 'about', 'payment', 'tarifUpdate','detailsEdit'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -84,6 +84,14 @@ class UserController extends Controller
 	public function actionMain()
 	{	
 		$model = $this->loadModel(Yii::app()->user->id);
+		
+		if(CUploadedFile::getInstancesByName('avatar'))
+		{
+			$uploadDir = '/images/originals/'.$model->id;
+			$model->settings->avatar = GetName::saveUploadedFiles('avatar',$uploadDir);
+			$model->settings->update();
+		}
+
 		$this->render('main',array(
 			'model'=>$model,
 		));
@@ -93,8 +101,8 @@ class UserController extends Controller
 	public function actionProfile($id)
 	{	
 		$model = $this->loadModel($id);
-		$gallery = json_decode($model->userInfo[0]->portfolio);
-		$license = json_decode($model->userInfo[0]->license);		
+		$gallery = json_decode($model->userInfo->portfolio);
+		$license = json_decode($model->userInfo->license);		
 		$photoArr = array();
 		foreach ($model->objects as $object) 
 		{
@@ -117,65 +125,50 @@ class UserController extends Controller
 		$model = $this->loadModel(Yii::app()->user->id);	
 		$uploadDir = '/files/docs_upload/'.$model->id.'/';
 		GetName::makeDir($uploadDir);
-
-		if(isset($_POST['OrganizationData']))
+		if(isset($_POST['UserInfo']))
 		{
-			$model->userInfo[0]->description = $_POST['OrganizationData']['description'];
-			if($model->userInfo[0]->update())
+			$model->userInfo->description = $_POST['UserInfo']['description'];
+			if($model->userInfo->update())
 				Yii::app()->user->setFlash('success',"Описание сохранено");	
 			else
 				Yii::app()->user->setFlash('error',"Ошибка сохранения. Попробуйте еще раз или свяжитесь с администратором");
 		}
 		
-		if(isset($_POST['UserSettings']))
-		{
-			if((CUploadedFile::getInstancesByName('license')))
-				$model->userInfo[0]->license = GetName::saveUploadedFiles('license',$uploadDir, $model->userInfo[0]->license);
+			if(!empty($_FILES['license']) && CUploadedFile::getInstancesByName('license'))
+				$model->userInfo->license = GetName::saveUploadedFiles('license',$uploadDir, $model->userInfo->license);
+			if(!empty($_FILES['portfolio']) && CUploadedFile::getInstancesByName('portfolio'))
+				$model->userInfo->portfolio = GetName::saveUploadedFiles('portfolio',$uploadDir, $model->userInfo->portfolio);
 
-			if((CUploadedFile::getInstancesByName('portfolio')))
-				$model->userInfo[0]->portfolio = GetName::saveUploadedFiles('portfolio',$uploadDir, $model->userInfo[0]->license);
-
-			if($file = CUploadedFile::getInstance($model->settings[0],'avatar'))
-			{
-				$fileName = GetName::translit($file->getName());
-				$model->settings[0]->avatar = $uploadDir.$fileName;
-				if($model->settings[0]->validate())
-				{
-					$model->settings[0]->save();
-					$file->saveAs(Yii::getPathOfAlias('webroot').$model->settings[0]->avatar);	
-				}
-			}
-		}
 		
 		if(isset($_POST['UserInfo']['regions']))
-			$model->userInfo[0]->regions = json_encode($_POST['UserInfo']['regions']);
+			$model->userInfo->regions = json_encode($_POST['UserInfo']['regions']);
 
 		if(isset($_POST['UserInfo']['profiles']))
-				$model->userInfo[0]->profiles = json_encode($_POST['UserInfo']['profiles']);
+				$model->userInfo->profiles = json_encode($_POST['UserInfo']['profiles']);
 
 		if(isset($_POST['UserInfo']['goods']))
-			$model->userInfo[0]->goods = json_encode($_POST['UserInfo']['goods']);
+			$model->userInfo->goods = json_encode($_POST['UserInfo']['goods']);
 		
-		$model->userInfo[0]->update();		
+		$model->userInfo->update();	
+		
+		$gallery = json_decode($model->userInfo->portfolio);
+		$geography = User::geographyList($model->userInfo->regions);
 
-
-		$gallery = json_decode($model->userInfo[0]->portfolio);
-		$geography = GetName::jsonToString($model->userInfo[0]->regions, GetName::getNames('Region', 'region_name'), "li");
 		if(GetName::getCabinetAttributes()->type == 2)
 		{
-			$profile = GetName::jsonToString($model->userInfo[0]->profiles, Orders::model()->categoryList, "li");
-			$goods = GetName::jsonToString($model->userInfo[0]->goods, GetName::getNames('WorkTypes', 'name'), "li");
+			$profile = GetName::jsonToString($model->userInfo->profiles, Orders::model()->categoryList, "li");
+			$goods = GetName::jsonToString($model->userInfo->goods, GetName::getNames('WorkTypesList', 'name'), "li");
 		}
 
 		if(GetName::getCabinetAttributes()->type == 3)
 		{
-			$profile = GetName::jsonToString($model->userInfo[0]->profiles, MaterialBuy::model()->categoryList, "li");
-			$goods = GetName::jsonToString($model->userInfo[0]->goods, GetName::getNames('MaterialList', 'name'), "li");
+			$profile = GetName::jsonToString($model->userInfo->profiles, MaterialBuy::model()->categoryList, "li");
+			$goods = GetName::jsonToString($model->userInfo->goods, GetName::getNames('MaterialList', 'name'), "li");
 		}
 
-		$model->userInfo[0]->regions = json_decode($model->userInfo[0]->regions);
-		$model->userInfo[0]->profiles = json_decode($model->userInfo[0]->profiles);
-		$model->userInfo[0]->goods = json_decode($model->userInfo[0]->goods);
+		$model->userInfo->regions = json_decode($model->userInfo->regions);
+		$model->userInfo->profiles = json_decode($model->userInfo->profiles);
+		$model->userInfo->goods = json_decode($model->userInfo->goods);
 		$this->render('about',array(
 			'model'=>$model,
 			'gallery'=>$gallery,
@@ -200,8 +193,6 @@ class UserController extends Controller
 		$userInfo = new UserInfo;
 
 		$userRole = CHttpRequest::getParam('userRole');
-		$regionNames = GetName::getNames('Region', 'region_name');
-		$cityNames = GetName::getNames('City', 'city_name');
 		$orgTypes = GetName::getNames('OrgType', 'org_type_name');
 
 		$this->performAjaxValidation($model);
@@ -242,9 +233,6 @@ class UserController extends Controller
 					$orgData->org_name = 'Не указано';	
 
 				$orgData->save();
-					
-				Yii::app()->user->setFlash('success',"Благодарим за регистрацию! Пожалуйста, проверьте свой email.");	
-
 				
 				if($model->sendActivationString($model))
 					Yii::app()->user->setFlash('success',"Благодарим за регистрацию! Пожалуйста, проверьте свой email.");					
@@ -261,8 +249,7 @@ class UserController extends Controller
 				if(!empty($orgData->attributes))
 					$orgData->validate();
 			}
-
-				/* Yii::app()->user->setFlash('error',"Ошибка регистрации. Если ошибка возникает повторно, свяжитесь с администратором сайта ".Yii::app()->params['adminEmail']);	*/				
+		
 		}
 
 		// Вывод формы
@@ -271,8 +258,6 @@ class UserController extends Controller
 				'model'=>$model, 
 				'userData' => $userData,
 				'roleAttributes'=>$roleAttributes,
-				'regionNames' => $regionNames,
-				'cityNames' => $cityNames,
 				'orgTypes' => $orgTypes,
 				'orgData' => $orgData,
 				)
@@ -292,9 +277,9 @@ class UserController extends Controller
 		if(isset($_POST['User']) && isset($_POST['PersonalData']) && isset($_POST['OrganizationData']))
 		{
 			$model->attributes=$_POST['User'];
-			$model->personalData[0]->attributes=$_POST['PersonalData'];
-			$model->organizationData[0]->attributes=$_POST['OrganizationData'];
-			if($model->update() && $model->personalData[0]->update() && $model->organizationData[0]->update())
+			$model->personalData->attributes=$_POST['PersonalData'];
+			$model->organizationData->attributes=$_POST['OrganizationData'];
+			if($model->update() && $model->personalData->update() && $model->organizationData->update())
 				$this->redirect(array('view'));
 		}
 
@@ -337,18 +322,83 @@ class UserController extends Controller
 	/**
 	 * Manages all models.
 	 */
-	public function actionAdmin()
+	public function actionPayment()
 	{
-		$model=new User('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['User']))
-			$model->attributes=$_GET['User'];
+		$model=$this->loadModel(Yii::app()->user->id);
+		$emptyFields = array();
+		foreach($model->organizationData->attributes as $key=>$attribute)
+		{
+			if(empty($attribute))
+			{
+				if($key == 'region_id' || $key == 'street' || $key == 'house' || $key == 'office')
+					continue;
+				else
+					$emptyFields[] = $key;
+			}				
+		}
 
-		$this->render('admin',array(
+		if($_GET['UserSettings']['tariff'] && $_GET['UserSettings']['tariff'] != 1)
+		{
+			if($_GET['mode'] != 0)
+				Yii::app()->user->setFlash('success', 'Переадресация к форме оплаты');
+			else
+				$this->redirect(array('bill/create', 'tarif'=>$_GET['UserSettings']['tariff'], 'term' =>$_GET['term'], 'mode'=>$_GET['mode']));	
+		}
+		
+		$this->render('payment',array(
 			'model'=>$model,
+			'emptyFields'=>$emptyFields,
 		));
 	}
 
+	public function actionTarifUpdate()
+	{
+	 	$data = array();
+  	$data["tarifVal"] = $_POST['tarifVal']; 
+  	$data["month"] = $_POST['month'];
+    $this->renderPartial('_payment', $data, false, true);
+	}
+
+	public function actionDetailsEdit()
+	{
+		$model=$this->loadModel(Yii::app()->user->id);
+		if(Yii::app()->getRequest()->getIsAjaxRequest()) 
+		{
+			if(isset($_POST['OrganizationData']))
+			{
+				foreach($_POST['OrganizationData'] as $key=>$data)
+				{
+					if(empty($data))
+					{
+						echo CJSON::encode(array(
+	         		'status'=>'error',
+	         		'message'=>'не все поля заполнены!',
+         		));	
+         		Yii::app()->end();					
+					}
+				}
+
+
+				$model->organizationData->attributes = $_POST['OrganizationData'];
+				if($model->organizationData->validate())
+				{
+					$model->organizationData->save(false);
+					echo CJSON::encode(array(
+	         		'status'=>'success',	         		
+         		));	
+					Yii::app()->end();
+				}
+				else
+					echo CJSON::encode(array(
+	         		'status'=>'error',
+	         		'message'=>'ошибка сохранения! Попробуйте еще раз',
+         		));	
+
+				Yii::app()->end();
+			}
+		}
+
+	}
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.

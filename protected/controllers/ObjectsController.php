@@ -27,7 +27,7 @@ class ObjectsController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update', 'index', 'view', 'search'),
+				'actions'=>array('create','update', 'index', 'view', 'search', 'finished'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -60,21 +60,38 @@ class ObjectsController extends Controller
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate()
+	public function actionCreate($id='')
 	{
-		$objects=new Objects;
+		if(!empty($id))
+		{
+			$objects=$this->loadModel($id);
+			$objects->communications = json_decode($objects->communications);
+		}			
+		else
+		{
+			$objects=new Objects;	
+			$objects->user_id = Yii::app()->user->id;		
+			$objects->save(false);
+			$this->redirect(array('create', 'id' => $objects->id));
+		}	
 
 			if(isset($_POST['Objects']))
 			{
 				$objects->attributes=$_POST['Objects'];	
-				$objects->communications = $_POST['Objects']['communications'] != "" ? json_encode($_POST['Objects']['communications']) : NULL;
-				$objects->user_id = Yii::app()->user->id;
-				$objects->photoes = GetName::saveUploadedFiles('photoes',$uploadDir);
-				$objects->blueprints = GetName::saveUploadedFiles('bluprints',$uploadDir);
-				$objects->documents = GetName::saveUploadedFiles('objectdocs',$uploadDir);	
+				$objects->communications = $_POST['Objects']['communications'] != "" ? json_encode($_POST['Objects']['communications']) : NULL;				
+				if(!empty($_FILES['photoes']) && CUploadedFile::getInstancesByName('photoes'))
+					$objects->photoes = GetName::saveUploadedFiles('photoes',$uploadDir);
+				if(!empty($_FILES['bluprints']) && CUploadedFile::getInstancesByName('bluprints'))
+					$objects->blueprints = GetName::saveUploadedFiles('bluprints',$uploadDir);
+				if(!empty($_FILES['objectdocs']) && CUploadedFile::getInstancesByName('objectdocs'))
+					$objects->documents = GetName::saveUploadedFiles('objectdocs',$uploadDir);	
 
 				if($objects->save()) 
-					$this->redirect(array('view','id'=>$objects->id));
+				{
+		  		$objects->deleteAll('region_id=0');
+		  		$this->redirect(array('view','id'=>$objects->id));
+				}
+					
 			}	
 
 		$this->render('create',array(
@@ -131,8 +148,36 @@ class ObjectsController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Objects');
+		if($_POST['Objects']['id'])
+		{
+			$object = $this->loadModel($_POST['Objects']['id']);
+			$object->status=1;
+			if($object->update())
+				$this->redirect(array('finished'));
+		}
+			
+		$criteria = new CDbCriteria;
+		$criteria->condition = 'status=0 AND user_id='.Yii::app()->user->id;
+		$dataProvider=new CActiveDataProvider('Objects', array('criteria'=>$criteria));
 		$this->render('index',array(
+			'dataProvider'=>$dataProvider,
+		));
+	}
+
+	public function actionFinished()
+	{
+		if($_POST['Objects']['id'])
+		{
+			$object = $this->loadModel($_POST['Objects']['id']);
+			$object->status=0;
+			if($object->update())
+				$this->redirect(array('index'));
+		}
+			
+		$criteria = new CDbCriteria;
+		$criteria->condition = 'status=1 AND user_id='.Yii::app()->user->id;
+		$dataProvider=new CActiveDataProvider('Objects', array('criteria'=>$criteria));
+		$this->render('finish',array(
 			'dataProvider'=>$dataProvider,
 		));
 	}

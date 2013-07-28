@@ -1,4 +1,9 @@
 $(document).ready(function(){
+	// Принятие соглашения
+	$('#accept').click(function(){
+		$('#PersonalData_terms').prop('checked', true);
+	});
+
 	// Переключение видимости типов подрядчиков
 	$('#contractor-types').click(function(){
 		if($('#work-list').is(':visible'))
@@ -38,7 +43,7 @@ $(document).ready(function(){
 	// Разворот заказов
 	$('.show').click(function(){
 		var block = $(this).parent().parent();
-		$(block).find('.hidden').toggle('500');
+		$(block).find('.hidden').toggle('500').css('display', 'inline');
 
 		if($(this).attr("value") == "Показать полностью")
 			$(this).attr("value", "Свернуть")
@@ -49,6 +54,8 @@ $(document).ready(function(){
 			$(this).text("Свернуть");
 		else
 			$(this).text("Далее...");
+
+
 
 	});
 	
@@ -80,14 +87,8 @@ $(document).ready(function(){
 	$('#material-grid img[src$="delivery.png"]').tooltip({title:"Только с доставкой"});
 
 	// Карусель
-	$('#photos').carouFredSel({
-		circular: false,
-		pagination  : "#photos_pag"
-	});
-
-	$('#blueprints').carouFredSel({
-		circular: false,
-		pagination  : "#blueprints_pag"
+	$('.carusel').carouFredSel({
+		circular: false,		
 	});
 
 	// Add fields to Offer
@@ -156,5 +157,112 @@ $(document).ready(function(){
 		}
 		$('#user-purchases').toggle();
 	});
+
+	// Кнопка загрузки изображений
+	$('.upload').click(function(){
+		var id = $(this).attr('data-target');		
+		$('#'+id+'_wrap input').last().trigger('click');
+	});
+
+	$('.accordion-menu li.level1').hover(
+		function(){
+			$(this).find('ul.level2').stop().show('slow');
+		},
+		function(){
+			$(this).find('ul.level2').stop().hide('slow');
+		}
+	);
+
+	$('.multiselect').multiselect({
+		buttonWidth:'314px',
+		maxHeight: 500,
+		buttonClass:'btn',		
+		includeSelectAllOption:true
+	});
+
+	$('a.look').tooltip({title:"Посмотреть"});
+
+	/* Мульти Селект */
+
+	$('li.group-label').click(
+		function (event) {	
+		event.stopPropagation();		
+			if($(this).hasClass('hovered'))
+				$(this).removeClass('hovered');
+			else
+				$(this).addClass('hovered');			
+			$(this).find('ul.multiselect-group').toggle(500);
+		}
+	);
+
+	$('input#avatar').change(function(){
+		$(this).closest("form").submit();
+	});
+
+	$('a.accordion-toggle').click(function (){
+		var i = $(this).find('i');
+		if(i.hasClass('icon-chevron-right'))
+			i.removeClass('icon-chevron-right').addClass('icon-chevron-down')
+		else
+			i.removeClass('icon-chevron-down').addClass('icon-chevron-right')
+	});
+
+	$('input.selectall').change(
+		function(){	
+		if(!$(this).is(':checked'))		
+			$(this).closest('div.accordion-inner').find('input[type="checkbox"]').prop('checked', false);
+		else
+			$(this).closest('div.accordion-inner').find('input[type="checkbox"]').prop('checked', true);
+		});
+
+	$('#tarifbase input[type="checkbox"]').change(
+		function(){	
+			if(!$(this).is(':checked'))
+				$('#tarifbase input[type="checkbox"]').attr("disabled", false);
+			else
+				$('#tarifbase input[type="checkbox"]').attr("disabled", true);
+				
+				$(this).closest('div.accordion-inner').find('input[type="checkbox"]').attr("disabled", false);
+		});
+
+	$('#payment-form input[type="radio"]').change(
+		function(){
+			$('#payment-form input[type="radio"]').parent().css('background-color', '#1f497d');
+			$('#payment-form input[type="radio"]:checked').parent().css('background-color', 'rgb(0,176,80)');
+
+			if($(this).attr('id')=='UserSettings_tariff_0')
+			{
+				$('#fucking-idiocy button').text('Перейти');
+				//$('#fucking-idiocy button').attr('data-toggle', 'modal').attr('data-target', '#base-trans');
+			}				
+			else
+			{
+				$('#fucking-idiocy button').text('Оплатить');
+			}			
+
+
+			var tar = $('input[type="radio"]:checked', '#tarif-choose').parent().parent().find('label').text();		
+			var term = $('#payment-term input[type="radio"]:checked').val()
+			var index = $('#payment-term input[name="term"]:checked').parent().index();			
+			var sum = $('td:eq('+index+')','#refresh #sum').text();
+			var month = "";
+			if(term == "1") 
+				month = " месяц";
+			if(term == "3") 
+				month = " месяца";
+			if(term == "6" || term == "12") 
+				month = " месяцев";
+
+			if(tar.toLowerCase() != "базовый")
+			{
+				$('#payment-title').text('Оплата тарифного плана "' + tar + '" на ' + term + month);
+				$('#final-price').text(sum + ' руб.');
+			}				
+			else
+			{
+				$('#payment-title').text('-');
+				$('#final-price').text('0,00 руб.')
+			}				
+		});
 });
 

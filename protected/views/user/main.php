@@ -11,6 +11,8 @@
 	        array('label'=>'Основное', 'url'=>array('user/main')),
 	        array('label'=>'Реквизиты', 'url'=>array('user/view')),
 	        array('label'=>'Деятельность', 'url'=>array('user/about'),'visible' =>!($model->role_id == 1 && $model->org_type_id == 1)),
+	        array('label'=>'Кабинет', 'url'=>array('user/payment'),'visible' =>!($model->role_id == 1 && $model->org_type_id == 1))
+
 	    ),
 	)); ?>
 </div>

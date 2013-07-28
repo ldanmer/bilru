@@ -89,18 +89,34 @@ class Events extends CActiveRecord
 		));
 	}
 
-	public function trimLongText($text, $lenght = 200, $toogle="Далее...")
+	public function trimLongText($text, $counttext = 50, $sep = ' ')
 	{
+		$words = preg_split('/\s/', $text);
+    if (count($words) > $counttext )
+    {
+    	$start = '<div class="hidden">';
+			$end = '</div> <a class="show">Далее...</a>';
+			$main = implode($sep, array_slice($words, 0, $counttext));
+			$rest = implode($sep, array_slice($words, $counttext - count($words)));
+			$rest = $start.$rest.$end;
+			$text = $main.$rest;
+    }
+        
+    return $text;
+
+		/*
 		if(strlen(strip_tags($text)) > $lenght)
 		{
-			$start = '<span class="hidden">';
-			$end = '</span> <a class="show">'.$toogle.'</a>';
+			$pos = strpos($text, " ", $lenght);
+
+			$start = '<div class="hidden">';
+			$end = '</div> <a class="show">'.$toogle.'</a>';
 			$rest = substr($text,$lenght);
 			$rest = $start.$rest.$end;
-			$main = substr($text, 0, $lenght);		
+			$main = substr($text, 0, $pos);		
 			$text = $main.$rest;
 
 		}
-		return str_replace(array("\n","\r"), '', $text);
+		return str_replace(array("\n","\r"), '', $text); */
 	}
 }

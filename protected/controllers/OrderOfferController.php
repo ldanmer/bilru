@@ -93,6 +93,9 @@ class OrderOfferController extends Controller
 			$model->doc_list = GetName::saveUploadedFiles('doc_list',$uploadDir);	
 			
 			$model->attributes=$_POST['OrderOffer'];
+			$model->work_price = preg_replace("/\s+|((\,|\.)\d{2}$)/","",$_POST['OrderOffer']['work_price']);
+			$model->material_price = preg_replace("/\s+|((\,|\.)\d{2}$)/","",$_POST['OrderOffer']['material_price']);
+			
 			$model->order_id = $id;
 			$model->supplier_id = Yii::app()->user->id;
 			if($model->save())

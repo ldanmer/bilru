@@ -3,7 +3,6 @@ $this->breadcrumbs=array(
 	'Объекты'=>array('index'),
 	'Создать',
 );
-
 ?>
 
 <div>
@@ -11,8 +10,9 @@ $this->breadcrumbs=array(
 	    'type'=>'tabs', 
 	    'stacked'=>false, 
 	    'items'=>array(
-	        //array('label'=>'Мои объекты', 'url'=>array('objects/index')),
+	        array('label'=>'Активные объекты', 'url'=>array('objects/index')),
 	        array('label'=>'Создать объект', 'url'=>array('objects/create')),
+	        array('label'=>'Завершенные', 'url'=>array('objects/finished')),
 	    ),
 	)); ?>
 </div>
@@ -32,3 +32,9 @@ $this->breadcrumbs=array(
 				'htmlOptions' => array('class' => 'pull-right', 'name' => 'publish'),				
 			)); ?>
 <?php $this->endWidget(); ?>
+<?php 
+	$this->widget('ext.fancybox.EFancyBox', array(
+    'target'=>'a[rel=fancybox]',
+    'config'=>array(),
+    ));	
+?>

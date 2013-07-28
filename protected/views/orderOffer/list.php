@@ -38,7 +38,7 @@ $this->breadcrumbs=array(
 		<table class="table table-striped">	
 			<tr class="alert alert-error">
 				<td class="header">Прием заявок:</td>
-				<td>с <?php echo $zakaz->start_date; ?> по <?php echo $zakaz->end_date; ?></td>
+				<td>с <?php echo date('d.m.Y',$zakaz->start_date); ?> по <?php echo date('d.m.Y',$zakaz->end_date); ?></td>
 			</tr>		
 			<tr>
 				<td class="header">Объект:</td>
@@ -53,13 +53,13 @@ $this->breadcrumbs=array(
 			<tr>
 				<td class="header">Стоимость работ:</td>
 				<td>
-					<?php echo CHtml::encode($zakaz->price); ?>
+					<?php echo number_format($zakaz->price, 2, ',', ' '); ?>руб.
 				</td>
 			</tr>	
 			<tr>
 				<td class="header">Сроки выполнение работ:</td>
 				<td>
-					<?php echo CHtml::encode($zakaz->duration); ?>
+					<?php echo CHtml::encode($zakaz->duration); ?> дней.
 				</td>
 			</tr>			
 		</table>
@@ -73,11 +73,11 @@ $this->widget('bootstrap.widgets.TbGridView',array(
 	'ajaxUpdate'=>true,
 	'enablePagination' => true,
 	'columns'=>array(		
-		array('name' => 'Название подрядчика', 'value' => 'CHtml::link($data->supplier->organizationData[0]->org_name, array("view", "id"=>$data->id))', 'type'=>'raw'),
+		array('name' => 'Наименование подрядчика', 'value' => 'CHtml::link($data->supplier->organizationData->org_name, array("view", "id"=>$data->id))', 'type'=>'raw'),
 		array('name'=>'Рейтинг', 'value'=>'CHtml::link(GetName::getRating($data->supplier_id)->averageRating, array("UserRating/view", "id"=>$data->supplier_id))', 'type'=>'raw'),
 		array('name'=>'Отзывы', 'value'=>'CHtml::link(GetName::getRating($data->supplier_id)->count, array("UserRating/view", "id"=>$data->supplier_id))', 'type'=>'raw'),
-		array('name'=>'Стоимость работ, руб', 'value'=>'CHtml::link($data->work_price, array("view", "id"=>$data->id))', 'type'=>'raw'),
-		array('name'=>'Сроки выполнения работ', 'value'=>'CHtml::link($data->duration, array("view", "id"=>$data->id))', 'type'=>'raw'),
+		array('name'=>'Стоимость работ, руб', 'value'=>'CHtml::link(number_format($data->work_price, 2, ",", " "), array("view", "id"=>$data->id))', 'type'=>'raw'),
+		array('name'=>'Срок выполнения работ, дней', 'value'=>'CHtml::link($data->duration, array("view", "id"=>$data->id))', 'type'=>'raw'),
 		array('name'=>'Готов начать', 'value'=>'CHtml::link($data->start_date, array("view", "id"=>$data->id))', 'type'=>'raw'),
 	),
 	'template' => '{items}{pager}',

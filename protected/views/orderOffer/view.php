@@ -56,7 +56,7 @@ $this->breadcrumbs=array(
 			<tr>
 				<td class="header">Стоимость работ:</td>
 				<td>
-					<?php echo empty($model->order->price) ? "По договоренности" : CHtml::encode($model->order->price); ?>
+					<?php echo empty($model->order->price) ? "По договоренности" : number_format($model->order->price, 2, ',', ' '); ?>
 				</td>
 			</tr>	
 			<tr>
@@ -70,12 +70,14 @@ $this->breadcrumbs=array(
 </div>
 
 <div class="order-title">
-	<?php echo CHtml::encode($model->supplier->organizationData[0]->org_name); ?>
+	<?php echo CHtml::encode($model->supplier->organizationData->org_name); ?>
 </div>
 <div class="order-view clearfix">
 	<div class="span1">		
-		<?php if(!empty($model->supplier->avatar)): ?>
-			<?php echo CHtml::image(Yii::app()->baseUrl.$model->supplier->avatar); ?>
+		<?php if(!empty($model->supplier->settings->avatar)): 
+		$avatar = json_decode($model->supplier->settings->avatar);
+		?>
+			<?php echo CHtml::image(Yii::app()->baseUrl.$avatar[0]); ?>
 		<?php else: ?>
 		<img src="<?php echo Yii::app()->baseUrl ?>/img/avatar_placeholder.png" />
 	<?php endif; ?>
@@ -90,11 +92,11 @@ $this->breadcrumbs=array(
 		<table class="table table-striped">		
 			<tr>
 				<td class="header">Стоимость работ:</td>
-				<td><?php echo $model->work_price." руб."; ?></td>
+				<td><?php echo number_format($model->work_price, 2, ',', ' ') ?> руб.</td>
 			</tr>	
 			<tr>
 				<td class="header">Стоимость материалов:</td>
-				<td><?php echo $model->material_price." руб."; ?></td>
+				<td><?php echo number_format($model->material_price, 2, ',', ' ') ?> руб.</td>
 			</tr>		
 			<tr>
 				<td class="header">Срок выполнения работ:</td>

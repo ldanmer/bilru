@@ -30,7 +30,11 @@ class EventsController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','index','like','comment'),
+				'actions'=>array('create','index'),
+				'users'=>array('*'),
+			),
+			array('allow', // allow authenticated user to perform 'create' and 'update' actions
+				'actions'=>array('update','like','comment'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -61,6 +65,7 @@ class EventsController extends Controller
 	public function actionCreate()
 	{
 		$model=new Events;
+		Yii::import('ext.SimpleHTMLDOM.SimpleHTMLDOM');	
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -68,7 +73,24 @@ class EventsController extends Controller
 		if(isset($_POST['Events']))
 		{
 			$model->attributes=$_POST['Events'];
+
+			// Обработка картинок
+			$simpleHTML = new SimpleHTMLDOM;
+			$html = $simpleHTML->str_get_html($model->text);
+			$images = '<div id="event-imgs">';
+			foreach($html->find('img') as $img) 
+			{
+				//$imageSmall = str_replace(Yii::app()->baseUrl, Yii::app()->baseUrl . '/site/resized/120x100', $img->src);	
+				$imageSmall = '/site/resized/120x100'.$img->src;	
+				$img->outertext = '<a href="'. $img->src .'" rel="fancybox"><img src='.$imageSmall.' /></a>'; 	
+				$images .= $img->outertext;	
+				$img->outertext = '';
+			}
+			$images .= '</div>';
+
+			$model->text = $images.$html;      
 			$model->user_id = Yii::app()->user->id;
+
 			if($model->save())
 				$this->redirect(array('index'));
 		}

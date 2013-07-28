@@ -28,12 +28,12 @@ class OrganizationData extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('org_name, user_id', 'required'),
-			array('region_id, city_id, office, inn, kpp, bik, current_account, correspond_account, user_id', 'numerical', 'integerOnly'=>true),
+			array('region_id, office, inn, kpp, bik, current_account, correspond_account, user_id', 'numerical', 'integerOnly'=>true),
 			array('org_name, street, bank', 'length', 'max'=>255),
 			array('house', 'length', 'max'=>20),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, org_name, region_id, city_id, street, house, office, inn, kpp, bank, bik, current_account, correspond_account, user_id', 'safe', 'on'=>'search'),
+			array('id, org_name, region_id, street, house, office, inn, kpp, bank, bik, current_account, correspond_account, user_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -45,9 +45,8 @@ class OrganizationData extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
-			'region' => array(self::BELONGS_TO, 'Region', 'region_id'),
-			'city' => array(self::BELONGS_TO, 'City', 'city_id'),
+			'user' => array(self::BELONGS_TO, 'User', 'user_id'),			
+			'city' => array(self::BELONGS_TO, 'City', 'region_id'),			
 		);
 	}
 
@@ -60,7 +59,6 @@ class OrganizationData extends CActiveRecord
 			'id' => 'ID',
 			'org_name' => 'Название организации',
 			'region_id' => 'Регион',
-			'city_id' => 'Город',
 			'street' => 'Улица',
 			'house' => 'Дом/Корпус',
 			'office' => 'Офис',

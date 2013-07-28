@@ -10,11 +10,11 @@ class MaterialBuy extends CActiveRecord
 		);
 
 	public $goodName;
-	public $unit = array('шт.', 'упак.', 'кг.');
+	public $unit = array('пог. м','м2','л','м3','г','кг.','тн.','шт.','рул.','упак.','лист.','ящ.');
 	public $quantity;
-	public $email_check;
 	public $region_id;
 	public $org_type;
+	public $subscribe;
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -84,7 +84,7 @@ class MaterialBuy extends CActiveRecord
 			'show_contact' => 'Контакты',
 			'doc_list' => 'Список документов',
 			'order_list' => 'Перечень заказа',
-			'email_check' => 'Сохранить текущие настройки для E-mail уведомлений',
+			'subscribe' => 'Подпишитесь на email-рассылку по выбранным параметрам',
 		);
 	}
 
@@ -95,33 +95,40 @@ class MaterialBuy extends CActiveRecord
 	public function search()
 	{
 		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+		// should not be searched.			
+
+		if($this->region_id[0] == 'multiselect-all')
+			unset($this->region_id);
 
 		$criteria=new CDbCriteria;
-		$criteria->with = "object";
-		$criteria->with = "user";
-		$criteria->together = true;
-		$criteria->condition = "t.offer_id IS NULL";
+		$criteria->with = array(
+			"object" => array('select'=>'region_id'),
+			'user' => array('select' => 'org_type_id'),
+			);	
+		$criteria->condition = "t.offer_id is NULL";
+		
 		if(!empty($this->region_id))
 		{
-			$criteria->condition = "region_id=:region_id";
-			$criteria->params = array(":region_id"=>$this->region_id);
+			$regions = array();
+			foreach($this->region_id as $region)
+			{
+				$cites = City::model()->findAll('region_id='.$region);
+				foreach ($cites as $city) 
+					$regions[] = $city->id;
+			}
+			$criteria->addInCondition("region_id",$regions);		
 		}
+			
+
 		if(!empty($this->org_type))
-		{
-			$criteria->condition = "org_type_id=:org_type";
-			$criteria->params = array(":org_type"=>$this->org_type);
-		}
+			$criteria->addInCondition("org_type_id", $this->org_type);
+
 		if(!empty($this->category))
-		{
-			$criteria->condition = "category=:category";
-			$criteria->params = array(":category"=>$this->category);
-		}
+			$criteria->addInCondition("category",$this->category);
+
 		if(!empty($this->material_type))
-		{
-			$criteria->condition = "material_type=:material_type";
-			$criteria->params = array(":material_type"=>$this->material_type);
-		}
+			$criteria->addInCondition("material_type",$this->material_type);
+
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
@@ -157,11 +164,6 @@ class MaterialBuy extends CActiveRecord
 
 		$res = array();
 		foreach ($order as $key=>$value) {
-			/*if(array_key_exists(3, $value))
-			{
-				$value[4] = $value[2] * $value[3];
-				$amount += $value[4]; 				
-			}*/
 
 			if(!empty($offer[$key]))
 			{

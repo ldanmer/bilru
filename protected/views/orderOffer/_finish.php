@@ -7,31 +7,29 @@
 		<tr>
 			<td class="header">Статус:</td>
 			<td>Работы завершены
-				<div class="subtitle pull-right">Ваша оценка 
+				<h4 class="subtitle pull-right">Ваша оценка 
 					<span class="red">	<?php echo GetName::getThisRating($data->order->rating_id)->rating; ?></span>
-				</div>
+				</h4>
 			</td>
 		</tr>	
 		<?php if($data->order->offer_id): ?>
 		<tr>
 			<td class="header">Заказчик:</td>
 			<td><?php 
-				echo CHtml::encode($data->order->object->user->organizationData[0]->org_name); 
-				echo CHtml::link('Профиль заказчика', array("user/view", "id"=>$data->order->object->user_id), 
-					array('class'=>'btn pull-right light-blue-border'));
+				echo CHtml::link(CHtml::encode($data->order->object->user->organizationData->org_name), array("user/profile", "id"=>$data->order->object->user_id)); 
 				?> </td>
 		</tr>	
 		<tr class="hidden">
 			<td class="header contact">Контактное лицо:</td>
 			<td>
-				<?php	 echo $data->order->object->user->personalData[0]->first_name . " " . $data->order->object->user->personalData[0]->middle_name . " " . $data->order->object->user->personalData[0]->last_name; 
+				<?php	 echo $data->order->object->user->personalData->first_name . " " . $data->order->object->user->personalData->middle_name . " " . $data->order->object->user->personalData->last_name; 
 				?>
 			</td>
 		</tr>
 		<tr class="hidden">
 			<td class="header contact">Телефон:</td>
 			<td>
-				<?php echo $data->order->object->user->personalData[0]->phone1 ?>
+				<?php echo $data->order->object->user->personalData->phone1 ?>
 			</td>
 		</tr>
 		<tr class="hidden">
@@ -44,7 +42,7 @@
 			<td class="header">Объект</td>
 			<td><?php 
 					echo CHtml::link('Профиль объекта', array("objects/view", "id"=>$data->order->object_id),
-						array('class'=>'btn btn-block'));
+						array('class'=>'btn btn-small btn-block'));
 			?></td>
 		</tr>
 
@@ -73,14 +71,14 @@
 		</tr>	
 		<tr>
 			<td class="header">Стоимость работ:</td>
-			<td><?php echo CHtml::encode($data->work_price); ?> руб.</td>
+			<td><?php echo number_format($data->work_price, 2, ',', ' ') ?> руб.</td>
 		</tr>	
 		<tr>
 			<td class="header">Стоимость материалов:</td>
-			<td><?php echo CHtml::encode($data->material_price); ?> руб.</td>
+			<td><?php echo number_format($data->material_price, 2, ',', ' ') ?> руб.</td>
 		</tr>	
 		<tr>
-			<td class="header">Сроки выполнения работ:</td>
+			<td class="header">Срок выполнения:</td>
 			<td><?php echo CHtml::encode($data->duration); ?> дней</td>
 		</tr>		
 		<tr class="hidden">
@@ -93,11 +91,12 @@
 		</tr>	
 	</table>
 	<p class="comment hidden"><?php echo CHtml::encode($data->order->description); ?></p>
+	<br>
 	<div class="hidden">	
-		<?php echo CHtml::link("Страница подряда",array('orders/view', 'id'=>$data->order_id),array('class'=>'btn btn-info pull-left')); ?>
+		<?php echo CHtml::link("Страница подряда",array('orders/view', 'id'=>$data->order_id),array('class'=>'btn btn-small btn-info pull-left')); ?>
 	</div>
 	<div align="right">	
-		<?php echo CHtml::button("Показать полностью",array('class'=>'btn btn-primary show pull-right')); ?>
+		<?php echo CHtml::button("Показать полностью",array('class'=>'btn btn-small btn-primary show pull-right')); ?>
 	</div>
 	<p class="clearfix"></p>
 </div>

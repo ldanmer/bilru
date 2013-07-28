@@ -1,15 +1,5 @@
 <?php
 
-/**
- * This is the model class for table "{{work_types}}".
- *
- * The followings are the available columns in table '{{work_types}}':
- * @property integer $id
- * @property string $name
- *
- * The followings are the available model relations:
- * @property Orders[] $orders
- */
 class WorkTypes extends CActiveRecord
 {
 	/**
@@ -54,7 +44,7 @@ class WorkTypes extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			
+			'workSubType' => array(self::HAS_MANY, 'WorkTypesList', 'parent'),
 		);
 	}
 
@@ -88,9 +78,14 @@ class WorkTypes extends CActiveRecord
 		));
 	}
 
-	// Массив названий Типов работ
-	public static function getWorkTypeNames()
+	public function getCategoryList()
 	{
-		return GetName::getNames(__CLASS__, 'name');
+		$workTypes = self::model()->findAll(array('order'=>'id'));
+		$workTypesArray = array();		
+		foreach ($workTypes as $parent) 
+			foreach ($parent->workSubType as $workSubType) 
+				$workTypesArray[$parent->name][$workSubType->id] = $workSubType->name;
+
+		return $workTypesArray;
 	}
 }

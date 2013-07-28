@@ -11,6 +11,8 @@
 	        array('label'=>'Основное', 'url'=>array('user/main')),
 	        array('label'=>'Реквизиты', 'url'=>array('user/view')),
 	        array('label'=>'Деятельность', 'url'=>array('user/about'),'visible' =>!($model->role_id == 1 && $model->org_type_id == 1)),
+	        array('label'=>'Кабинет', 'url'=>array('user/payment'),'visible' =>!($model->role_id == 1 && $model->org_type_id == 1))
+
 	    ),
 	)); ?>
 </div>
@@ -33,7 +35,7 @@
 							echo "Компания";
 				 ?>
 				</td>
-				<td><?php echo GetName::getUserTitles($model->id)->orgType ?> <?php echo $model->organizationData[0]->org_name; ?></td>
+				<td><?php echo GetName::getUserTitles($model->id)->orgType ?> <?php echo $model->organizationData->org_name; ?></td>
 			</tr>	
 			<?php endif; ?>
 			<tr>
@@ -48,42 +50,42 @@
 				 ?>:
 				</td>
 				<td>
-					<?php echo $model->personalData[0]->first_name .' '. $model->personalData[0]->middle_name.' '.$model->personalData[0]->last_name; ?>
+					<?php echo $model->personalData->first_name .' '. $model->personalData->middle_name.' '.$model->personalData->last_name; ?>
 				</td>
 			</tr>	
 			<tr>
 				<td class="header">Регион:</td>
-				<td><?php echo $model->personalData[0]->region->region_name; ?></td>
+				<td><?php echo $model->personalData->city->region->region_name; ?></td>
 			</tr>
 			<tr>
 				<td class="header">Город:</td>
-				<td><?php echo $model->personalData[0]->city->city_name; ?></td>
+				<td><?php echo $model->personalData->city->city_name; ?></td>
 			</tr>	
 			<tr>
 				<td class="header">Фактический адрес:</td>
 				<td>
-					ул.<?php echo !empty($model->personalData[0]->street) ? $model->personalData[0]->street : '<span class="text-error">НЕ УКАЗАНО</span>'; ?> 
-					д.<?php echo !empty($model->personalData[0]->house) ? $model->personalData[0]->house : '<span class="text-error">НЕ УКАЗАНО</span>'; ?> 
-					оф.<?php echo !empty($model->personalData[0]->apartament) ? $model->personalData[0]->apartament : '<span class="text-error">НЕ УКАЗАНО</span>'; ?>
+					ул.<?php echo !empty($model->personalData->street) ? $model->personalData->street : '<span class="text-error">НЕ УКАЗАНО</span>'; ?> 
+					д.<?php echo !empty($model->personalData->house) ? $model->personalData->house : '<span class="text-error">НЕ УКАЗАНО</span>'; ?> 
+					оф.<?php echo !empty($model->personalData->apartament) ? $model->personalData->apartament : '<span class="text-error">НЕ УКАЗАНО</span>'; ?>
 				</td>
 			</tr>	
 			<?php if($model->org_type_id != 1): ?>
 			<tr>
 				<td class="header">Юридический адрес:</td>
 					<td>
-					ул.<?php echo !empty($model->organizationData[0]->street) ? $model->organizationData[0]->street : '<span class="text-error">НЕ УКАЗАНО</span>'; ?> 
-					д.<?php echo !empty($model->organizationData[0]->house) ? $model->organizationData[0]->house : '<span class="text-error">НЕ УКАЗАНО</span>'; ?> 
-					оф.<?php echo !empty($model->organizationData[0]->office) ? $model->organizationData[0]->office : '<span class="text-error">НЕ УКАЗАНО</span>'; ?>
+					ул.<?php echo !empty($model->organizationData->street) ? $model->organizationData->street : '<span class="text-error">НЕ УКАЗАНО</span>'; ?> 
+					д.<?php echo !empty($model->organizationData->house) ? $model->organizationData->house : '<span class="text-error">НЕ УКАЗАНО</span>'; ?> 
+					оф.<?php echo !empty($model->organizationData->office) ? $model->organizationData->office : '<span class="text-error">НЕ УКАЗАНО</span>'; ?>
 				</td>
 			</tr>	
 		<?php endif; ?>
 			<tr>
 				<td class="header">Телефон:</td>
-				<td><?php echo !empty($model->personalData[0]->phone1) ? $model->personalData[0]->phone1 : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
+				<td><?php echo !empty($model->personalData->phone1) ? $model->personalData->phone1 : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
 			</tr>	
 			<tr>
 				<td class="header">Телефон/Факс:</td>
-				<td><?php echo !empty($model->personalData[0]->phone2) ? $model->personalData[0]->phone2 : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
+				<td><?php echo !empty($model->personalData->phone2) ? $model->personalData->phone2 : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
 			</tr>	
 			<tr>
 				<td class="header">Email:</td>
@@ -91,27 +93,27 @@
 			</tr>				
 			<tr>
 				<td class="header">ИНН:</td>
-				<td><?php echo !empty($model->organizationData[0]->inn) ? $model->organizationData[0]->inn : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
+				<td><?php echo !empty($model->organizationData->inn) ? $model->organizationData->inn : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
 			</tr>	
 			<tr>
 				<td class="header">КПП:</td>
-				<td><?php echo !empty($model->organizationData[0]->kpp) ? $model->organizationData[0]->kpp : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
+				<td><?php echo !empty($model->organizationData->kpp) ? $model->organizationData->kpp : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
 			</tr>	
 			<tr>
 				<td class="header">Банк:</td>
-				<td><?php echo !empty($model->organizationData[0]->bank) ? $model->organizationData[0]->bank : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
+				<td><?php echo !empty($model->organizationData->bank) ? $model->organizationData->bank : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
 			</tr>	
 			<tr>
 			<td class="header">БИК:</td>
-				<td><?php echo !empty($model->organizationData[0]->bik) ? $model->organizationData[0]->bik : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
+				<td><?php echo !empty($model->organizationData->bik) ? $model->organizationData->bik : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
 			</tr>	
 			<tr>
 				<td class="header">Расчетный счет:</td>
-				<td><?php echo !empty($model->organizationData[0]->current_account) ? $model->organizationData[0]->current_account : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
+				<td><?php echo !empty($model->organizationData->current_account) ? $model->organizationData->current_account : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
 			</tr>	
 			<tr>
 				<td class="header">Корреспондентский счет:</td>
-				<td><?php echo !empty($model->organizationData[0]->correspond_account) ? $model->organizationData[0]->correspond_account : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
+				<td><?php echo !empty($model->organizationData->correspond_account) ? $model->organizationData->correspond_account : '<span class="text-error">НЕ УКАЗАНО</span>'; ?></td>
 			</tr>	
 		</table>
 	</div>

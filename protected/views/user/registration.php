@@ -17,6 +17,7 @@ elseif (empty($roleAttributes)):
 
 // Вывод 2й формы 
 else:
+
 ?>
 <div class="user-form register-form">
 <div class="span6">
@@ -34,8 +35,6 @@ else:
 						'model'=>$model, 
 						'userData' => $userData,
 						'roleAttributes'=>$roleAttributes,
-						'regionNames' => $regionNames,
-						'cityNames' => $cityNames,
 			)); ?>
 
 	<?php else: ?>
@@ -43,12 +42,39 @@ else:
 						'model'=>$model, 
 						'userData' => $userData,
 						'roleAttributes'=>$roleAttributes,
-						'regionNames' => $regionNames,
-						'cityNames' => $cityNames,
 						'orgTypes' => $orgTypes,
 						'orgData' => $orgData,
 			)); ?>
 
 	<?php endif; ?>
 </div>
-<?php endif; ?>
+<?php  endif; ?>
+<?php $this->beginWidget('bootstrap.widgets.TbModal', array('id'=>'agreement')); ?>
+ 
+<div class="modal-header">
+    <a class="close" data-dismiss="modal">X</a>
+    <h4>Позовательское соглашение</h4>
+</div>
+ 
+<div class="modal-body">
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Suspendisse nisi. Vestibulum vitae enim a nulla suscipit tincidunt. Suspendisse potenti. Phasellus pulvinar. Donec suscipit dui at nisi. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </p>
+    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+    </p>
+</div>
+ 
+<div class="modal-footer">
+  <?php $this->widget('bootstrap.widgets.TbButton', array(
+      'label'=>'Принять',
+      'type'=>'primary',
+      'htmlOptions'=>array('data-dismiss'=>'modal', 'id'=>'accept'),
+  )); ?>
+  <?php $this->widget('bootstrap.widgets.TbButton', array(
+    'label'=>'Закрыть',
+    'type'=>'danger',
+    'htmlOptions'=>array('data-dismiss'=>'modal'),
+  )); ?>
+</div>
+ 
+<?php $this->endWidget(); ?>

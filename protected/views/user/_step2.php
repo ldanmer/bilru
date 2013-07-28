@@ -65,19 +65,13 @@
 	</div>
 
 	<div class="span3">
-		<?php echo $form->dropDownListRow($userData, 'region_id', array($regionNames), array(
+		<?php echo $form->dropDownListRow($userData, 'region_id', Region::model()->getRegionsList(), array(
 			'hint' => 'Регион',
 			'label'=>false, 
 			'empty' => '- выберите регион -',
 			'tabindex'=>70,
 		)); ?>
 
-		<?php echo $form->dropDownListRow($userData, 'city_id', array($cityNames), array(
-			'hint' => 'Город',
-			'label'=>false, 
-			'empty' => '- выберите город -',
-			'tabindex'=>80,
-		)); ?>
 	</div>
 	<div class="span6">
 		<?php if(CCaptcha::checkRequirements()): ?>
@@ -97,37 +91,18 @@
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 			'buttonType'=>'submit',
 			'type'=>'primary',
-			'label'=>$model->isNewRecord ? 'Регистрация' : 'Сохранить',
+			'label'=>'Регистрация',
 			'htmlOptions' => array('class' => 'pull-right'),
+		)); ?>
+
+		<?php 
+		$this->widget('bootstrap.widgets.TbButton', array(
+		    'label'=>'Вернуться',
+		    'type'=>'primary',
+		    'htmlOptions'=>array(
+		        'class' => 'btn-back pull-left',
+		    ),
 		)); ?>
 	</div>
 
 <?php $this->endWidget(); ?>
-
-<?php $this->beginWidget('bootstrap.widgets.TbModal', array('id'=>'agreement')); ?>
- 
-<div class="modal-header">
-    <a class="close" data-dismiss="modal">X</a>
-    <h4>Позовательское соглашение</h4>
-</div>
- 
-<div class="modal-body">
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Suspendisse nisi. Vestibulum vitae enim a nulla suscipit tincidunt. Suspendisse potenti. Phasellus pulvinar. Donec suscipit dui at nisi. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-    </p>
-    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
-    </p>
-</div>
- 
-<div class="modal-footer">
-    <?php $this->widget('bootstrap.widgets.TbButton', array(
-        'label'=>'Закрыть',
-        'url'=>'#',
-        'htmlOptions'=>array('data-dismiss'=>'modal'),
-    )); ?>
-</div>
- 
-<?php $this->endWidget(); ?>
-
-
-

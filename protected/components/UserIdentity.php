@@ -33,6 +33,8 @@ class UserIdentity extends CUserIdentity
 		else {
 			$this->_id=$user->id;
 			$this->email=$user->email;
+			$user->last_visit = time();
+			$user->update();
 			$this->errorCode=self::ERROR_NONE;
 		}
 		return $this->errorCode==self::ERROR_NONE;

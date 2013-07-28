@@ -3,7 +3,7 @@
 /* @var $data Events */
 ?>
 
-<div class="event">
+<div class="event user-review">
 	<div class="pull-right date">
 		<?php echo date('d.m.Y',strtotime($data->date)); ?>
 	</div>
@@ -17,16 +17,17 @@
 		</h4>
 	</div>
   <div class="user-header clearfix">
-		<div class="thumbnail user-image">
-		<?php if(!empty($data->user->settings[0]->avatar)): ?>
-			<?php echo CHtml::image(Yii::app()->baseUrl.$data->user->settings[0]->avatar); ?>
+		<div class="user-image">
+		<?php if(!empty($data->user->settings->avatar)): 		
+					$avatar = json_decode($data->user->settings->avatar);
+		?>
+		  <?php echo CHtml::image(Yii::app()->baseUrl.$avatar[0]); ?>
 		<?php else: ?>
 		<img src="<?php echo Yii::app()->baseUrl ?>/img/avatar_placeholder.png" />
 		<?php endif; ?>
 		</div>
 		<p>
-			<?php echo CHtml::encode($data->user->role->role_name); ?>
-			<strong> <?php echo CHtml::link(CHtml::encode($data->user->organizationData[0]->org_name), array('user/profile', 'id'=>$data->user_id)); ?>
+			<strong> <?php echo CHtml::link(CHtml::encode($data->user->organizationData->org_name), array('user/profile', 'id'=>$data->user_id)); ?>
 		</strong>
 		</p>		
   </div>
@@ -41,7 +42,14 @@
 			</li>
 			<div class="pull-right">
 <script type="text/javascript" src="//yandex.st/share/share.js" charset="utf-8"></script>
-<div class="yashare-auto-init" data-yashareL10n="ru" data-yashareType="none" data-yashareQuickServices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir"></div> 
+<div 
+	class="yashare-auto-init" 
+	data-yashareL10n="ru" 
+	data-yashareType="none" 
+	data-yashareQuickServices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir" 
+	data-yashareTitle="<?php echo CHtml::encode($data->rater->organizationData->org_name); ?>"
+	data-yashareDescription="<?php echo CHtml::encode($data->review) ?>"
+	></div>
 
 			</div>
 		</ul>	

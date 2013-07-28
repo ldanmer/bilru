@@ -20,6 +20,9 @@ class SiteController extends Controller
 			'page'=>array(
 				'class'=>'CViewAction',
 			),
+			'resized' => array(
+        'class'   => 'ext.resizer.ResizerAction',        
+      ),
 		);
 	}
 
@@ -89,10 +92,8 @@ class SiteController extends Controller
 			{
 				$model->attributes=$_POST['UserLogin'];
 				// validate user input and redirect to previous page if valid
-				if($model->validate()) {
-					$this->lastVisit();
+				if($model->validate()) 
 					$this->redirect(Yii::app()->user->returnUrl);
-				}
 			}
 			// display the login form
 			$this->render('login',array('model'=>$model));
@@ -152,13 +153,7 @@ class SiteController extends Controller
     	
     }
 	}
-	
-	private function lastVisit() 
-	{	
-		$lastVisit = User::model()->findByPk(Yii::app()->user->id);
-		$lastVisit->last_visit = time();
-		$lastVisit->update();
-	}
+
 	/**
 	 * Logs out the current user and redirect to homepage.
 	 */

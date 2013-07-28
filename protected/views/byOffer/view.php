@@ -73,8 +73,10 @@ $this->breadcrumbs=array(
 </div>
 <div class="order-view clearfix">
 	<div class="span1">		
-		<?php if(!empty($model->supplier->avatar)): ?>
-			<?php echo CHtml::image(Yii::app()->baseUrl.$model->supplier->avatar); ?>
+		<?php if(!empty($model->supplier->settings->avatar)): 
+						$avatar = json_decode($model->supplier->settings->avatar);
+		?>
+			<?php echo CHtml::image(Yii::app()->baseUrl.$avatar[0]); ?>
 		<?php else: ?>
 		<img src="<?php echo Yii::app()->baseUrl ?>/img/avatar_placeholder.png" />
 	<?php endif; ?>
@@ -89,7 +91,7 @@ $this->breadcrumbs=array(
 		<table class="table table-striped">			
 			<tr>
 				<td class="header">Поставщик:</td>
-				<td><?php echo CHtml::encode($model->supplier->organizationData[0]->org_name); ?></td>
+				<td><?php echo CHtml::encode($model->supplier->organizationData->org_name); ?></td>
 			</tr>		
 			<tr>
 				<td class="header">Доставка:</td>

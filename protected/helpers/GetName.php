@@ -26,7 +26,7 @@ class GetName extends CActiveRecord
     else
       $userInfo = OrganizationData::model()->find('user_id=?',array($id));
       
-    $userAttributes->region = $userInfo->region->region_name;
+    $userAttributes->region = $userInfo->city->city_name;
 
     if(!empty($userInfo->org_name))
     {   
@@ -45,9 +45,9 @@ class GetName extends CActiveRecord
 	public static function saveUploadedFiles($fieldName, $uploadDir, $field = '')
 	{
 		$files = CUploadedFile::getInstancesByName($fieldName);
-
-		$absoluteDir = Yii::getPathOfAlias('webroot') . $uploadDir . "/";
 		$uploadDir .= "/";
+		$absoluteDir = Yii::getPathOfAlias('webroot') . $uploadDir;
+		
     if (isset($files) && count($files) > 0) {
     	$docs = array();
     	foreach ($files as $pic) {
@@ -69,7 +69,8 @@ class GetName extends CActiveRecord
 
 	public function jsonToString($jsonKeys, $searchArray, $divider = ", ")
 	{
-		if(!empty($jsonKeys)){
+		if(!empty($jsonKeys))
+		{
 			$keys = array_flip(json_decode($jsonKeys));
 			$resultArray = array_intersect_key($searchArray,$keys);
 			if($divider != 'li')
@@ -102,13 +103,18 @@ class GetName extends CActiveRecord
 		$docs = json_decode($json);	
 		$list = "";
 		$docsObject =  new stdClass();
-		foreach ($docs as $doc) {
-			$substring = substr($doc, strripos($doc, '/') + 1);
-			$list .= "<li><a href=".Yii::app()->baseUrl.$doc." target=\"_blank\">$substring</a></li>";
-			if(self::getImage(Yii::app()->baseUrl.$doc))
-				$docsObject->img = Yii::app()->baseUrl.$doc;
+		if(count($docs)>0)
+		{
+			foreach ($docs as $doc) 
+			{
+				$substring = substr($doc, strripos($doc, '/') + 1);
+				$list .= "<li><a href=".Yii::app()->baseUrl.$doc." target=\"_blank\">$substring</a></li>";
+				if(self::getImage(Yii::app()->baseUrl.$doc))
+					$docsObject->img = Yii::app()->baseUrl.$doc;
+			}
+			$docsObject->list = $list;
 		}
-		$docsObject->list = $list;
+
 		return $docsObject;			
 	}
 
@@ -340,5 +346,37 @@ class GetName extends CActiveRecord
     }
     	$out=$out."</ul>";
     return $out; 
+	}
+
+	// цена по месяцам в зависимости от тарифа
+	public function tarifPrice($tarif)
+	{
+		$result = new stdClass;
+		$thisTarif = Tarif::model()->findByPk($tarif);
+		$keys = array_keys(Bill::model()->terms);
+		$discountValue = array();
+
+		$result->tarifName = $thisTarif->name;
+		
+		foreach($keys as $key)
+			$result->mainPrice[] = $key * $thisTarif->price;
+
+		if($thisTarif->price == 0)
+			$result->discount = array_fill(0, 4, '-');
+		else
+			$result->discount = array('-', '1 неделя', '2 недели', '4 недели');
+
+		foreach ($result->discount as $discount)
+			$discountValue[] = $discount * 300;
+
+			$func = function($val1, $val2)
+			{
+				return $val1 - $val2;
+			};
+
+		$result->discountPrice = array_map($func, $result->mainPrice, $discountValue);
+			
+		return $result;
+
 	}
 }

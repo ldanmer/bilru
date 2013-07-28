@@ -32,13 +32,13 @@ $this->breadcrumbs=array(
 			</tr>
 			<tr>
 				<td class="header">ПРИЕМ ЗАЯВОК:</td>
-				<td>
+				<td style="padding: 0 10px;">
 					<table>
 						<tr>
 							<td class="header">Начало</td>
-							<td><?php echo $model->start_date; ?></td>
+							<td><?php echo date('d.m.Y',$model->start_date); ?></td>
 							<td class="header">Окончание</td>
-							<td><?php echo $model->end_date; ?></td>
+							<td><?php echo date('d.m.Y',$model->end_date); ?></td>
 						</tr>
 					</table>
 				</td>
@@ -53,7 +53,7 @@ $this->breadcrumbs=array(
 				<td class="header">ОБЪЕКТ:</td>
 				<td>
 					<?php 
-					if(UserSettings::getThisTariff() != 1)
+					if(UserSettings::getThisTariff() == 1)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 						echo $model->object;
@@ -64,7 +64,7 @@ $this->breadcrumbs=array(
 				<td class="header">ЗАКАЗЧИК:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() != 1)
+					if(UserSettings::getThisTariff() == 1)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 						echo $model->customer ?>
@@ -86,7 +86,7 @@ $this->breadcrumbs=array(
 				<td class="header">КОНТАКТЫ:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() != 1)
+					if(UserSettings::getThisTariff() == 1)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 					 echo $model->contact 
@@ -97,7 +97,7 @@ $this->breadcrumbs=array(
 				<td class="header contact">Телефон:</td>
 				<td>
 					<?php 
-					if(UserSettings::getThisTariff() != 1)
+					if(UserSettings::getThisTariff() == 1)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 						echo $model->phone ?>
@@ -107,7 +107,7 @@ $this->breadcrumbs=array(
 				<td class="header contact">E-mail:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() != 1)
+					if(UserSettings::getThisTariff() == 1)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 					 echo $model->email ?>
@@ -117,25 +117,17 @@ $this->breadcrumbs=array(
 				<td class="header contact">Контактное лицо:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() != 1)
+					if(UserSettings::getThisTariff() == 1)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 					 echo $model->persona ?>
 				</td>
 			</tr>
 			<tr>
-				<td class="header">Документы:</td>
-				<td>
-					<ul>
-						<?php echo $model->docs ?>
-					</ul>
-				</td>
-			</tr>
-			<tr>
 				<td class="header">ОФИЦИАЛЬНЫЙ САЙТ:</td>
-				<td>
+				<td style="padding: 0 10px;">
 					<?php 
-					if(UserSettings::getThisTariff() != 1):
+					if(UserSettings::getThisTariff() == 1):
 					$this->widget('bootstrap.widgets.TbButton', array(
 					    'label'=>'перейти на официальный сайт подряда',
 					    'htmlOptions'=>array(

@@ -29,8 +29,8 @@ class PersonalData extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('first_name, last_name, phone1, region_id, city_id, user_id', 'required'),
-			array('region_id, city_id, apartament, user_id', 'numerical', 'integerOnly'=>true),
+			array('first_name, last_name, phone1, region_id, user_id', 'required'),
+			array('region_id, apartament, user_id', 'numerical', 'integerOnly'=>true),
 			array('first_name, middle_name, last_name, street', 'length', 'max'=>255),
 			array('phone1, phone2', 'length', 'max'=>20),
 			array('phone1, phone2','match','pattern'=>'/^((8|\+7|7)[\- ]?)?(\(?\d{3,4}\)?[\- ]?)?[\d\- ]{6,10}$/'),
@@ -38,7 +38,7 @@ class PersonalData extends CActiveRecord
 		 	array('terms',"required", 'requiredValue' => true, 'message' => 'Вы должны согласиться с условиями пользовательского соглашения'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, first_name, middle_name, last_name, phone1, phone2, region_id, city_id, street, house, apartament, user_id', 'safe', 'on'=>'search'),
+			array('id, first_name, middle_name, last_name, phone1, phone2, region_id, street, house, apartament, user_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -51,8 +51,7 @@ class PersonalData extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
-			'region' => array(self::BELONGS_TO, 'Region', 'region_id'),
-			'city' => array(self::BELONGS_TO, 'City', 'city_id'),
+			'city' => array(self::BELONGS_TO, 'City', 'region_id'),
 		);
 	}
 
@@ -69,11 +68,10 @@ class PersonalData extends CActiveRecord
 			'phone1' => 'Телефон',
 			'phone2' => 'Дополнительный телефон',
 			'region_id' => 'Регион',
-			'city_id' => 'Город',
 			'street' => 'Улица',
 			'house' => 'Дом/Корпус',
 			'apartament' => 'Офис/Квартира',
-			'terms' => 'Я ознакомился и принимаю условия <a data-toggle="modal" data-target="#agreement">пользовательского соглашения</a>',
+			'terms'=>'<p class="text-error">Нажимая кнопку «Регистрация» Вы принимаете условия <a href="#agreement" role="button" data-toggle="modal">Пользовательского соглашения</a></p>',
 		);
 	}
 
@@ -95,7 +93,6 @@ class PersonalData extends CActiveRecord
 		$criteria->compare('phone1',$this->phone1,true);
 		$criteria->compare('phone2',$this->phone2,true);
 		$criteria->compare('region_id',$this->region_id);
-		$criteria->compare('city_id',$this->city_id);
 		$criteria->compare('street',$this->street,true);
 		$criteria->compare('house',$this->house,true);
 		$criteria->compare('apartament',$this->apartament);

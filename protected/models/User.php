@@ -10,6 +10,7 @@ class User extends CActiveRecord
 	public $newPassword;
 	public $newPassword_repeat;
 
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -60,9 +61,9 @@ class User extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'organizationData' => array(self::HAS_MANY, 'OrganizationData', 'user_id'),		
-			'personalData' => array(self::HAS_MANY, 'PersonalData', 'user_id'),	
-			'userInfo' => array(self::HAS_MANY, 'UserInfo', 'user_id'),	
+			'organizationData' => array(self::HAS_ONE, 'OrganizationData', 'user_id'),		
+			'personalData' => array(self::HAS_ONE, 'PersonalData', 'user_id'),	
+			'userInfo' => array(self::HAS_ONE, 'UserInfo', 'user_id'),	
 			'objects' => array(self::HAS_MANY, 'Objects', 'user_id'),
 			'materials' => array(self::HAS_MANY, 'MaterialBuy', 'user_id'),
 			'materialsCount' => array(self::STAT, 'MaterialBuy', 'user_id'),
@@ -76,10 +77,11 @@ class User extends CActiveRecord
 			'eventsCount' => array(self::STAT, 'Events', 'user_id'),
 			'ratingCount' => array(self::STAT, 'UserRating', 'user_id'),
 			'ratingMadeCount' => array(self::STAT, 'UserRating', 'rater_id'),
-			'orgType' => array(self::BELONGS_TO, 'OrgType', 'org_type_id'),
 			'role' => array(self::BELONGS_TO, 'Role', 'role_id'),
+			'orgType' => array(self::BELONGS_TO, 'OrgType', 'org_type_id'),
 			'rating' => array(self::HAS_MANY, 'UserRating', 'user_id'),
-			'settings' => array(self::HAS_MANY, 'UserSettings', 'user_id'),
+			'settings' => array(self::HAS_ONE, 'UserSettings', 'user_id'),
+			'bills' => array(self::HAS_MANY, 'Bill', 'user_id'),
 		);
 	}
 
@@ -306,7 +308,6 @@ class User extends CActiveRecord
 	{
 		if(GetName::getCabinetAttributes()->type == 2)
 		{
-			$role = $user->role->id;
 			$categories = UserSettings::getSettingsField("order_category");
 			if(empty($categories)) 
 				return array();
@@ -317,7 +318,7 @@ class User extends CActiveRecord
 		    	$criteria->addSearchCondition('work_type_id',$category, true, 'OR'); 
 
 				$criteria->addCondition('status=0');
-				$criteria->addSearchCondition('user_role_id',$role);
+				$criteria->addSearchCondition('user_role_id',$user->role_id);
 				return $orders = Orders::model()->findAll($criteria);	
 			}
 		}
@@ -448,6 +449,36 @@ class User extends CActiveRecord
 
 		return $count;	 
 	}
-	
+
+	// Очередная долбанутая идея - считать количество выбранных городов 
+	// и сравнивать их с общим количеством городов в регионе
+	public function geographyList($list)
+	{
+		$list = CJSON::decode($list);
+		$regions = array();
+		$resultArray = array();
+		if(count($list) >0)
+		{
+			foreach ($list as $city) 
+			{
+				$currentCity = City::model()->findByPk($city);
+				$regions[$currentCity->region_id][$currentCity->id] = $currentCity->city_name;
+			}
+
+			foreach ($regions as $key => $region) 
+			{
+				$thisRegionCount = count($region);
+				$thisRegion = Region::model()->findByPk($key);
+
+				if($thisRegionCount == $thisRegion->citiesCount)
+					$resultArray[] = $thisRegion->region_name;
+				else
+					$resultArray = array_merge($resultArray, $region);
+			}	
+			return $resultArray;
+		}
+
+	}
+
 
 }

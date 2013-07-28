@@ -1,26 +1,6 @@
 <?php
 class DefaultController extends Controller
 {
-	public function filters()
-	{
-		return array(
-			'accessControl', // perform access control for CRUD operations
-		);
-	}
-
-	public function accessRules()
-	{
-		return array(
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index'),
-				'users'=>array('admin@bilru.com'),
-			),
-			array('deny',  // deny all users
-				'users'=>array('*'),
-			),
-		);
-	}
-
 	public function actionIndex()
 	{
 		header('Content-Type: text/html; charset=utf-8'); 
@@ -28,109 +8,60 @@ class DefaultController extends Controller
 		Yii::import('ext.SimpleHTMLDOM.SimpleHTMLDOM');	
 		$uploadDir = '/files/import/';
 		GetName::makeDir($uploadDir);	
-		$savePath = Yii::getPathOfAlias('webroot').$uploadDir.'file.ip';
+		$savePath = Yii::getPathOfAlias('webroot').$uploadDir;
 		$banned = array('приобретение','покупка');
  		
-		$start = $this->curl_get("http://zakupki.gov.ru/pgz/public/action/rss/order/extended/search?c0=true&a=false&b=OK&b=OA&b=EF&c=AP&d=&_e=on&_f=on&_g=on&h=&p0=1865&j=true&_j=on&k=&l=&m=&n=&o=RUB&i=&p=&q=&r=&s=&b8=false&t=&customer.organizationId=&letter=%D0%90&_w=on&x=&y=&_z=on&a0=&sellerOrganizationId=&b7=false&f_MP=c&f_MC=c&f_NU=c&f_OLIMPSTROI=c&b6=false&f_UG=c&f_IN=c&b9=false&a1=&a2=&a4=&a5=&a6=&a7=&b5=&a8=&_a9=on&b10=false&_complaintSearchBlock.hasComplaint=on&complaintSearchBlock.complaintNumber=&complaintSearchBlock.subjectId=&complaintSearchBlock.subject=&complaintSearchBlock.controlOrganizationId=&complaintSearchBlock.controlOrganization=&b11=false&auditResultSearchBlock.auditNumber=&auditResultSearchBlock.subjectId=&auditResultSearchBlock.subject=&auditResultSearchBlock.controlOrganizationId=&auditResultSearchBlock.controlOrganization=&_auditResultSearchBlock.hasDecision=on&auditResultSearchBlock.decisionNumber=&auditResultSearchBlock.decisionDateFrom=&auditResultSearchBlock.decisionDateTo=&lotView=false&b0=&_b1=on&_b2=on&_b3=on&_b4=on&ext=cd54487489e21b42f6d1ac7c88f22748");
+		$start = $this->curl_get("http://zakupki.gov.ru/pgz/public/action/search/extended/run?c0=true&a=true&c=AP&c=CW&d=&_e=on&_f=on&_g=on&h=&p0=1865&j=true&_j=on&k=&l=&m=&n=&o=RUB&i=&p=&q=&r=&r1=ETP_TEST&r1=ETP_AVK&r1=ETP_EETP&r1=ETP_SBAST&r1=ETP_RTS&r1=ETP_MMVB&s=&b8=false&t=&customer.organizationId=&letter=%D0%90&_w=on&x=&y=&_z=on&a0=&sellerOrganizationId=&b7=false&f_MP=c&f_MC=c&f_NU=c&f_OLIMPSTROI=c&b6=false&f_UG=c&f_IN=c&b9=false&a1=&a2=&a4=&a5=&a6=&a7=&b5=&a8=&_a9=on&b10=false&_complaintSearchBlock.hasComplaint=on&complaintSearchBlock.complaintNumber=&complaintSearchBlock.subjectId=&complaintSearchBlock.subject=&complaintSearchBlock.controlOrganizationId=&complaintSearchBlock.controlOrganization=&b11=false&auditResultSearchBlock.auditNumber=&auditResultSearchBlock.subjectId=&auditResultSearchBlock.subject=&auditResultSearchBlock.controlOrganizationId=&auditResultSearchBlock.controlOrganization=&_auditResultSearchBlock.hasDecision=on&auditResultSearchBlock.decisionNumber=&auditResultSearchBlock.decisionDateFrom=&auditResultSearchBlock.decisionDateTo=&lotView=false&b0=&b1=true&_b1=on&_b2=on&_b3=on&_b4=on&ext=40a75a667a1e7d80bfe91d9209fc4317");
+
+		file_put_contents($savePath.'links.ip',$start);
+		$simpleHTML = new SimpleHTMLDOM; 		
+
 		echo "<ol>";
-		if($html = new SimpleXMLElement($start))
+		if($html = $simpleHTML->file_get_html($savePath.'links.ip'))
 		{
-			// сохраняем link-и в массив
-			$links = array();
-			foreach ($html->channel->item as $item)
- 				$links[] = $item->link;
+			foreach ($html->find('a[href^="/pgz/printForm?type=NOTIFICATION&id="]') as $el) 
+			{
+				$zakazId = substr($el->href, -7);
+				$link = 'http://zakupki.gov.ru'.$el->href;
+				$url = 'http://zakupki.gov.ru/pgz/public/action/orders/info/common_info/show?notificationId='.$zakazId;
 
-			// Начинаем прогон всех страниц
-			foreach ($links as $link) { 
-				// проверка на уникальность
-				if(Goszakaz::model()->find("link=:link", array(":link"=>$link)))
-					continue;
-
-				$model = new Goszakaz;
-
-				// сохраняем содержимое страницы на сервер			
-				$page = $this->curl_get($link);
-				file_put_contents($savePath,$page);
-				
-				$simpleHTML = new SimpleHTMLDOM; 
-				$html = $simpleHTML->file_get_html($savePath);
-				
-				// link
-				$model->link = $link;	
-
-			 foreach ($html->find('td.orderInfoCol1') as $field)
-			 {	
-				// placement		 	
-				if(trim($field->plaintext) == "Способ размещения заказа")
-					$model->placement = $field->next_sibling(1)->plaintext;
-
-				// title		 	
-				if(trim($field->plaintext) == "Краткое наименование аукциона")
-					$model->title = $field->next_sibling(1)->plaintext;
-
-				// Поиск запрещенных слов
-				foreach ($banned as $word)
+				if(!Goszakaz::model()->find('link=:link', array(':link'=>$url)))
 				{
-					if(stripos($model->title, $word) != false)
-						$model->status = 0;
-				}
+					$model = new Goszakaz;
+					$advert = $this->curl_get($link);		
+					$model->link = $url;		
 
-				// price		 	
-				if(trim($field->plaintext) == "Начальная (Максимальная) цена контракта")
-				{
-					$price = filter_var($field->next_sibling(1)->plaintext,FILTER_SANITIZE_NUMBER_INT);
-					$model->price = substr($price, 0, -2);
-				}
+					$xml = new SimpleXMLElement($advert);
+					$model->title = $xml->orderName;
 
-				// category
-				if(trim($field->plaintext) == "Классификация товаров, работ и услуг")
-					$model->category = $field->next_sibling(1)->plaintext;
+					foreach ($banned as $word)
+					{
+						if(stripos($model->title, $word) != false)
+							$model->status = 0;
+					}
 
-				// customer
-				if(trim($field->plaintext) == "Организация")
-					$model->customer = $field->next_sibling(1)->plaintext;
-
-				// contact
-				if(trim($field->plaintext) == "Почтовый адрес")
-					$model->contact = $field->next_sibling(1)->plaintext;
-
-				// personal contact data
-				if(trim($field->plaintext) == "Контактное лицо")
-				{
-					$contactData = $field->next_sibling(1);
-					$model->persona = $contactData->find('span.iceOutTxt',0)->plaintext;
-					$model->phone = $contactData->find('span.iceOutTxt',2)->plaintext;
-					$model->email = $contactData->find('a.iceOutLnk',1)->plaintext;
-				}
-
-				// object
-				if(trim($field->plaintext) == "Место поставки товара, выполнения работ, оказания услуг")
-					$model->object = $field->next_sibling(1)->plaintext;
-					
-				// duration
-				if(trim($field->plaintext) == "Срок поставки товара, выполнения работ, оказания услуг (по местному времени заказчика)")
-					$model->duration = $field->next_sibling(1)->plaintext;
-
-				// start_date
-				if(trim($field->plaintext) == "Дата и время окончания срока подачи заявок на участие в открытом аукционе в электронной форме")
-					$model->start_date = $field->next_sibling(1)->plaintext;
-
-				// end_date
-				if(trim($field->plaintext) == "Окончание срока рассмотрения первых частей заявок")
-					$model->end_date = $field->next_sibling(1)->plaintext;	 
-				
-				}
-
+					$model->price = preg_replace("/\s+|((\,|\.)\d{2}$)/","",$xml->lots->lot->customerRequirements->customerRequirement->maxPrice);
+					$model->start_date = strtotime($xml->createDate);
+					$model->end_date = strtotime($xml->notificationCommission->p1Date);
+					$model->category = $xml->lots->lot->products->product->name;
+					$model->object = $xml->lots->lot->customerRequirements->customerRequirement->deliveryPlace;
+					$model->customer = $xml->lots->lot->customerRequirements->customerRequirement->organization->fullName;
+					$model->placement = $xml->placingWay->name;
+					$model->duration = $xml->lots->lot->customerRequirements->customerRequirement->deliveryTerm;
+					$model->contact = $xml->contactInfo->orgPostAddress;
+					$model->phone = $xml->contactInfo->contactPhone;
+					$model->email = $xml->contactInfo->contactEMail;
+					$model->persona = $xml->contactInfo->contactPerson->lastName . ' ' 
+													. $xml->contactInfo->contactPerson->firstName . ' '
+													. $xml->contactInfo->contactPerson->middleName;					
 				if($model->save())
 					echo '<li style="color:#468847">'.$model->title . " - сохранено</li>";
 				else
-				{
 					echo '<li style="color:#b94a48">'.$model->link . " - НЕ сохранено</li>";
-					continue;
-				} 
-			}
+				}				
+			}			
 		}
-		echo "</ol>";
+	echo "</ol>";
 }
 
 	public function curl_get($host)

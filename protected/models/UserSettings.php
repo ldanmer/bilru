@@ -45,6 +45,7 @@ class UserSettings extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
+			'tarif' => array(self::BELONGS_TO, 'Tarif', 'tariff'),
 		);
 	}
 

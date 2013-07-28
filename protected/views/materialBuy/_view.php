@@ -1,5 +1,5 @@
 <?php 
-	if($data->doc_list != "null")
+	if(!is_null($data->doc_list))
 	{
 		$docs = GetName::getDocsList($data->doc_list);
 		$img = $docs->img;
@@ -45,7 +45,7 @@
 		<?php else: ?>
 			<tr>
 				<td class="header">Поставщик:</td>
-				<td><?php echo $data->offer->supplier->organizationData[0]->org_name ?></td>
+				<td><?php echo $data->offer->supplier->organizationData->org_name ?></td>
 			</tr>
 		<?php endif; ?>
 			<tr>
@@ -53,7 +53,7 @@
 				<td>
 					<?php 
 					if(!empty($data->offer->total_price))
-						echo CHtml::encode($data->offer->total_price) . ' руб.'; 
+						echo number_format($data->offer->total_price, 2, ',', ' ') . ' руб.';
 					else
 						echo "Не определена"; 
 						?>
@@ -88,10 +88,10 @@
 								echo $data->user->email;
 								break;
 							case '1':
-								echo $data->user->personalData[0]->phone1;
+								echo $data->user->personalData->phone1;
 								break;
 							case '2':
-								echo $data->user->email." / ".$data->user->personalData[0]->phone1;
+								echo $data->user->email." / ".$data->user->personalData->phone1;
 								break;
 							
 							default:
@@ -102,14 +102,15 @@
 				</td>
 			</tr>
 		</table>
+		<?php if(!empty($docs->list)): ?>
 		<div class="hidden">
 			<h4 class="subtitle">Документы</h4>
 			<ol class="doc-list"><?php echo $docs->list ?></ol>	
 		</div>
-
+		<?php endif; ?>
 	</div>	
 	<br />
-	<div class="hidden">
+	<div class="hidden grid-view">
 
 	<?php
 	if(empty($data->supplier)):		
@@ -147,16 +148,16 @@
 
 	<div align="right">
 	<?php if(empty($data->offer_id)): ?>
-	<?php echo CHtml::link("Посмотреть предложения поставщиков",array('/byOffer/list','id'=>$data->id), array('class'=>'btn pull-left light-blue light-blue-border')); ?>
+	<?php echo CHtml::link("Посмотреть предложения поставщиков",array('/byOffer/list','id'=>$data->id), array('class'=>'btn btn-small pull-left light-blue light-blue-border')); ?>
 	<?php endif; ?>
 	<?php if(empty($data->offer_id)): 
-		echo CHtml::link("Редактировать",array('update','id'=>$data->id), array('class'=>'btn btn-primary hidden pull-right')); 
+		echo CHtml::link("Редактировать",array('update','id'=>$data->id), array('class'=>'btn btn-small btn-primary hidden pull-right')); 
  	else: 
-	 echo CHtml::link("Дать оценку поставщику",array('rating', 'id'=>$data->id), array('class'=>'btn btn-success pull-left'));
+	 echo CHtml::link("Дать оценку поставщику",array('rating', 'id'=>$data->id), array('class'=>'btn btn-small btn-success pull-left'));
 	endif;
  		 ?>
 
-	<?php echo CHtml::button("Показать полностью",array('class'=>'btn btn-primary show pull-right')); ?>
+	<?php echo CHtml::button("Показать полностью",array('class'=>'btn btn-small btn-primary show pull-right')); ?>
 	</div>
 
 <div class="clearfix"></div>

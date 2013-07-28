@@ -25,20 +25,15 @@ class OrdersController extends Controller
 	 */
 	public function accessRules()
 	{
-		return array(
-			/*
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array(),
-				'users'=>array('*'),
-			), */
+		return array(		
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('index','create','update', 'search','view','finished','rating'),
+				'actions'=>array('create','search','view'),
+				'users'=>array('*'),
+			),
+			array('allow', // allow authenticated user to perform 'create' and 'update' actions
+				'actions'=>array('index','update','finished','rating'),
 				'users'=>array('@'),
 			),
-		/*	array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','view','delete'),
-				'users'=>array('admin'),
-			),*/
 			array('deny',  // deny all users
 				'users'=>array('*'),
 			),
@@ -51,10 +46,14 @@ class OrdersController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$criteria = new CDbCriteria;
-		$criteria->condition = 'order_id=:order_id AND supplier_id='.Yii::app()->user->id;
-		$criteria->params = array(':order_id'=>$id);
-		$already = OrderOffer::model()->find($criteria);
+		if(!Yii::app()->user->isGuest)
+		{
+			$criteria = new CDbCriteria;
+			$criteria->condition = 'order_id=:order_id AND supplier_id='.Yii::app()->user->id;
+			$criteria->params = array(':order_id'=>$id);
+			$already = OrderOffer::model()->find($criteria);
+		}
+
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
 			'already'=>$already,
@@ -77,8 +76,15 @@ class OrdersController extends Controller
 		$objectList=Objects::model()->findAll($criteria);
 
 		// Сохранение полей объектов в массив
-		if(empty($objectList) || $_GET['object'] == 'new')
-			$objects = new Objects;
+		if(empty($objectList))
+		{
+			$objects = new Objects;	
+			/*
+			$objects->user_id = Yii::app()->user->id;
+			$objects->save(false);	
+			$this->redirect(array('/objects/create', 'id' => $objects->id));		
+			*/
+		}
 		else
 		{			
 			foreach ($objectList as $object) {
@@ -95,6 +101,9 @@ class OrdersController extends Controller
 		if(isset($_POST['Orders']))
 		{
 			$model->attributes=$_POST['Orders'];
+			$model->price = preg_replace("/\s+|((\,|\.)\d{2}$)/","",$_POST['Orders']['price']);
+			$model->start_date = strtotime($model->start_date);
+			$model->end_date = strtotime($model->end_date);
 			$model->documents = GetName::saveUploadedFiles('documents',$uploadDir);	
 			$publish = isset($_POST['publish']) ? 1 : 0;  
 			if(!empty($_POST['Orders']['user_role_id']))
@@ -106,8 +115,7 @@ class OrdersController extends Controller
 			if(isset($_POST['Objects']))
 			{
 				$objects->attributes=$_POST['Objects'];	
-				$objects->communications = json_encode($_POST['Objects']['communications']);
-				$objects->user_id = Yii::app()->user->id;
+				$objects->communications = json_encode($_POST['Objects']['communications']);				
 				$objects->photoes = GetName::saveUploadedFiles('photoes',$uploadDir);
 				$objects->blueprints = GetName::saveUploadedFiles('bluprints',$uploadDir);
 				$objects->documents = GetName::saveUploadedFiles('objectdocs',$uploadDir);	
@@ -186,13 +194,15 @@ class OrdersController extends Controller
 	/**
 	 * Lists all models.
 	 */
-	public function actionIndex()
+	public function actionIndex($id='')
 	{
 		// Поиск заказов пользователя
 		$criteria = new CDbCriteria;
 		$criteria->with = array('object');
-		$criteria->condition = 'user_id = :userId AND status=0';
+		$criteria->condition = 'user_id=:userId AND t.status=0';
 		$criteria->params = array(':userId' => Yii::app()->user->id);
+		if(!empty($id))
+			$criteria->addCondition('object_id='.$id);
 		$dataProvider=new CActiveDataProvider('Orders', array('criteria'=>$criteria));		
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
@@ -202,12 +212,14 @@ class OrdersController extends Controller
 	/**
 	 * Lists finished models.
 	 */
-	public function actionFinished()
+	public function actionFinished($id='')
 	{
 		// Поиск заказов пользователя
 		$criteria = new CDbCriteria;
 		$criteria->with = array('object');
-		$criteria->condition = 'user_id = :userId AND status=1';
+		$criteria->condition = 'user_id = :userId AND t.status=1';
+		if(!empty($id))
+			$criteria->addCondition('object_id='.$id);
 		$criteria->params = array(':userId' => Yii::app()->user->id);
 		$dataProvider=new CActiveDataProvider('Orders', array('criteria'=>$criteria));		
 		$this->render('finished',array(
@@ -226,7 +238,7 @@ class OrdersController extends Controller
 
 		if(isset($_GET['Orders']['org_type']))
 			$model->org_type=$_GET['Orders']['org_type'];
-
+		
 		// Регион
 		if(isset($_GET['Orders']['region_id']))
 			$model->region=$_GET['Orders']['region_id'];
@@ -235,6 +247,13 @@ class OrdersController extends Controller
 		if(isset($_GET['Orders']['work_type_id']))
 			$model->work_type_id=$_GET['Orders']['work_type_id'];
 
+		if($_GET['Orders']['subscribe'] == 1 && !Yii::app()->user->isGuest)
+		{
+			unset($_GET['Orders']['subscribe']);
+			$user = UserSettings::model()->find('user_id='.Yii::app()->user->id);
+			$user->order_subscribe = CJSON::encode($_GET['Orders']);
+			$user->update();
+		}
 
 		$this->render('search',array(
 			'model'=>$model,

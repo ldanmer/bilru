@@ -9,10 +9,14 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 	'enableAjaxValidation'=>false,
 )); ?>
 
-	<?php echo $form->errorSummary($model); ?>
+	<?php 
+	if(!Yii::app()->user->isGuest)
+		echo $form->errorSummary($model); 
+	else
+		echo '<div class="alert">Для создания объекта и размещения заказа необходимо зарегистрироваться</div>';
+	?>
 
 	<!-- Если объекты существуют -->
-
 	<?php if(isset($objects) && is_array($objects)): ?>
 	<legend>
 		<span>НАЙТИ ПОДРЯДЧИКА НА ОБЪЕКТ</span>
@@ -35,8 +39,7 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 				'htmlOptions' => array('class' => 'pull-right', 'name' => 'newobject'),				
 			)); ?>
 
-		<?php //echo CHtml::link("Создать объект",array('objects/create'), array('class'=>'btn btn-primary')); ?>
-	</fieldset>
+		</fieldset>
 	
 	<!-- Если объектов еще нет -->
 	<?php elseif(isset($objects)): ?>
@@ -53,35 +56,23 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 		<span><?php echo $title; ?> заказа</span>
 	</legend>
 	<fieldset id="create-order">
-		<div class="span3">			
-			<?php $this->widget('bootstrap.widgets.TbButton', array(
-		    'label'=>'Выберите тип подрядчика',
-		    'block'=>true,
-		    'toggle' => true,
-		    'htmlOptions' => array(
-		    	'id' => 'contractor-types',
-		    	),
-			)); ?>
-		</div>
-		<div id="contractor-list" class="form-list span6">
-			<?php echo $form->checkBoxListRow($model, 'user_role_id', $model->contractorTypes, array(
-				'label'=>false, 
-			)); ?>
+		<div class="span3">	
+		<h4 class="subtitle">Выберите тип подрядчика</h4>
+		<?php echo $form->dropDownListRow($model, 'user_role_id', $model->contractorTypes, array(
+			'label'=>false, 
+			'multiple'=>true,
+			'class'=>'span3 multiselect',			
+			)); ?>	
 		</div>
 
 		<div class="span3">
-			<?php $this->widget('bootstrap.widgets.TbButton', array(
-		    'label'=>'Выберите вид работ',
-		    'block'=>true,
-		    'htmlOptions' => array('id' => 'work-types'),
-			)); ?>
-		</div>
-
-			<div id="work-list" class="form-list span6">
-				<?php echo $form->checkBoxListRow($model, 'work_type_id', GetName::getNames('WorkTypes', 'name'), array(
-					'label'=>false, 
+			<h4 class="subtitle">Выберите вид работ</h4>
+			<?php echo $form->dropDownListRow($model, 'work_type_id',WorkTypes::model()->getCategoryList(),	array(
+				'label'=>false, 
+				'multiple'=>true,
+				'class'=>'span3 multiselect',			
 				)); ?>
-			</div>
+		</div>
 
 		<?php echo $form->textFieldRow($model,'title',array(
 			'label'=>false, 
@@ -120,7 +111,17 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 					'append'=>'Дней',
 					)); 
 				?>
-
+			<?php $this->widget('bootstrap.widgets.TbButton', array(
+		    'label'=>'Загрузить',
+		    'type'=>'primary',
+		    'size'=>'mini',		     
+		    'htmlOptions' => array(
+		    	'class'=>'pull-right change upload',
+		    	'data-target'=>'documents',
+					'title'=>'Разрешенные типы файлов: doc|docx|txt|pdf|csv|xls',		 
+					'style'=>'margin-top:5px',
+				  ),
+			)); ?>
 			<h4 class="subtitle">Документы</h4>
 			<?php $this->widget('CMultiFileUpload', array(
               'name' => 'documents',
@@ -128,8 +129,7 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
               'duplicate' => 'Дупликат!', 
               'denied' => 'Неверный тип файла',
             ));
-      ?>
-      <small class="red">разрешенные типы файлов: doc, txt, pdf, csv, xls</small>	
+      ?>      	
 		</div>
 		<div class="span3">
 		<h4 class="subtitle" align="center">Прием заявок</h4>
@@ -179,7 +179,7 @@ $monthPlus =  date("d.m.Y", strtotime("+1 month", time()));
 				'buttonType'=>'submit',
 				'type'=>'primary',
 				'label'=> 'Разместить заказ',
-				'htmlOptions' => array('class' => 'pull-right', 'name' => 'publish'),				
+				'htmlOptions' => array('class' => 'pull-right clearfix', 'name' => 'publish'),				
 			)); ?>
 
 </fieldset>

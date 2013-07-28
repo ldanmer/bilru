@@ -18,6 +18,12 @@
 				    'block'=>true,
 				    'url'=>Yii::app()->user->loginUrl,
 				)); 
+				$this->widget('bootstrap.widgets.TbButton', array(
+				    'label'=>'Гостевой доступ',
+				    'type'=>'primary', 
+				    'block'=>true,
+				    'url'=>Yii::app()->user->returnUrl,
+				)); 
 			?>
 		</div>
 	</div>

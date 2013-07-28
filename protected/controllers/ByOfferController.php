@@ -26,12 +26,8 @@ class ByOfferController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
-				'users'=>array('*'),
-			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update', 'addPrice', 'list', 'finished'),
+				'actions'=>array('create','index','view','update', 'addPrice', 'list', 'finished'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -90,7 +86,7 @@ class ByOfferController extends Controller
 
 		if(isset($_POST['ByOffer']))
 		{
-			$model->attributes=$_POST['ByOffer'];
+			$model->attributes=$_POST['ByOffer'];			
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}

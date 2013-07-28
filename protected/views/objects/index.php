@@ -8,12 +8,22 @@ $this->breadcrumbs=array(
 	    'type'=>'tabs', 
 	    'stacked'=>false, 
 	    'items'=>array(
-	        array('label'=>'Мои объекты', 'url'=>array('objects/index')),
+	        array('label'=>'Активные объекты', 'url'=>array('objects/index')),
 	        array('label'=>'Создать объект', 'url'=>array('objects/create')),
+	        array('label'=>'Завершенные', 'url'=>array('objects/finished')),
 	    ),
 	)); ?>
 </div>
 <?php $this->widget('bootstrap.widgets.TbListView',array(
 	'dataProvider'=>$dataProvider,
 	'itemView'=>'_view',
+	'template' => '{items}{pager}',
 )); ?>
+<?php 
+
+$this->widget('ext.fancybox.EFancyBox', array(
+    'target'=>'a[rel=fancybox]',
+    'config'=>array(),
+    ));	
+
+ ?>

@@ -41,9 +41,9 @@
 			<?php else: ?>
 			<tr>
 				<td class="header white">Оценка поставщика: 
-					<?php echo GetName::getThisRating($data->rating_id)->rating; ?>
+					<span class="red">	<?php echo GetName::getThisRating($data->rating_id)->rating; ?></span>
 				</td>
-				<td>
+				<td style="padding:0 10px">
 					<?php 
 						$this->widget('bootstrap.widgets.TbButton', array(
 					    'label'=>'Ваш отзыв',
@@ -62,14 +62,14 @@
 			</tr>
 			<tr>
 				<td class="header">Подрядчик:</td>
-				<td><?php echo $data->offer->supplier->organizationData[0]->org_name ?></td>
+				<td><?php echo $data->offer->supplier->organizationData->org_name ?></td>
 			</tr>
 			<tr>
 				<td class="header">Стоимость работ:</td>
 				<td>
 					<?php 
 					if($data->price != 0)
-						echo CHtml::encode($data->price) . ' руб.'; 
+						echo number_format($data->price, 2, ',', ' ') . ' руб.'; 
 					else
 						echo "По договоренности"; 
 						?>

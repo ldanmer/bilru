@@ -4,16 +4,14 @@ $this->breadcrumbs=array(
 	'Создание заказа',
 );
 ?>
-
-
 <div>
 	<?php $this->widget('bootstrap.widgets.TbMenu', array(
 	    'type'=>'tabs', 
 	    'stacked'=>false, 
 	    'items'=>array(
-	    	array('label'=>'Купить', 'url'=>'create', 'active' => true),
-        array('label'=>'Активные покупки', 'url'=>'index'),
-        array('label'=>'Завершенные покупки', 'url'=>'finished'),
+	    	array('label'=>'Купить', 'url'=>array('materialBuy/create')),
+        array('label'=>'Активные покупки', 'url'=>array('materialBuy/index'), 'visible'=>!Yii::app()->user->isGuest),
+        array('label'=>'Завершенные покупки', 'url'=>array('materialBuy/finished'), 'visible'=>!Yii::app()->user->isGuest),
 	    ),
 	)); ?>
 </div>

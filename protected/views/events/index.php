@@ -24,11 +24,19 @@ $this->breadcrumbs=array(
 
 </div>
 
-<?php $this->widget('zii.widgets.CListView', array(
+<?php $this->widget('bootstrap.widgets.TbListView', array(
+	'id'=>'events-list',
 	'dataProvider'=>$dataProvider,
 	'itemView'=>'_view',
-	'template' => '{items}',
+	'template' => '{items}{pager}',
 	'htmlOptions' => array('class' => 'clearfix'),
 )); ?>
+
+<?php
+$this->widget('ext.fancybox.EFancyBox', array(
+    'target'=>'a[rel=fancybox]',
+    'config'=>array(),
+    ));	
+ ?>
 
 

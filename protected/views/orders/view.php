@@ -16,8 +16,8 @@ if($model->documents != "null")
 	    'stacked'=>false, 
 	    'items'=>array(
 	        array('label'=>'Найти подряд', 'url'=>array('orders/search'), 'active' => true),
-	        array('label'=>'Мои подряды', 'url'=>array('orderOffer/index')),
-	        array('label'=>'Завершенные подряды', 'url'=>array('orderOffer/finished')),
+	        array('label'=>'Мои подряды', 'url'=>array('orderOffer/index'), 'visible'=>!Yii::app()->user->isGuest),
+	        array('label'=>'Завершенные подряды', 'url'=>array('orderOffer/finished'), 'visible'=>!Yii::app()->user->isGuest),
 	    ),
 	)); ?>
 </div>
@@ -35,17 +35,17 @@ if($model->documents != "null")
 			</tr>
 			<tr>
 				<td class="header">СТОИМОСТЬ РАБОТ:</td>
-				<td><?php echo $model->price == 0 ? 'По договоренности' : $model->price; ?></td>
+				<td><?php echo $model->price == 0 ? 'По договоренности' : number_format($model->price, 2, ',', ' '); ?></td>
 			</tr>
 			<tr>
 				<td class="header">ПРИЕМ ЗАЯВОК:</td>
-				<td>
+				<td style="padding: 0 10px;">
 					<table>
 						<tr>
 							<td class="header">Начало</td>
-							<td><?php echo $model->start_date; ?></td>
+							<td><?php echo date('d.m.Y',$model->start_date); ?></td>
 							<td class="header">Окончание</td>
-							<td><?php echo $model->end_date; ?></td>
+							<td><?php echo date('d.m.Y',$model->end_date); ?></td>
 						</tr>
 					</table>
 				</td>
@@ -60,7 +60,7 @@ if($model->documents != "null")
 				<td class="header">ОБЪЕКТ:</td>
 				<td>
 					<?php 
-					if(UserSettings::getThisTariff() == 0):			
+					if(UserSettings::getThisTariff() == 1):			
 						$this->widget('bootstrap.widgets.TbButton', array(
 						    'label'=>'Посмотреть профиль объекта',
 						    'type'=>'btn-block',
@@ -78,7 +78,7 @@ if($model->documents != "null")
 			<tr>
 				<td class="header">АДРЕС ОБЪЕКТА:</td>
 				<td>
-					<?php echo $model->object->region->region_name ?>, 
+					<?php echo $model->object->region->city_name ?>, 
 					ул.<?php echo $model->object->street ?>, 
 					д.<?php echo $model->object->house ?>
 				</td>
@@ -87,7 +87,7 @@ if($model->documents != "null")
 				<td class="header">ЗАКАЗЧИК:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() == 0):
+					if(UserSettings::getThisTariff() == 1):
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else: 
 						if (empty($org_info->org_name))
@@ -131,10 +131,10 @@ if($model->documents != "null")
 				<td class="header">КОНТАКТЫ:</td>
 				<td>
 					<?php 
-					if(UserSettings::getThisTariff() == 0):
+					if(UserSettings::getThisTariff() == 1):
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else:
-						echo $model->object->region->region_name ?>, 
+						echo $model->object->region->city_name ?>, 
 						ул.<?php echo $model->object->street ?>, 
 						д.<?php echo $model->object->house ?>
 					<?php endif; ?>
@@ -144,7 +144,7 @@ if($model->documents != "null")
 				<td class="header contact">Телефон:</td>
 				<td>
 					<?php 
-					if(UserSettings::getThisTariff() == 0)
+					if(UserSettings::getThisTariff() == 1)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 						echo $user_info->phone1 
@@ -155,7 +155,7 @@ if($model->documents != "null")
 				<td class="header contact">E-mail:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() == 0)
+					if(UserSettings::getThisTariff() == 1)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 					 echo $model->object->user->email;
@@ -166,7 +166,7 @@ if($model->documents != "null")
 				<td class="header contact">Контактное лицо:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() == 0)
+					if(UserSettings::getThisTariff() == 1)
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else
 					 echo $user_info->first_name . " " . $user_info->middle_name . " " . $user_info->last_name; 
@@ -183,7 +183,7 @@ if($model->documents != "null")
 
 
 	<?php 
-	if(UserSettings::getThisTariff() == 0):
+	if(UserSettings::getThisTariff() == 1):
 		$this->widget('bootstrap.widgets.TbButton', array(
 		    'label'=>'Дать предложение',
 		    'type'=>'primary',
@@ -228,7 +228,7 @@ if($model->documents != "null")
 <?php $this->beginWidget('bootstrap.widgets.TbModal', array('id'=>'alert')); ?>
  
 <div class="alert alert-error">
-    Информация недоступна на тарифном плане «БАЗОВЫЙ»
+    Функция недоступна на тарифном плане «БАЗОВЫЙ»
 </div>
  
 <?php $this->endWidget(); ?>

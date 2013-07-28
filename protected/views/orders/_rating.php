@@ -11,15 +11,17 @@
 	<?php echo $form->errorSummary($rating); ?>
 
 	<div class="span1">
-		<?php if(!empty($model->supplier->avatar)): ?>
-			<?php echo CHtml::image(Yii::app()->baseUrl.$model->supplier->avatar); ?>
+		<?php if(!empty($model->supplier->settings->avatar)): 
+		$avatar = json_decode($model->supplier->settings->avatar);
+		?>
+			<?php echo CHtml::image(Yii::app()->baseUrl.$avatar[0]); ?>
 		<?php else: ?>
 			<img src="<?php echo Yii::app()->baseUrl ?>/img/avatar_placeholder.png" />
 		<?php endif; ?>
 	</div>
-	<div class="span5 dark-blue">
+	<div class="span5 dark-blue pull-right">
 		<div>ПОДРЯДЧИК: 
-			<strong><?php echo CHtml::encode($model->supplier->organizationData[0]->org_name); ?></strong>
+			<strong><?php echo CHtml::encode($model->supplier->organizationData->org_name); ?></strong>
 		</div>
 		<table>	
 			<tr class="white">
@@ -30,7 +32,7 @@
 			</tr>
 		</table>
 		<div>
-		<?php echo CHtml::link("Посмотреть профиль подрядчика",array(''), array('class'=>'btn btn-block pull-left')); ?>
+		<?php echo CHtml::link("Посмотреть профиль подрядчика",array('user/profile', 'id'=>$model->supplier_id), array('class'=>'btn btn-small btn-block pull-left')); ?>
 		</div>
 	</div>
 	<div class="span6">
@@ -57,6 +59,7 @@
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 			'buttonType'=>'submit',
 			'type'=>'primary',
+			'size'=>'small',
 			'label'=>'Оставить отзыв',
 			'htmlOptions' => array('class' => 'pull-right clearfix'),
 		)); ?>

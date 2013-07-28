@@ -46,7 +46,7 @@
 							echo "Название компании";
 				 ?>:</td>
 				<td><?php echo 
-					$form->textFieldRow($model->organizationData[0],'org_name', array(
+					$form->textFieldRow($model->organizationData,'org_name', array(
 						'label'=>false, 
 						'placeholder' => 'Название организации',
 					)); ?>
@@ -58,13 +58,15 @@
 					<table>
 						<tr>
 							<td>
-								<?php echo $form->dropDownListRow($model->personalData[0], 'region_id', GetName::getNames('Region', 'region_name')); ?>
-								<?php echo $form->textFieldRow($model->personalData[0],'street'); ?>	
-								<?php echo $form->textFieldRow($model->personalData[0],'house'); ?>							
+								<?php echo $form->dropDownListRow($model->personalData, 'region_id', Region::model()->getRegionsList(), array(
+									'label'=>false, 
+									'empty' => '- выберите регион -',
+								)); ?>
+								<?php echo $form->textFieldRow($model->personalData,'street'); ?>	
+								<?php echo $form->textFieldRow($model->personalData,'house'); ?>							
 							</td>
 							<td>
-								<?php echo $form->dropDownListRow($model->personalData[0], 'city_id', GetName::getNames('City', 'city_name')); ?>
-								<?php echo $form->textFieldRow($model->personalData[0],'apartament'); ?>
+								<?php echo $form->textFieldRow($model->personalData,'apartament'); ?>
 							</td>
 						</tr>
 					</table>
@@ -78,13 +80,12 @@
 					<table>
 						<tr>
 							<td>
-								<?php echo $form->dropDownListRow($model->organizationData[0], 'region_id', GetName::getNames('Region', 'region_name')); ?>
-								<?php echo $form->textFieldRow($model->organizationData[0],'street'); ?>
-								<?php echo $form->textFieldRow($model->organizationData[0],'office'); ?>
+								<?php echo $form->dropDownListRow($model->organizationData, 'region_id', GetName::getNames('Region', 'region_name')); ?>
+								<?php echo $form->textFieldRow($model->organizationData,'street'); ?>
+								<?php echo $form->textFieldRow($model->organizationData,'office'); ?>
 							</td>
 							<td>
-								<?php echo $form->dropDownListRow($model->organizationData[0], 'city_id', GetName::getNames('City', 'city_name')); ?>
-								<?php echo $form->textFieldRow($model->organizationData[0],'house'); ?>
+								<?php echo $form->textFieldRow($model->organizationData,'house'); ?>
 
 							</td>
 						</tr>
@@ -95,13 +96,13 @@
 			<tr>
 				<td class="header">Телефон:</td>
 				<td>
-					<?php echo $form->textFieldRow($model->personalData[0],'phone1', array('label'=>false)); ?>
+					<?php echo $form->textFieldRow($model->personalData,'phone1', array('label'=>false)); ?>
 				</td>
 			</tr>	
 			<tr>
 				<td class="header">Телефон/Факс:</td>
 				<td>
-					<?php echo $form->textFieldRow($model->personalData[0],'phone2', array('label'=>false)); ?>
+					<?php echo $form->textFieldRow($model->personalData,'phone2', array('label'=>false)); ?>
 				</td>
 			</tr>	
 			<tr>
@@ -116,20 +117,20 @@
 							echo "Контактное лицо";
 				 ?>:</td>
 				<td>
-					<?php echo $form->textFieldRow($model->personalData[0],'last_name'); ?>	
-					<?php echo $form->textFieldRow($model->personalData[0],'first_name'); ?>		
-					<?php echo $form->textFieldRow($model->personalData[0],'middle_name'); ?>	
+					<?php echo $form->textFieldRow($model->personalData,'last_name'); ?>	
+					<?php echo $form->textFieldRow($model->personalData,'first_name'); ?>		
+					<?php echo $form->textFieldRow($model->personalData,'middle_name'); ?>	
 				</td>
 			</tr>	
 			<tr>
 				<td class="header">Банковские реквизиты:</td>
 				<td>
-					<?php echo $form->textFieldRow($model->organizationData[0],'inn'); ?>	
-					<?php echo $form->textFieldRow($model->organizationData[0],'kpp'); ?>		
-					<?php echo $form->textFieldRow($model->organizationData[0],'bank'); ?>	
-					<?php echo $form->textFieldRow($model->organizationData[0],'bik'); ?>	
-					<?php echo $form->textFieldRow($model->organizationData[0],'current_account'); ?>		
-					<?php echo $form->textFieldRow($model->organizationData[0],'correspond_account'); ?>	
+					<?php echo $form->textFieldRow($model->organizationData,'inn'); ?>	
+					<?php echo $form->textFieldRow($model->organizationData,'kpp'); ?>		
+					<?php echo $form->textFieldRow($model->organizationData,'bank'); ?>	
+					<?php echo $form->textFieldRow($model->organizationData,'bik'); ?>	
+					<?php echo $form->textFieldRow($model->organizationData,'current_account'); ?>		
+					<?php echo $form->textFieldRow($model->organizationData,'correspond_account'); ?>	
 				</td>
 			</tr>	
 			

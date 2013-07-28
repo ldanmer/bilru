@@ -34,14 +34,14 @@ class Objects extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('title, object_type_id, region_id, city_id, street, house, square, floors, user_id', 'required'),
-			array('object_type_id, region_id, city_id, square, floors, user_id', 'numerical', 'integerOnly'=>true),
+			array('title, object_type_id, region_id, street, house, square, floors, user_id', 'required'),
+			array('object_type_id, region_id, square, floors, user_id', 'numerical', 'integerOnly'=>true),
 			array('title, street', 'length', 'max'=>255),
 			array('house', 'length', 'max'=>10),
 			array('photoes, blueprints, documents', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, title, object_type_id, photoes, blueprints, documents, region_id, city_id, street, house, square, floors, communications, user_id', 'safe', 'on'=>'search'),
+			array('id, title, object_type_id, photoes, blueprints, documents, region_id, street, house, square, floors, communications, user_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -54,13 +54,20 @@ class Objects extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'objectType' => array(self::BELONGS_TO, 'ObjectTypes', 'object_type_id'),
-			'region' => array(self::BELONGS_TO, 'Region', 'region_id'),
+			'region' => array(self::BELONGS_TO, 'City', 'region_id'),
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
-			'city' => array(self::BELONGS_TO, 'City', 'city_id'),
 			'orders' => array(self::HAS_MANY, 'Orders', 'object_id'),
 			'goszakaz' => array(self::MANY_MANY, 'Goszakaz', 'object_id'),
 			'orgType' => array(self::HAS_MANY, 'OrgType', 'org_type_id',  'through' => 'user'),
-			'ordersCount' => array(self::STAT, 'Orders', 'object_id'),
+			'ordersCount' => array(self::STAT, 'Orders', 'object_id', 'condition'=>'status=0 AND offer_id=0'),
+			'buyesCount' => array(self::STAT, 'MaterialBuy', 'object_id', 'condition'=>'status=0 AND offer_id=0'),
+			'ordersCountActive' => array(self::STAT, 'Orders', 'object_id', 'condition'=>'status=0 AND offer_id!=0'),
+			'buyesCountActive' => array(self::STAT, 'MaterialBuy', 'object_id', 'condition'=>'status=0 AND offer_id!=0'),
+			'ordersCountFinished' => array(self::STAT, 'Orders', 'object_id', 'condition'=>'status=1'),
+			'buyesCountFinished' => array(self::STAT, 'MaterialBuy', 'object_id', 'condition'=>'status=1'),
+			'ordersCountFinishedUnique' => array(self::STAT, 'Orders', 'object_id', 'condition'=>'status=1', 'select' => 'count(DISTINCT offer_id)'),
+			'buyesCountFinishedUnique' => array(self::STAT, 'MaterialBuy', 'object_id', 'condition'=>'status=1', 'select' => 'count(DISTINCT offer_id)'),
+			'images' => array(self::HAS_MANY, 'Images', 'id_object', 'order' => 'images.sorter'),
 		);
 	}
 
@@ -77,7 +84,6 @@ class Objects extends CActiveRecord
 			'blueprints' => 'Чертежи',
 			'documents' => 'Документы',
 			'region_id' => 'Регион',
-			'city_id' => 'Город',
 			'street' => 'Улица',
 			'house' => 'Дом',
 			'square' => 'Площадь',
@@ -104,4 +110,5 @@ class Objects extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+
 }

@@ -15,17 +15,15 @@
 			<tr>
 				<td class="header">Статус:</td>
 				<td>Поставка завершена 
-					<div class="subtitle pull-right">Ваша оценка 
+					<h4 class="subtitle pull-right">Ваша оценка 
 					<span class="red">	<?php echo GetName::getThisRating($data->materialBuy->rating_id)->rating; ?></span>
-					</div>
+					</h4>
 				</td>
 			</tr>	
 			<tr class="hidden">
 				<td class="header">Заказчик:</td>
 				<td><?php
-					echo CHtml::encode($data->materialBuy->user->organizationData[0]->org_name); 
-					echo CHtml::link('Профиль заказчика', array("user/view", "id"=>$data->materialBuy->user_id), 
-					array('class'=>'btn pull-right light-blue-border'));?></td>
+					echo CHtml::link(CHtml::encode($data->materialBuy->user->organizationData->org_name),array("user/profile", "id"=>$data->materialBuy->user_id)); 	?></td>
 			</tr>
 			<tr class="hidden">
 				<td class="header">Контакты:</td>
@@ -36,10 +34,10 @@
 								echo $data->materialBuy->user->email;
 								break;
 							case '1':
-								echo $data->materialBuy->user->personalData[0]->phone1;
+								echo $data->materialBuy->user->personalData->phone1;
 								break;
 							case '2':
-								echo $data->materialBuy->user->email." / ".$data->materialBuy->user->personalData[0]->phone1;
+								echo $data->materialBuy->user->email." / ".$data->materialBuy->user->personalData->phone1;
 								break;
 							
 							default:
@@ -66,7 +64,7 @@
 			<tr>
 				<td class="header">Стоимость поставки:</td>
 				<td>
-					<?php echo CHtml::encode($data->total_price); ?> руб.
+					<?php echo number_format($data->total_price, 2, ',', ' '); ?> руб.
 				</td>
 			</tr>	
 			<tr>
@@ -115,7 +113,7 @@
 </div>
 
 	<div align="right">	
-	<?php echo CHtml::button("Показать полностью",array('class'=>'btn btn-primary show pull-right')); ?>
+	<?php echo CHtml::button("Показать полностью",array('class'=>'btn btn-small btn-primary show pull-right')); ?>
 	</div>
 
 	<div class="clearfix"></div>

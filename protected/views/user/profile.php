@@ -8,60 +8,59 @@
 </div>
 <div class="order-view clearfix" id="mainprofile">
 	<div class="span1">
-  	<?php if(!empty($model->settings[0]->avatar)): ?>
-      <?php echo CHtml::image(Yii::app()->baseUrl.$model->settings[0]->avatar); ?>
+  	<?php if(!empty($model->settings->avatar)): 
+  		$avatar = json_decode($model->settings->avatar);
+  	?>
+	    <?php $this->widget('ext.SAImageDisplayer', array(
+	        'image' => str_replace('/images/originals/', '', $avatar[0]),
+	        'size' => 'middle',
+	    )); ?>
     <?php else: ?>
-      <?php echo CHtml::image(Yii::app()->baseUrl.'/img/avatar_placeholder.png'); ?>
+			<?php echo CHtml::image(Yii::app()->baseUrl.'/img/avatar_placeholder.png'); ?>
     <?php endif; ?>
     <span class="pull-right">Зарегистрирован: <?php echo CHtml::encode(date("d.m.Y",strtotime($model->create_time))); ?></span>
 	</div>
 
 	<div id="maininfo" class="span4">
-		<p class="header"> <?php echo CHtml::encode($model->role->role_name) ?>: 
-		<span class="big"><?php echo GetName::getUserTitles($model->id)->orgType ?></span></p> 
-		<p class="big"><?php echo ($model->org_type_id == 1 && $model->role_id == 1 ) ? CHtml::encode($model->personalData[0]->first_name . ' ' .$model->personalData[0]->middle_name . ' ' . $model->personalData[0]->last_name) : CHtml::encode($model->organizationData[0]->org_name) ?></p>
+		<p class="header"> <?php echo CHtml::encode($model->role->role_name) ?></p> 
+		<p class="big"><?php echo GetName::getUserTitles($model->id)->orgType ?> <?php echo ($model->org_type_id == 1 && $model->role_id == 1 ) ? CHtml::encode($model->personalData->first_name . ' ' .$model->personalData->middle_name . ' ' . $model->personalData->last_name) : CHtml::encode($model->organizationData->org_name) ?></p>
 		<?php if($model->role_id == 4): ?>
 			<p class="header">Бригадир/Прораб:  
-			<span class="big"><?php echo CHtml::encode($model->personalData[0]->first_name) ?> <?php echo CHtml::encode($model->personalData[0]->last_name) ?></span></p>
+			<span class="big"><?php echo CHtml::encode($model->personalData->first_name) ?> <?php echo CHtml::encode($model->personalData->last_name) ?></span></p>
 		<?php endif; ?>
 		<?php if($model->role_id == 5): ?>			 
-			<p class="big"><?php echo CHtml::encode($model->personalData[0]->first_name)?> <?php echo CHtml::encode($model->personalData[0]->middle_name) ?> <?php echo CHtml::encode($model->personalData[0]->last_name) ?></p>
+			<p class="big"><?php echo CHtml::encode($model->personalData->first_name)?> <?php echo CHtml::encode($model->personalData->middle_name) ?> <?php echo CHtml::encode($model->personalData->last_name) ?></p>
 		<?php endif; ?>
 		<h4>
 			<span class="red">
-				<?php echo CHtml::encode($model->personalData[0]->region->region_name) ?>				
+				<?php echo CHtml::encode($model->personalData->city->city_name) ?>				
 			</span>
 			<span><a href="#geography" role="button" data-toggle="modal"> и другие регионы</a></span>
 		</h4>
-		<p><strong>Телефон: </strong><?php echo CHtml::encode($model->personalData[0]->phone1) . '; ' . CHtml::encode($model->personalData[0]->phone2)  ?></p>
-		<p><strong>Email: </strong><?php echo CHtml::mailto($model->email) ?></p>
+		<p><strong>Телефон: </strong><?php echo CHtml::encode($model->personalData->phone1) . '; ' . CHtml::encode($model->personalData->phone2)  ?></p>
+		<p><strong>Email: </strong><a href="#message" role="button" data-toggle="modal">Отправить сообщение</a></p>
 		<?php if($model->role_id != 1): ?>
-		<p class="green margin-top">
-			<img src="<?php echo Yii::app()->baseUrl ?>/img/finger-up.png" class="pull-left" />
-		Эту компанию рекомендовало 
-			<span class="red"><?php echo GetName::getRating($model->id)->count ?></span>
-			пользователей</p>
 	</div>
 	<div class="span13 pull-right">
 		<div class="subtitle">
 			<h4>Рейтинг: <span class="red"><?php echo GetName::getRating($model->id)->averageRating ?></span></h4>
 		</div>				
-		<div class="rating-title"><?php echo $model->rating[0]->category[0] ?>:
+		<div class="rating-title"><?php echo UserRating::model()->category[0] ?>:
 			<span class="red pull-right"><?php echo GetName::getRating($model->id)->price ?></span>
 		</div>
-		<div class="rating-title"><?php echo $model->rating[0]->category[1] ?>:
+		<div class="rating-title"><?php echo UserRating::model()->category[1] ?>:
 			<span class="red pull-right"><?php echo GetName::getRating($model->id)->quality ?></span>
 		</div>
-		<div class="rating-title"><?php echo $model->rating[0]->category[2] ?>:
+		<div class="rating-title"><?php echo UserRating::model()->category[2] ?>:
 			<span class="red pull-right"><?php echo GetName::getRating($model->id)->delivery ?></span>
 		</div>
-		<div class="rating-title"><?php echo $model->rating[0]->category[3] ?>:
+		<div class="rating-title"><?php echo UserRating::model()->category[3] ?>:
 			<span class="red pull-right"><?php echo GetName::getRating($model->id)->personal ?></span>
 		</div>
-		<div class="rating-title"><?php echo $model->rating[0]->category[4] ?>:
+		<div class="rating-title"><?php echo UserRating::model()->category[4] ?>:
 			<span class="red pull-right"><?php echo GetName::getRating($model->id)->assortiment ?></span>
 		</div>
-		<div class="rating-title"><?php echo $model->rating[0]->category[5] ?>:
+		<div class="rating-title"><?php echo UserRating::model()->category[5] ?>:
 			<span class="red pull-right"><?php echo GetName::getRating($model->id)->service ?></span>
 		</div>
 	</div>
@@ -70,12 +69,11 @@
 		<h4 class="subtitle" align="center">Галерея</h4>
 		<?php if($gallery): ?>
 		<div class="image_carousel">
-			<div id="photos" class="carusel">
-				<?php foreach ($gallery as $photo) {
-					echo CHtml::link(CHtml::image(Yii::app()->baseUrl.$photo), Yii::app()->baseUrl.$photo, array('rel'=>'fancybox'));
-				} ?>
-			</div>
-			<div class="pagination" id="photos_pag"></div>
+			<div class="carusel">
+				<?php foreach ($gallery as $photo)
+					echo CHtml::link(CHtml::image(Yii::app()->baseUrl.'/site/resized/76x76'.$photo), Yii::app()->baseUrl.$photo, array('rel'=>'fancybox'));
+				 ?>
+			</div>			
 		</div>
 		<?php else: ?>
 		<div>
@@ -84,8 +82,8 @@
 		<?php endif ?>
 		<div class="clearfix"></div>
 		<h4 class="subtitle" align="center">Лицензии, сертификаты, дипломы</h4>
-		<?php if(!is_null($model->userInfo[0]->license)): ?>
-			<ol class="doc-list"><?php echo GetName::getDocsList($model->userInfo[0]->license)->list ?></ol>
+		<?php if(!is_null($model->userInfo->license)): ?>
+			<ol class="doc-list"><?php echo GetName::getDocsList($model->userInfo->license)->list ?></ol>
 		<?php else: ?>
 		<div>
 			<em>Пользователь пока ничего не добавил</em>
@@ -111,14 +109,14 @@
 			<span class="red pull-right"><?php echo $model->ratingCount ?></span>
 		</div>
 		<div class="rating-title">Лицензий, сертификатов, дипломов :
-			<span class="red pull-right"><?php echo !empty($model->userInfo[0]->license) ? count(json_decode($model->userInfo[0]->license)) : "0"; ?></span>
+			<span class="red pull-right"><?php echo !empty($model->userInfo->license) ? count(json_decode($model->userInfo->license)) : "0"; ?></span>
 		</div>
 		<div class="rating-title">
 			<a href="#geography" role="button" data-toggle="modal">Регионов деятельности</a>:
-			<span class="red pull-right"><?php echo !empty($model->userInfo[0]->regions) ? count(json_decode($model->userInfo[0]->regions)) + 1 : "1"; ?></span>
+			<span class="red pull-right"><?php echo !empty($model->userInfo->regions) ? count(json_decode($model->userInfo->regions)) + 1 : "1"; ?></span>
 		</div>		
 		<div class="rating-title"><a href="#profile" role="button" data-toggle="modal">Профилей деятельности</a>:
-			<span class="red pull-right"><?php echo !empty($model->userInfo[0]->profiles) ? count(json_decode($model->userInfo[0]->profiles)) : "0"; ?></span>
+			<span class="red pull-right"><?php echo !empty($model->userInfo->profiles) ? count(json_decode($model->userInfo->profiles)) : "0"; ?></span>
 		</div>		
 		<div class="rating-title"><a href="#category" role="button" data-toggle="modal">
 			<?php if(GetName::getCabinetAttributes($model->id)->type == 2)
@@ -128,10 +126,10 @@
 				echo "Категорий товаров";
 			?>
 		</a>:
-			<span class="red pull-right"><?php echo !empty($model->userInfo[0]->goods) ? count(json_decode($model->userInfo[0]->goods)) : "0"; ?></span>
+			<span class="red pull-right"><?php echo !empty($model->userInfo->goods) ? count(json_decode($model->userInfo->goods)) : "0"; ?></span>
 		</div>
 		<div class="rating-title">Опыт компании (лет):
-			<span class="red pull-right"><?php echo !empty($model->userInfo[0]->age) ? $model->userInfo[0]->age : "0"; ?></span>
+			<span class="red pull-right"><?php echo !empty($model->userInfo->age) ? $model->userInfo->age : "0"; ?></span>
 		</div>
 	</div>
 
@@ -141,12 +139,11 @@
 		<h4 class="subtitle" align="center">Объекты</h4>
 		<?php if($objectsPhoto): ?>
 		<div class="image_carousel">
-			<div id="photos" class="carusel">
+			<div class="carusel">
 				<?php foreach ($objectsPhoto as $photo) {
-					echo CHtml::link(CHtml::image(Yii::app()->baseUrl.$photo), Yii::app()->baseUrl.$photo, array('rel'=>'fancybox'));
+					echo CHtml::link(CHtml::image(Yii::app()->baseUrl.'/site/resized/76x76'.$photo), Yii::app()->baseUrl.$photo, array('rel'=>'fancybox'));
 				} ?>
-			</div>
-			<div class="pagination" id="photos_pag"></div>
+			</div>			
 		</div>
 		<?php else: ?>
 		<div>
@@ -176,7 +173,7 @@
 
 	<div class="subtitle clearfix"><h4>Краткое описание компании</h4></div>	
 		<p class="comment">
-			<?php echo !empty($model->organizationData[0]->description) ? CHtml::encode($model->organizationData[0]->description) : "Пользователь не оставил описания."; ?>
+			<?php echo !empty($model->organizationData->description) ? CHtml::encode($model->organizationData->description) : "Пользователь не оставил описания."; ?>
 		</p>
  	<?php if($model->role_id == 1): ?>
  	<div class="hidden" id="user-orders">
@@ -190,8 +187,8 @@
 			'columns'=>array(
 				array('name'=>'Тип', 'value' => 'CHtml::image(Yii::app()->request->baseUrl."/img/bill.png")', 'type' => 'raw'),
 				array('name' => 'Наименование заказа','type' => 'raw', 'value' => 'CHtml::link($data->title, array("orders/view", "id"=>$data["id"]))'),
-				array('name' => 'Начальная цена, руб', 'value' => '$data->price != 0 ? $data->price : "По договоренности"'),
-				array('name' => 'Регион', 'value' => '$data->object->region->region_name'),
+				array('name' => 'Начальная цена, руб', 'value' => '$data->price != 0 ? number_format($data->price, 2, ",", " ") : "По договоренности"'),
+				array('name' => 'Регион', 'value' => '$data->object->region->city_name'),
 				array('name' => 'Окончание подачи заявок', 'value' => '$data["end_date"]',)
 			),
 			'template' => '{items}{pager}',
@@ -210,7 +207,7 @@
 					array('name'=>'Вид', 'value' => 'CHtml::image(Yii::app()->request->baseUrl.MaterialBuy::categoryImg($data->category))', 'type' => 'raw'),
 					array('name' => 'Наименование покупки', 'value' => 'CHtml::link($data->title, array("materialBuy/view", "id"=>$data->id))', 'type' => 'raw'),
 					array('name' => 'Доставка', 'value' => '$data->supply == 1 ? CHtml::image(Yii::app()->request->baseUrl."/img/delivery.png") : ""', 'type' => 'raw'),
-					array('name' => 'Регион', 'value' => '$data->object->region->region_name'),
+					array('name' => 'Регион', 'value' => '$data->object->region->city_name'),
 					array('name' => 'Срок поставки', 'value' => '$data->start_date ." - ". $data->end_date',
 			      ),
 				),
@@ -247,8 +244,8 @@ $this->widget('ext.fancybox.EFancyBox', array(
 
 <div class="modal-body">
 	<ul>
-		<li><strong>Основной: <?php echo CHtml::encode($model->personalData[0]->region->region_name) ?></strong></li>
-		<?php echo GetName::jsonToString($model->userInfo[0]->regions, GetName::getNames('Region', 'region_name'), "li"); ?>
+		<li><strong>Основной: <?php echo CHtml::encode($model->personalData->city->city_name) ?></strong></li>
+		<?php echo GetName::jsonToString($model->userInfo->regions, GetName::getNames('Region', 'region_name'), "li"); ?>
 	</ul>
 </div>
  
@@ -272,10 +269,10 @@ $this->widget('ext.fancybox.EFancyBox', array(
 <div class="modal-body">
 	<ul>
 		<?php 
-		if(!empty($model->userInfo[0]->goods))
+		if(!empty($model->userInfo->goods))
 		{
 			if(GetName::getCabinetAttributes($model->id)->type == 3)
-		echo empty($model->userInfo[0]->profiles) ? "Не указано" : GetName::jsonToString($model->userInfo[0]->profiles, MaterialBuy::model()->categoryList, "li"); 
+		echo empty($model->userInfo->profiles) ? "Не указано" : GetName::jsonToString($model->userInfo->profiles, MaterialBuy::model()->categoryList, "li"); 
 		}
 	?>
 	</ul>
@@ -308,12 +305,12 @@ $this->widget('ext.fancybox.EFancyBox', array(
 <div class="modal-body">
 	<ul>
 		<?php 
-		if(!empty($model->userInfo[0]->goods))
+		if(!empty($model->userInfo->goods))
 		{
 			if(GetName::getCabinetAttributes($model->id)->type == 3)
-				echo GetName::jsonToString($model->userInfo[0]->goods, GetName::getNames('MaterialList', 'name'), "li"); 
+				echo GetName::jsonToString($model->userInfo->goods, GetName::getNames('MaterialList', 'name'), "li"); 
 			if(GetName::getCabinetAttributes($model->id)->type == 2)
-				echo GetName::jsonToString($model->userInfo[0]->goods, GetName::getNames('WorkTypes', 'name'), "li"); 
+				echo GetName::jsonToString($model->userInfo->goods, GetName::getNames('WorkTypes', 'name'), "li"); 
 		}
 		else
 			echo "Не указано";
@@ -329,5 +326,19 @@ $this->widget('ext.fancybox.EFancyBox', array(
         'htmlOptions'=>array('data-dismiss'=>'modal'),
     )); ?>
 </div>
+
+<?php $this->endWidget(); ?>
+
+<!-- Контактная форма -->
+
+<?php $this->beginWidget('bootstrap.widgets.TbModal', array('id'=>'message')); ?>
+<div class="modal-header">
+  <a class="close" data-dismiss="modal">X</a>
+  <h4>Отправить сообщение</h4>
+</div>
+
+<div class="modal-body">
+	<?php $this->widget('Contact', array('email'=>$model->email)); ?>
+</div> 
 
 <?php $this->endWidget(); ?>

@@ -4,29 +4,24 @@ $this->breadcrumbs=array(
 );
 ?>
 <div class="order-title">
-	Оставить отзыв
+	Отзывы о компании
 </div>
-<div class="order-view clearfix">
+<div class="order-view clearfix" id="user-review">
 	<div class="span1">		
-  	<?php if(!empty($model[0]->user->settings[0]->avatar)): ?>
-      <?php echo CHtml::link(CHtml::image(Yii::app()->baseUrl.$model[0]->user->settings[0]->avatar), array('user/profile', 'id'=>$model[0]->user_id)); ?>
+  	<?php if(!empty($model[0]->user->settings->avatar)): 
+			$avatar = json_decode($model[0]->user->settings->avatar);
+		?>
+      <?php echo CHtml::link(CHtml::image(Yii::app()->baseUrl.$avatar[0]), array('user/profile', 'id'=>$model[0]->user_id)); ?>
     <?php else: ?>
       <?php echo CHtml::link(CHtml::image(Yii::app()->baseUrl.'/img/avatar_placeholder.png'), array('user/view')); ?>
     <?php endif; ?>
-		<p class="margin-top">
-			<img src="<?php echo Yii::app()->baseUrl ?>/img/finger-up.png" class="pull-right" />
-		</p>
 	</div>
-	<div class="span3">
+	<div class="span3" style="margin-left:30px;">
 		<h4 class="header"><?php echo CHtml::encode($model[0]->user->role->role_name) ?></h4>
-		<h4><strong><?php echo CHtml::encode($model[0]->user->organizationData[0]->org_name) ?></strong></h4>
-		<?php echo CHtml::link("Посмотреть профиль",array('user/profile', 'id'=>$model[0]->user_id), array('class'=>'btn btn-block pull-left')); ?>
-		<div class="clearfix"></div>
-		<p class="green margin-top">Этого поставщика рекомендовало 
-			<span class="red"><?php echo GetName::getRating($model[0]->user_id)->count ?></span>
-			пользователей</p>
+		<h4><strong><?php echo CHtml::encode($model[0]->user->organizationData->org_name) ?></strong></h4>
+		<?php echo CHtml::link("Посмотреть профиль",array('user/profile', 'id'=>$model[0]->user_id), array('class'=>'btn btn-block btn-small pull-left')); ?>
 	</div>
-	<div class="span2 margin-left">
+	<div class="span2 pull-right">
 		<div class="subtitle">
 			<h4>Рейтинг: <span class="red"><?php echo GetName::getRating($model[0]->user_id)->averageRating ?></span></h4>
 		</div>				

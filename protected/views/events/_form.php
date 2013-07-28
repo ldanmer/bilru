@@ -10,20 +10,32 @@
 	'label'=>false, 
 	'maxlength'=>255,
 	'placeholder' => 'Введите заголовок',
-	'class' => 'span3',
+	'class' => 'span6',
 )); ?>
 
-<?php echo $form->textAreaRow($model,'text',array(
-	'label'=>false, 
-	'placeholder' => 'Текст новости',
-	'class' => 'span3',
-	'rows'=>5
-)); ?>
-<div class="clearfix"></div>
+<?php 
+Yii::import('ext.imperavi-redactor-widget.ImperaviRedactorWidget');
+$this->widget('ImperaviRedactorWidget', array(
+    'model' => $model,
+    'attribute' => 'text',
+    'options' => array(
+      'lang' => 'ru', 
+      'imageUpload'=>$this->createUrl('file/upload'),
+      'imageGetJson'=>$this->createUrl('file/list'),
+      'autoresize'=>true,
+      'minHeight' => 200,
+      'linebreaks'=> true,
+      'buttons'=>array('image','video', 'table', 'bold'),
+    ),
+));
+
+ ?>
+ <br>
 <?php $this->widget('bootstrap.widgets.TbButton', array(
 				'buttonType'=>'submit',
 				'type'=>'primary',
-				'label'=> 'Сохранить',					
+				'label'=> 'Сохранить',	
+				'htmlOptions'=>array('class'=>'pull-right clearfix'),				
 			)); ?>
 </fieldset>
 

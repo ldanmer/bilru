@@ -11,15 +11,17 @@
 	<?php echo $form->errorSummary($model); ?>
 
 	<div class="span1">
-		<?php if(!empty($model->user->avatar)): ?>
-			<?php echo CHtml::image(Yii::app()->baseUrl.$model->user->avatar); ?>
+		<?php if(!empty($model->user->settings->avatar)): 
+						$avatar = json_decode($model->user->settings->avatar);
+			?>
+	      <?php echo CHtml::image(Yii::app()->baseUrl.$avatar[0]); ?>
 		<?php else: ?>
 			<img src="<?php echo Yii::app()->baseUrl ?>/img/avatar_placeholder.png" />
 		<?php endif; ?>
 	</div>
 	<?php var_dump($model) ?>
 	<div class="span4">
-		Поставщик <?php echo CHtml::encode($model->user->organizationData[0]->org_name); ?>
+		Поставщик <?php echo CHtml::encode($model->user->organizationData->org_name); ?>
 	</div>
 
 		<?php $this->widget('bootstrap.widgets.TbButton', array(

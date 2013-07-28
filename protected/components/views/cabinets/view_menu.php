@@ -4,21 +4,22 @@ $items = array(
     'name'=>'Найти заказ',
     'link'=>array('/materialBuy/search'),
     'icon' => 'search',
+    /*
     'sub'=>array(
       array('name'=>'Строительные материалы', 'link'=>array('/materialBuy/search')),
       array('name'=>'Отделочные материалы','link'=>array('/materialBuy/search')),
       array('name'=>'Инженерное оборудование','link'=>array('/materialBuy/search')),
-      ),
-    'visible'=>$role == 3,
+      ),*/
+    'visible'=>$role == 2 || $role == 4,
     ),
   array(
     'name'=>'Найти подряд',
     'link'=>array('/orders/search'),
     'icon' => 'search',
-    'visible'=>$role == 2,
+    'visible'=>$role == 2 || $role == 4,
     ),
   array(
-    'name'=>'Найти подрядчика',
+    'name'=>$role == 2 ? 'Найти субподрядчика' : 'Найти подрядчика',
     'link'=>array('/orders/create'),
     'icon' => 'home',
     'sub'=>array(
@@ -42,7 +43,7 @@ $items = array(
     ),
   array(
     'name'=>'Форум',
-    'link'=>'#',
+    'link'=>'http://forum.bilru.com',
     'icon'=>'question-sign',
     ),
 

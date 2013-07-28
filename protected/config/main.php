@@ -1,6 +1,8 @@
 <?php
 Yii::setPathOfAlias('bootstrap', dirname(__FILE__).'/../extensions/bootstrap');
 Yii::setPathOfAlias('dzRaty', dirname(__FILE__).'/../extensions/DzRaty');
+require_once(dirname(__FILE__) . '/../helpers/common.php');
+require_once(dirname(__FILE__) . '/../helpers/strings.php');
 
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
@@ -23,12 +25,25 @@ return array(
 		'application.models.*',
 		'application.components.*',
 		'application.helpers.*',
+		'application.extensions.*',
 		'dzRaty.*',
+		'ext.EchMultiselect.*',
+		'ext.galleryManager.*',
+		'ext.galleryManager.models.*',
+		'ext.yii-mail.YiiMailMessage',		
+		'application.modules.images.models.*',
+		'application.modules.images.components.*',
+		'application.modules.translateMessage.models.TranslateMessage',
+	),
+	'aliases' => array(
+    'xupload' => 'ext.xupload'
 	),
 	'modules'=>array(
 		'auth',
-		'parser',		
-		'backup',
+		'parser',	
+		'images',
+		'sendmail',
+		'translateMessage',
 		'gii'=>array(
 			'class'=>'system.gii.GiiModule',
 			'password'=>'123',
@@ -44,11 +59,47 @@ return array(
 
 	// application components
 	'components'=>array(
+		'mail' => array(
+ 			'class' => 'ext.yii-mail.YiiMail',
+ 			'transportType' => 'php',
+ 			'viewPath' => 'application.views.mail',
+ 			'logging' => true,
+ 			'dryRun' => false
+ 		),
 		'authManager' => array(
 				'behaviors' => array(
         	'auth.components.AuthBehavior',
       	),      	
 			),
+		'widgetFactory'=>array(
+      'widgets'=>array(             
+        'SAImageDisplayer'=>array(
+          'baseDir' => 'images',
+          'originalFolderName'=> 'originals',
+          'sizes' =>array(
+            'tiny' => array('width' => 40, 'height' => 40),
+            'thumb' => array('width' => 60, 'height' => 45),
+            'middle' => array('width' => 120, 'height' => 100),
+          ),
+        ),
+      ),
+    ),
+		'ePdf' => array(
+        'class'         => 'ext.yii-pdf.EYiiPdf',
+        'params'        => array(
+            'mpdf'     => array(
+                'librarySourcePath' => 'application.vendors.mpdf.*',
+                'constants'         => array(
+                    '_MPDF_TEMP_PATH' => Yii::getPathOfAlias('application.runtime'),
+                ),
+                'class'=>'mpdf', // the literal class filename to be loaded from the vendors folder
+            ),
+            'HTML2PDF' => array(
+                'librarySourcePath' => 'application.vendors.html2pdf.*',
+                'classFile'         => 'html2pdf.class.php', // For adding to Yii::$classMap                
+            )
+        ),
+    ),
     'request'=>array(
       'class' => 'application.components.EHttpRequest',
     ),
@@ -69,10 +120,12 @@ return array(
         'rememberMeTime' => 2592000,
         ),
 		'bootstrap'=>array(
-            'class'=>'bootstrap.components.Bootstrap',
-        ),     
-		// uncomment the following to enable URLs in path-format
-		
+        'class'=>'bootstrap.components.Bootstrap',
+      ),  
+		'image'=>array(
+	    'class'=>'application.extensions.image.CImageComponent',	      
+	      'driver'=>'GD',
+			),
 		'urlManager'=>array(
 			'urlFormat'=>'path',
 			'showScriptName'=> false, 
@@ -119,7 +172,6 @@ return array(
 	// application-level parameters that can be accessed
 	// using Yii::app()->params['paramName']
 	'params'=>array(
-		// this is used in contact page
 		'adminEmail'=>'admin@bilru.com',
 	),
 );

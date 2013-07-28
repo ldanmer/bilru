@@ -99,10 +99,11 @@ class Goszakaz extends CActiveRecord
 	}
 	public function totalPrice()
 	{
-		$values = self::model()->findAll('price');
-		$sum = 0;
-		foreach ($values as $value) 
-			$sum += $value->price;
+		$criteria=new CDbCriteria;
+		$criteria->select='sum(price) as price';
+		$sum = self::model()->find($criteria)->getAttribute('price');
+
+		$sum += Orders::model()->find($criteria)->getAttribute('price');
 		return $sum;
 	}
 }

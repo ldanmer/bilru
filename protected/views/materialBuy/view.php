@@ -1,10 +1,11 @@
 <?php
+$this->pageTitle=Yii::app()->name . ' - Закупка материалов';
 $this->breadcrumbs=array(
-	'Material Buys'=>array('index'),
+	'Покупка материалов'=>array('index'),
 	$model->id,
 );
 
-if($model->doc_list != "null")
+if(!is_null($model->doc_list))
 	$docs = GetName::getDocsList($model->doc_list);
 
 $form=$this->beginWidget('bootstrap.widgets.TbActiveForm',array(
@@ -18,29 +19,18 @@ $list = array_pop($arrayData->rawData);
 
 <?php echo $form->errorSummary($offer); ?>
 
-<?php /* if(Yii::app()->user->hasFlash('success')):?>
-    <div class="alert alert-success">
-        <?php echo Yii::app()->user->getFlash('success'); ?>
-    </div>
-<?php endif; ?>
-
-<?php if(Yii::app()->user->hasFlash('error')):?>
-    <div class="alert alert-error">
-        <?php echo Yii::app()->user->getFlash('error'); ?>
-    </div>
-<?php endif; */?>
-
 <div>
 	<?php $this->widget('bootstrap.widgets.TbMenu', array(
 	    'type'=>'tabs', 
 	    'stacked'=>false, 
 	    'items'=>array(
-	        array('label'=>'Найти заказ', 'url'=>'search', 'active' => true),
-	        array('label'=>'Активные заказы', 'url'=>array('byOffer/index')),
-	        array('label'=>'Завершенные заказы', 'url'=>array('byOffer/finished')),
+	        array('label'=>'Найти заказ', 'url'=>array('materialBuy/search'), 'active'=>true),
+         	array('label'=>'Активные заказы', 'url'=>array('byOffer/index'), 'visible'=>!Yii::app()->user->isGuest),
+	        array('label'=>'Завершенные заказы', 'url'=>array('byOffer/finished'), 'visible'=>!Yii::app()->user->isGuest),
 	    ),
 	)); ?>
 </div>
+
 
 <div class="create-form">
 
@@ -55,7 +45,7 @@ $list = array_pop($arrayData->rawData);
 			</tr>
 			<tr>
 				<td class="header">Срок поставки:</td>
-				<td>
+				<td style="padding: 0 10px;">
 					<table>
 						<tr>
 							<td class="header">Начало</td>
@@ -80,12 +70,13 @@ $list = array_pop($arrayData->rawData);
 
 			<tr class="visible">
 				<td class="header">ОБЪЕКТ:</td>
-				<td>
+				<td style="padding: 0 10px;">
 					<?php 
-					if(UserSettings::getThisTariff() != 1):			
+					if(UserSettings::getThisTariff() == 1):			
 						$this->widget('bootstrap.widgets.TbButton', array(
 						    'label'=>'Посмотреть профиль объекта',
 						    'type'=>'btn-block',
+			    			'size'=>'small',
 						    'htmlOptions'=>array(
 						        'data-toggle'=>'modal',
 						        'data-target'=>'#alert',
@@ -101,7 +92,7 @@ $list = array_pop($arrayData->rawData);
 			<tr>
 				<td class="header">АДРЕС ОБЪЕКТА:</td>
 				<td>
-					<?php echo $model->object->region->region_name ?>, 
+					<?php echo $model->object->region->city_name ?>, 
 					ул.<?php echo $model->object->street ?>, 
 					д.<?php echo $model->object->house ?>
 				</td>
@@ -110,7 +101,7 @@ $list = array_pop($arrayData->rawData);
 				<td class="header">ЗАКАЗЧИК:</td>
 				<td>
 					<?php
-					if(UserSettings::getThisTariff() != 1):
+					if(UserSettings::getThisTariff() == 1):
 						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
 					else: 
 						if (empty($org_info->org_name))
@@ -125,10 +116,14 @@ $list = array_pop($arrayData->rawData);
 				<td class="header contact">Телефон:</td>
 				<td>
 					<?php 
+					if(UserSettings::getThisTariff() == 1):
+						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
+					else: 
 						if($model->show_contact==1 || $model->show_contact==2) 
-							echo $model->user->personalData[0]->phone1;
+							echo $model->user->personalData->phone1;
 						else
 							echo "Скрыт заказчиком";
+					endif;
 					?>
 				</td>
 			</tr>
@@ -136,10 +131,14 @@ $list = array_pop($arrayData->rawData);
 				<td class="header contact">E-mail:</td>
 				<td>
 					<?php 
+					if(UserSettings::getThisTariff() == 1):
+						echo '<p class="text-error">Информация недоступна на тарифном плане «БАЗОВЫЙ»</p>';
+					else: 
 						if($model->show_contact==0 || $model->show_contact==2) 
 							echo $model->user->email;
 						else
 							echo "Скрыт заказчиком";
+					endif;
 					?>
 				</td>
 			</tr>		
@@ -221,10 +220,11 @@ $list = array_pop($arrayData->rawData);
 </div>
 	 
 	 <?php 
-		if(UserSettings::getThisTariff() != 1):			
+		if(UserSettings::getThisTariff() == 1):			
 				$this->widget('bootstrap.widgets.TbButton', array(
 			    'label'=>'Дать предложение',
 			    'type'=>'btn-block',
+			    'size'=>'small',
 			    'htmlOptions'=>array(
 		        'data-toggle'=>'modal',
 		        'data-target'=>'#alert',
@@ -240,6 +240,7 @@ $list = array_pop($arrayData->rawData);
  				$this->widget('bootstrap.widgets.TbButton', array(
 			    'label'=>'Дать предложение',
 			    'type'=>'primary',
+			    'size'=>'small',
 			    'htmlOptions'=>array('class'=>'pull-right', 'id'=>'offer-add'),
 					));
 		endif; 
@@ -275,6 +276,7 @@ $list = array_pop($arrayData->rawData);
 <?php $this->widget('bootstrap.widgets.TbButton', array(
 		    'label'=>'Вернуться к результатам поиска',
 		    'type'=>'primary',
+		    'size'=>'small',
 		    'url'=>$this->createUrl('materialBuy/search'),
 		    'htmlOptions'=>array(
 		        'class' => 'pull-right',
@@ -285,7 +287,7 @@ $list = array_pop($arrayData->rawData);
 <?php $this->beginWidget('bootstrap.widgets.TbModal', array('id'=>'alert')); ?>
  
 <div class="alert alert-error">
-    Информация недоступна на тарифном плане «БАЗОВЫЙ»
+    Функция недоступна на тарифном плане «БАЗОВЫЙ»
 </div>
 
  
